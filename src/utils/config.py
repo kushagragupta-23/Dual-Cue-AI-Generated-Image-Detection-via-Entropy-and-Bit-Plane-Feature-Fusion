@@ -1,5 +1,5 @@
 """
-Configuration utilities and typed dataclasses for the LOTA preprocessing pipeline.
+Configuration utilities and typed dataclasses for the MLEP & LOTA preprocessing pipelines.
 """
 
 from dataclasses import dataclass, field, asdict
@@ -38,6 +38,15 @@ class LOTAConfig:
 
 
 @dataclass
+class MLEPConfig:
+    """Configuration for Multi-granularity Local Entropy Pattern (MLEP) extraction."""
+    patch_size: int = 2
+    scales: List[float] = field(default_factory=lambda: [1.0, 0.5, 0.25])
+    window_size: int = 2
+    seed: int = 42
+
+
+@dataclass
 class LoggingConfig:
     """Configuration for logging and experiment output tracking."""
     log_dir: str = "logs"
@@ -47,8 +56,9 @@ class LoggingConfig:
 
 @dataclass
 class ProjectConfig:
-    """Master project configuration bundling dataset, LOTA, and logging settings."""
+    """Master project configuration bundling dataset, MLEP, LOTA, and logging settings."""
     dataset: DatasetConfig = field(default_factory=DatasetConfig)
+    mlep: MLEPConfig = field(default_factory=MLEPConfig)
     lota: LOTAConfig = field(default_factory=LOTAConfig)
     logging: LoggingConfig = field(default_factory=LoggingConfig)
 
@@ -60,9 +70,10 @@ class ProjectConfig:
 def _dict_to_config(data: Dict[str, Any]) -> ProjectConfig:
     """Helper to convert nested dictionary into ProjectConfig dataclass."""
     dataset_cfg = DatasetConfig(**data.get("dataset", {})) if "dataset" in data else DatasetConfig()
+    mlep_cfg = MLEPConfig(**data.get("mlep", {})) if "mlep" in data else MLEPConfig()
     lota_cfg = LOTAConfig(**data.get("lota", {})) if "lota" in data else LOTAConfig()
     logging_cfg = LoggingConfig(**data.get("logging", {})) if "logging" in data else LoggingConfig()
-    return ProjectConfig(dataset=dataset_cfg, lota=lota_cfg, logging=logging_cfg)
+    return ProjectConfig(dataset=dataset_cfg, mlep=mlep_cfg, lota=lota_cfg, logging=logging_cfg)
 
 
 def load_config(config_path: Union[str, Path]) -> ProjectConfig:
