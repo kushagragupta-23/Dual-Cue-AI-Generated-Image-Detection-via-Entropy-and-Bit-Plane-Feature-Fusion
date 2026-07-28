@@ -84,7 +84,7 @@ def generate_benchmark_dataset(target_dir: Path, total_samples: int = 40) -> Non
 
 def main():
     parser = argparse.ArgumentParser(description="Run Complete MLEP & LOTA Project Pipeline.")
-    parser.add_argument("--data_dir", type=str, default="outputs/demo_dataset", help="Path to input dataset directory.")
+    parser.add_argument("--data_dir", type=str, default="outputs/dataset_1400", help="Path to input dataset directory.")
     parser.add_argument("--output_dir", type=str, default="outputs/project_run", help="Directory to store run artifacts and logs.")
     parser.add_argument("--batch_size", type=int, default=8, help="Mini-batch size for DataLoader.")
     parser.add_argument("--num_workers", type=int, default=0, help="Number of data loading subprocess workers.")
@@ -102,7 +102,7 @@ def main():
     data_path = Path(args.data_dir)
     if not data_path.exists() or not any(data_path.iterdir()):
         logger.warning(f"Data directory '{data_path}' not found or empty. Generating benchmark dataset...")
-        generate_benchmark_dataset(data_path, total_samples=40)
+        generate_benchmark_dataset(data_path, total_samples=1400)
 
     # ==================== STEP 1: INITIALIZE SHARED DATASET INFRASTRUCTURE ====================
     print("\n" + "=" * 80)
