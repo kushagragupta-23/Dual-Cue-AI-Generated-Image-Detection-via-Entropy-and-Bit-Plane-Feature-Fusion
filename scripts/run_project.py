@@ -84,7 +84,7 @@ def generate_benchmark_dataset(target_dir: Path, total_samples: int = 40) -> Non
 
 def main():
     parser = argparse.ArgumentParser(description="Run Complete MLEP Project Pipeline.")
-    parser.add_argument("--data_dir", type=str, default="outputs/dataset_1400", help="Path to input dataset directory.")
+    parser.add_argument("--data_dir", type=str, default="dataset10000", help="Path to input dataset directory.")
     parser.add_argument("--output_dir", type=str, default="outputs/project_run", help="Directory to store run artifacts and logs.")
     parser.add_argument("--batch_size", type=int, default=8, help="Mini-batch size for DataLoader.")
     parser.add_argument("--num_workers", type=int, default=0, help="Number of data loading subprocess workers.")
@@ -172,46 +172,51 @@ def main():
     print("=" * 80)
 
     total_images_processed = 0
+    actual_batches_processed = 0
     real_entropy_scores: List[float] = []
     ai_entropy_scores: List[float] = []
     batch_latencies: List[float] = []
 
     with torch.no_grad():
-        for batch_idx, (images, labels, metas) in enumerate(loader):
-            b_start = time.time()
-            batch_size_curr = images.shape[0]
-
-            # Execute MLEP Forward Pipeline on batch
-            mlep_out = mlep_extractor(images)
-            entropy_maps = mlep_out["mlep_features"]  # Shape: (B, 9, H-1, W-1)
-
-            b_latency = (time.time() - b_start) * 1000.0
-            batch_latencies.append(b_latency)
-            total_images_processed += batch_size_curr
-
-            # Record divergence metrics across classes
-            for i in range(batch_size_curr):
-                mean_score = entropy_maps[i].mean().item()
-                if labels[i].item() == 0:
-                    real_entropy_scores.append(mean_score)
-                else:
-                    ai_entropy_scores.append(mean_score)
-
-            logger.info(
-                f"Batch [{batch_idx + 1}/{len(loader)}] processed in {b_latency:.1f}ms "
-                f"({batch_size_curr / (b_latency / 1000.0):.1f} img/s) | "
-                f"Input: {tuple(images.shape)} -> MLEP Features: {tuple(entropy_maps.shape)}"
-            )
-
-            # Export visualizations for the first batch
-            if args.export_visualizations and batch_idx == 0:
-                logger.info("Exporting sample diagnostic figures for Batch 1...")
-                sample_img = images[0:1]  # Slice first sample (1, 3, 256, 256)
-                sample_out = mlep_extractor(sample_img)
-
-                plot_entropy_heatmap(sample_img, sample_out["mlep_features"], scale_idx=0, save_path=vis_dir / "batch1_sample0_mlep_heatmap.png")
-                plot_multiscale_entropy(sample_out["mlep_features"], save_path=vis_dir / "batch1_sample0_mlep_multiscale.png")
-                logger.info(f"Batch 1 visualizations exported to: {vis_dir.resolve()}")
+        try:
+            for batch_idx, (images, labels, metas) in enumerate(loader):
+                b_start = time.time()
+                batch_size_curr = images.shape[0]
+    
+                # Execute MLEP Forward Pipeline on batch
+                mlep_out = mlep_extractor(images)
+                entropy_maps = mlep_out["mlep_features"]  # Shape: (B, 9, H-1, W-1)
+    
+                b_latency = (time.time() - b_start) * 1000.0
+                batch_latencies.append(b_latency)
+                total_images_processed += batch_size_curr
+                actual_batches_processed += 1
+    
+                # Record divergence metrics across classes
+                for i in range(batch_size_curr):
+                    mean_score = entropy_maps[i].mean().item()
+                    if labels[i].item() == 0:
+                        real_entropy_scores.append(mean_score)
+                    else:
+                        ai_entropy_scores.append(mean_score)
+    
+                logger.info(
+                    f"Batch [{batch_idx + 1}/{len(loader)}] processed in {b_latency:.1f}ms "
+                    f"({batch_size_curr / (b_latency / 1000.0):.1f} img/s) | "
+                    f"Input: {tuple(images.shape)} -> MLEP Features: {tuple(entropy_maps.shape)}"
+                )
+    
+                # Export visualizations for the first batch
+                if args.export_visualizations and batch_idx == 0:
+                    logger.info("Exporting sample diagnostic figures for Batch 1...")
+                    sample_img = images[0:1]  # Slice first sample (1, 3, 256, 256)
+                    sample_out = mlep_extractor(sample_img)
+    
+                    plot_entropy_heatmap(sample_img, sample_out["mlep_features"], scale_idx=0, save_path=vis_dir / "batch1_sample0_mlep_heatmap.png")
+                    plot_multiscale_entropy(sample_out["mlep_features"], save_path=vis_dir / "batch1_sample0_mlep_multiscale.png")
+                    logger.info(f"Batch 1 visualizations exported to: {vis_dir.resolve()}")
+        except KeyboardInterrupt:
+            logger.warning("Pipeline manually interrupted by user (Ctrl+C). Generating dashboard for the batches processed so far...")
 
     # ==================== STEP 4: PIPELINE EXECUTION SUMMARY REPORT ====================
     print("\n" + "=" * 80)
@@ -226,7 +231,7 @@ def main():
     summary_data = {
         "dataset_root": str(data_path.resolve()),
         "total_images_processed": total_images_processed,
-        "batches_processed": len(loader),
+        "batches_processed": actual_batches_processed,
         "performance": {
             "avg_batch_latency_ms": round(float(avg_latency), 2),
             "throughput_images_per_sec": round(float(throughput), 2),
@@ -266,17 +271,25 @@ def main():
             import subprocess
             def open_file(filepath):
                 path_str = str(filepath.resolve())
-                file_url = f"file:///{path_str.replace(chr(92), '/')}"
                 
-                brave_path = r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
-                librewolf_path = r"C:\Program Files\LibreWolf\librewolf.exe"
+                import urllib.request
+                import webbrowser
                 
-                if os.name == 'nt' and os.path.exists(brave_path):
-                    subprocess.Popen([brave_path, path_str])
-                elif os.name == 'nt' and os.path.exists(librewolf_path):
-                    subprocess.Popen([librewolf_path, path_str])
+                html_path = path_str + ".html"
+                img_url = f"file:{urllib.request.pathname2url(path_str)}"
+                
+                with open(html_path, "w", encoding="utf-8") as f:
+                    f.write(f"<html><body style='margin:0;background:#222;display:flex;justify-content:center;align-items:center;height:100vh;'><img src='{img_url}' style='max-width:100%;max-height:100%;object-fit:contain;'></body></html>")
+                    
+                file_url = f"file:{urllib.request.pathname2url(html_path)}"
+                
+                if os.name == 'nt':
+                    try:
+                        import subprocess
+                        subprocess.Popen([r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe", html_path])
+                    except Exception:
+                        os.startfile(html_path)
                 else:
-                    import webbrowser
                     webbrowser.open(file_url)
                     
                 print(f"    [Fallback] If it didn't pop up, please Ctrl+Click the URL below:\n    {file_url}")
@@ -285,8 +298,15 @@ def main():
                 open_file(mlep_img)
             if mlep_multi.exists():
                 open_file(mlep_multi)
+                
+            print("\n[6] Generating and opening the Interactive HTML Dashboard...")
+            sys.path.insert(0, str(root_path))
+            import scripts.generate_html_report as html_gen
+            dashboard_out = root_path / "outputs" / "MLEP_Dashboard.html"
+            html_gen.generate_html(dashboard_out, auto_open=True)
+            
         except Exception as e:
-            print(f"    Failed to auto-open project previews: {e}")
+            print(f"    Failed to auto-open project previews or dashboard: {e}")
 
 
 

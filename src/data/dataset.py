@@ -55,7 +55,11 @@ class AIGIDDataset(Dataset):
         self.split = split
         if transform is None:
             from src.data.transforms import LOTAPreprocessingTransform
-            self.transform = LOTAPreprocessingTransform(image_size=256, crop_to_square=True)
+            self.transform = LOTAPreprocessingTransform(
+                image_size=256, 
+                crop_to_square=True,
+                enable_augmentations=(split == "train")
+            )
         else:
             self.transform = transform
         self.seed = seed

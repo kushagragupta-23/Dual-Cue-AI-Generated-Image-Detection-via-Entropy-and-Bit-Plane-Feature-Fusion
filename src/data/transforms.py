@@ -71,13 +71,20 @@ class LOTAPreprocessingTransform:
         self.blur_sigma_range = blur_sigma_range
 
     def _apply_augmentations(self, img: Image.Image) -> Image.Image:
-        """Apply random JPEG recompression and/or Gaussian blur."""
+        """Apply random JPEG recompression, Gaussian blur, ColorJitter, and Horizontal Flip."""
         if random.random() < 0.5:
             q = random.randint(self.jpeg_quality_range[0], self.jpeg_quality_range[1])
             img = JPEGRecompression(quality=q)(img)
         if random.random() < 0.5:
             sigma = random.uniform(self.blur_sigma_range[0], self.blur_sigma_range[1])
             img = GaussianBlurDegradation(sigma=sigma)(img)
+        # Prevent overfitting with structural/spatial augmentations
+        if random.random() < 0.5:
+            from torchvision.transforms import ColorJitter
+            img = ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1, hue=0.05)(img)
+        if random.random() < 0.5:
+            from torchvision.transforms.functional import hflip
+            img = hflip(img)
         return img
 
     def __call__(self, img: Union[Image.Image, torch.Tensor]) -> torch.Tensor:

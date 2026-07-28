@@ -60,18 +60,26 @@ def main():
     print("\n[5] Automatically opening the generated preview...")
     try:
         path_str = os.path.abspath(out_path)
-        file_url = f"file:///{path_str.replace(chr(92), '/')}"
-        import subprocess
+        import urllib.request
+        import webbrowser
         
-        brave_path = r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
-        librewolf_path = r"C:\Program Files\LibreWolf\librewolf.exe"
+        # Create a tiny HTML wrapper to guarantee it opens in a web browser
+        # instead of the OS default image viewer (like Windows Photo Viewer).
+        html_path = path_str + ".html"
+        img_url = f"file:{urllib.request.pathname2url(path_str)}"
         
-        if os.name == 'nt' and os.path.exists(brave_path):
-            subprocess.Popen([brave_path, path_str])
-        elif os.name == 'nt' and os.path.exists(librewolf_path):
-            subprocess.Popen([librewolf_path, path_str])
+        with open(html_path, "w", encoding="utf-8") as f:
+            f.write(f"<html><body style='margin:0;background:#222;display:flex;justify-content:center;align-items:center;height:100vh;'><img src='{img_url}' style='max-width:100%;max-height:100%;object-fit:contain;'></body></html>")
+            
+        file_url = f"file:{urllib.request.pathname2url(html_path)}"
+        
+        if os.name == 'nt':
+            try:
+                import subprocess
+                subprocess.Popen([r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe", html_path])
+            except Exception:
+                os.startfile(html_path)
         else:
-            import webbrowser
             webbrowser.open(file_url)
             
         print(f"    [Fallback] If it didn't pop up, please Ctrl+Click the URL below:\n    {file_url}")

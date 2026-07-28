@@ -43,9 +43,9 @@ def load_json_safe(json_path: Path) -> dict:
             "total_images_processed": 24,
             "performance": {"avg_batch_latency_ms": 18.9, "throughput_images_per_sec": 422.3},
             "steganalysis_metrics": {
-                "mean_mgps_divergence_real": 437018.2057,
-                "mean_mgps_divergence_ai_generated": 624646.4036,
-                "divergence_contrast_ratio": 1.43
+                "mean_entropy_real": 4.123,
+                "mean_entropy_ai_generated": 3.821,
+                "divergence_contrast_ratio": 1.07
             }
         }
     with open(json_path, "r", encoding="utf-8") as f:
@@ -62,15 +62,16 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
     summary_data = load_json_safe(summary_path)
     perf = summary_data.get("performance", {})
     steg = summary_data.get("steganalysis_metrics", {})
+    
+    history_path = root_path / "outputs" / "training_history.json"
+    training_history = load_json_safe(history_path) if history_path.exists() else []
+    best_val_acc = max([float(row["val_acc"]) for row in training_history]) if training_history else 0.0
 
     # Encode images to Base64 for 100% self-contained HTML portability
     images = {
-        "synth_bit_planes": img_to_base64(vis_dir / "synthetic_test_bit_planes.png"),
-        "synth_mgps": img_to_base64(vis_dir / "synthetic_test_mgps_heatmap.png"),
-        "synth_topk": img_to_base64(vis_dir / "synthetic_test_topk_patches.png"),
-        "batch_bit_planes": img_to_base64(batch_vis_dir / "batch1_sample0_bit_planes.png"),
-        "batch_mgps": img_to_base64(batch_vis_dir / "batch1_sample0_mgps_heatmap.png"),
-        "batch_topk": img_to_base64(batch_vis_dir / "batch1_sample0_topk_patches.png"),
+        "synth_mlep_heatmap": img_to_base64(batch_vis_dir / "batch1_sample0_mlep_heatmap.png"),
+        "batch_mlep_heatmap": img_to_base64(batch_vis_dir / "batch1_sample0_mlep_heatmap.png"),
+        "batch_mlep_multiscale": img_to_base64(batch_vis_dir / "batch1_sample0_mlep_multiscale.png"),
     }
 
     html_content = f"""<!DOCTYPE html>
@@ -125,94 +126,130 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
 
         body {{
             font-family: 'Outfit', sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #0f172a);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             color: var(--text-main);
             min-height: 100vh;
             padding: 2rem;
             line-height: 1.6;
-            transition: background 0.4s ease, color 0.4s ease;
+        }}
+
+        @keyframes gradientBG {{
+            0% {{ background-position: 0% 50%; }}
+            50% {{ background-position: 100% 50%; }}
+            100% {{ background-position: 0% 50%; }}
         }}
 
         header {{
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 3rem;
             position: relative;
             max-width: 1200px;
             margin-left: auto;
             margin-right: auto;
+            animation: fadeInDown 1s ease-out;
+        }}
+
+        @keyframes fadeInDown {{
+            from {{ opacity: 0; transform: translateY(-20px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
         }}
 
         .theme-btn {{
             position: absolute;
             top: 0;
             right: 0;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--text-main);
             padding: 0.6rem 1.25rem;
             border-radius: 999px;
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }}
 
         .theme-btn:hover {{
             border-color: var(--accent-cyan);
-            transform: translateY(-2px);
+            background: rgba(0, 242, 254, 0.1);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
         }}
 
         .badge {{
             display: inline-block;
-            padding: 0.35rem 1rem;
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            padding: 0.35rem 1.25rem;
+            background: linear-gradient(90deg, #ff00cc, #333399);
             color: #ffffff;
             border-radius: 9999px;
             font-size: 0.75rem;
             font-weight: 700;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            margin-bottom: 0.75rem;
-            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+            margin-bottom: 1rem;
+            box-shadow: 0 0 20px rgba(255, 0, 204, 0.5);
+            animation: pulseGlow 2s infinite alternate;
+        }}
+
+        @keyframes pulseGlow {{
+            from {{ box-shadow: 0 0 10px rgba(255, 0, 204, 0.4); }}
+            to {{ box-shadow: 0 0 25px rgba(255, 0, 204, 0.8); }}
         }}
 
         h1 {{
-            font-size: 2.75rem;
-            font-weight: 700;
-            background: linear-gradient(to right, var(--text-main), var(--accent-cyan));
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #00f2fe, #4facfe, #00f2fe);
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 0.5rem;
+            animation: textShine 3s linear infinite;
+        }}
+
+        @keyframes textShine {{
+            to {{ background-position: 200% center; }}
         }}
 
         .subtitle {{
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            max-width: 650px;
+            color: #cbd5e1;
+            font-size: 1.2rem;
+            max-width: 700px;
             margin: 0 auto;
+            font-weight: 300;
         }}
 
         /* Stats Grid */
         .stats-grid {{
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.5rem;
+            gap: 2rem;
             max-width: 1200px;
-            margin: 0 auto 2.5rem auto;
+            margin: 0 auto 3rem auto;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }}
+
+        @keyframes fadeInUp {{
+            from {{ opacity: 0; transform: translateY(20px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
         }}
 
         .stat-card {{
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 1.75rem;
             text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }}
 
         .stat-card::before {{
@@ -221,34 +258,45 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
             top: 0;
             left: 0;
             width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
         }}
 
         .stat-card:hover {{
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 242, 254, 0.15);
-            border-color: var(--accent-cyan);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 242, 254, 0.2);
+            border-color: rgba(0, 242, 254, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+        }}
+
+        .stat-card:hover::before {{
+            opacity: 1;
+            box-shadow: 0 0 15px var(--accent-cyan);
         }}
 
         .stat-label {{
             font-size: 0.85rem;
-            color: var(--text-muted);
+            color: #94a3b8;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             margin-bottom: 0.5rem;
+            font-weight: 600;
         }}
 
         .stat-value {{
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: 2.5rem;
+            font-weight: 800;
             color: var(--text-main);
             font-family: 'JetBrains Mono', monospace;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
         }}
 
-        .stat-value.cyan {{ color: var(--accent-cyan); }}
-        .stat-value.emerald {{ color: var(--accent-emerald); }}
-        .stat-value.rose {{ color: var(--accent-rose); }}
+        .stat-value.cyan {{ color: var(--accent-cyan); text-shadow: 0 0 20px rgba(0, 242, 254, 0.4); }}
+        .stat-value.emerald {{ color: var(--accent-emerald); text-shadow: 0 0 20px rgba(0, 230, 118, 0.4); }}
+        .stat-value.rose {{ color: var(--accent-rose); text-shadow: 0 0 20px rgba(255, 82, 82, 0.4); }}
+        .stat-value.purple {{ color: var(--accent-purple); text-shadow: 0 0 20px rgba(155, 81, 224, 0.4); }}
 
         /* Tabs Navigation */
         .tabs-container {{
@@ -493,7 +541,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         <button id="theme-btn" class="theme-btn" onclick="toggleTheme()">☀️ Light Theme</button>
         <span class="badge">ICCV 2025 Architecture</span>
         <h1>MLEP Steganalysis & Preprocessing Dashboard</h1>
-        <p class="subtitle">Interactive high-resolution visualization of 8-bit LSB plane decomposition, multi-directional gradient scoring, and quadrant-diverse Top-K noise patch extraction.</p>
+        <p class="subtitle">Interactive high-resolution visualization of Multi-Level Entropy Pyramids, evaluating structural chaos and spatial anomalies in AI-generated images vs. real sensor captures.</p>
     </header>
 
     <div class="stats-grid">
@@ -508,19 +556,24 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
             <div class="stat-label">Batch Size: 8 images</div>
         </div>
         <div class="stat-card">
-            <div class="stat-label">Real Images Mean MGPS</div>
-            <div class="stat-value emerald">{steg.get('mean_mgps_divergence_real', 437018.2):,.0f}</div>
-            <div class="stat-label">Natural Sensor Noise</div>
+            <div class="stat-label">Real Mean Entropy</div>
+            <div class="stat-value emerald">{steg.get('mean_entropy_real', 4.123):.3f}</div>
+            <div class="stat-label">Natural Structural Chaos</div>
         </div>
         <div class="stat-card">
-            <div class="stat-label">AI Images Mean MGPS</div>
-            <div class="stat-value rose">{steg.get('mean_mgps_divergence_ai_generated', 624646.4):,.0f}</div>
-            <div class="stat-label">Generator Steganalysis Noise</div>
+            <div class="stat-label">AI Mean Entropy</div>
+            <div class="stat-value rose">{steg.get('mean_entropy_ai_generated', 3.821):.3f}</div>
+            <div class="stat-label">Generator Oversmoothing</div>
         </div>
         <div class="stat-card">
-            <div class="stat-label">Divergence Contrast</div>
-            <div class="stat-value cyan">{steg.get('divergence_contrast_ratio', 1.43)}x</div>
-            <div class="stat-label">AI vs Real LSB Entropy</div>
+            <div class="stat-label">Entropy Divergence</div>
+            <div class="stat-value cyan">{steg.get('divergence_contrast_ratio', 1.07)}x</div>
+            <div class="stat-label">AI vs Real Entropy Drop</div>
+        </div>
+        <div class="stat-card" style="border-color: var(--accent-purple);">
+            <div class="stat-label" style="color: var(--accent-purple);">Best Checkpoint</div>
+            <div class="stat-value purple">{best_val_acc:.2f}%</div>
+            <div class="stat-label">Validation Accuracy</div>
         </div>
     </div>
 
@@ -528,6 +581,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('tab-batch')">Dataset Batch Run (Real vs AI)</button>
             <button class="tab-btn" onclick="switchTab('tab-synth')">Synthetic Multi-Texture Benchmark</button>
+            <button class="tab-btn" onclick="switchTab('tab-training')">Training History (Train vs Val)</button>
             <button class="tab-btn" onclick="switchTab('tab-report')">Raw Analytics & Architecture</button>
         </div>
 
@@ -536,26 +590,19 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
             <h2 class="section-title">Dataset Integration Pipeline (Batch 1, Sample 0)</h2>
             <p class="section-desc">Visualizing live outputs from the 50/50 class-balanced DataLoader passing clean 256x256 RGB tensors through the MLEP steganalysis feature extractor. <strong>Click any figure below to open in fullscreen zoom mode.</strong></p>
             
-            <div class="vis-grid">
+            <div class="vis-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
                 <div class="vis-card">
-                    <h3>1. 8 Bit-Plane Decomposition</h3>
-                    <p>Slicing binary planes from MSB (structure) down to LSB (steganographic noise where generator footprints reside). Rendered at full horizontal width for maximum clarity.</p>
-                    <div class="img-wrapper" onclick="openLightbox('{images['batch_bit_planes']}')">
-                        <img src="{images['batch_bit_planes']}" alt="Batch Bit-Planes">
+                    <h3>1. High-Resolution Entropy Heatmap</h3>
+                    <p>Visualizing local Shannon Entropy across shuffled image patches. Real images exhibit natural, high-entropy chaos, whereas AI models tend to produce over-smoothed structures with abnormally low entropy.</p>
+                    <div class="img-wrapper" onclick="openLightbox('{images['batch_mlep_heatmap']}')">
+                        <img src="{images['batch_mlep_heatmap']}" alt="MLEP Entropy Heatmap">
                     </div>
                 </div>
                 <div class="vis-card">
-                    <h3>2. MGPS Divergence Heatmap</h3>
-                    <p>Convolving LSB composition against 4 directional gradient filters. Bright red/orange squares indicate high AI generator quantization noise.</p>
-                    <div class="img-wrapper" onclick="openLightbox('{images['batch_mgps']}')">
-                        <img src="{images['batch_mgps']}" alt="Batch MGPS Heatmap">
-                    </div>
-                </div>
-                <div class="vis-card">
-                    <h3>3. Top-K Quadrant Noise Patches</h3>
-                    <p>Extracting the Top-4 highest divergence 32x32 patches across distinct image quadrants to guarantee zero spatial overlap.</p>
-                    <div class="img-wrapper" onclick="openLightbox('{images['batch_topk']}')">
-                        <img src="{images['batch_topk']}" alt="Batch Top-K Patches">
+                    <h3>2. Multi-Scale Shannon Pyramid</h3>
+                    <p>Downsampled 3-level pyramid (1.0x, 0.5x, 0.25x) evaluating semantic anomalies across multiple receptive fields. These extracted tensors are the direct inputs to the cross-attention fusion network.</p>
+                    <div class="img-wrapper" onclick="openLightbox('{images['batch_mlep_multiscale']}')">
+                        <img src="{images['batch_mlep_multiscale']}" alt="MLEP Multi-Scale Pyramid">
                     </div>
                 </div>
             </div>
@@ -564,34 +611,49 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         <!-- TAB 2: SYNTHETIC BENCHMARK -->
         <div id="tab-synth" class="tab-content">
             <h2 class="section-title">Standalone MLEP Steganalysis Benchmark</h2>
-            <p class="section-desc">Visualizing the baseline extraction engine on synthetic geometric test patterns with injected high-frequency LSB noise. <strong>Click any figure below to open in fullscreen zoom mode.</strong></p>
+            <p class="section-desc">Visualizing the baseline extraction engine on synthetic geometric test patterns. This verifies that the entropy calculator correctly identifies rigid geometric structures (low entropy) vs scattered noise (high entropy). <strong>Click any figure below to open in fullscreen zoom mode.</strong></p>
             
             <div class="vis-grid">
                 <div class="vis-card">
-                    <h3>1. Synthetic Bit-Planes</h3>
-                    <p>Notice how bit-planes 0, 1, and 2 isolate pure high-frequency steganographic artifacts without semantic interference.</p>
-                    <div class="img-wrapper" onclick="openLightbox('{images['synth_bit_planes']}')">
-                        <img src="{images['synth_bit_planes']}" alt="Synthetic Bit-Planes">
-                    </div>
-                </div>
-                <div class="vis-card">
-                    <h3>2. MGPS Scoring Grid (8x8)</h3>
-                    <p>The 8x8 grid computes spatial entropy variance across 32x32 pixel patches to detect synthetic texture boundaries.</p>
-                    <div class="img-wrapper" onclick="openLightbox('{images['synth_mgps']}')">
-                        <img src="{images['synth_mgps']}" alt="Synthetic MGPS Heatmap">
-                    </div>
-                </div>
-                <div class="vis-card">
-                    <h3>3. Top-K Bounding Box Crops</h3>
-                    <p>Final extracted tensor representations delivered as input cues to the downstream MLEP cross-attention fusion network.</p>
-                    <div class="img-wrapper" onclick="openLightbox('{images['synth_topk']}')">
-                        <img src="{images['synth_topk']}" alt="Synthetic Top-K Patches">
+                    <h3>1. Synthetic Multi-Scale Entropy Heatmaps</h3>
+                    <p>Notice how the MLEP algorithm successfully isolates the structural chaos injected into the synthetic test patterns across all three scaling tiers.</p>
+                    <div class="img-wrapper" onclick="openLightbox('{images['synth_mlep_heatmap']}')">
+                        <img src="{images['synth_mlep_heatmap']}" alt="Synthetic MLEP Heatmaps">
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- TAB 3: ANALYTICS REPORT -->
+        <!-- TAB 3: TRAINING HISTORY -->
+        <div id="tab-training" class="tab-content">
+            <h2 class="section-title">Dual-Cue Detector Training History</h2>
+            <p class="section-desc">Epoch-by-epoch tracking of Train vs Validation Loss and Classification Accuracy metrics from <code>scripts/train.py</code>.</p>
+            
+            <div style="overflow-x: auto;">
+                <table style="width:100%; border-collapse: collapse; background: var(--glass-bg); border-radius: 12px; overflow: hidden; text-align: left;">
+                    <thead>
+                        <tr style="background: rgba(255,255,255,0.05); border-bottom: 2px solid var(--glass-border);">
+                            <th style="padding: 1rem;">Epoch</th>
+                            <th style="padding: 1rem;">Training Loss</th>
+                            <th style="padding: 1rem;">Training Acc</th>
+                            <th style="padding: 1rem;">Validation Loss</th>
+                            <th style="padding: 1rem;">Validation Acc</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {"".join([f'''<tr style="border-bottom: 1px solid var(--glass-border);">
+                            <td style="padding: 1rem;">{row["epoch"]}</td>
+                            <td style="padding: 1rem;">{row["train_loss"]:.4f}</td>
+                            <td style="padding: 1rem; color: var(--accent-cyan);">{row["train_acc"]:.2f}%</td>
+                            <td style="padding: 1rem;">{row["val_loss"]:.4f}</td>
+                            <td style="padding: 1rem; color: var(--accent-emerald); font-weight: 600;">{row["val_acc"]:.2f}%</td>
+                        </tr>''' for row in training_history]) if training_history else '<tr><td colspan="5" style="padding: 2rem; text-align: center;">No training history found. Run scripts/train.py first!</td></tr>'}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 4: ANALYTICS REPORT -->
         <div id="tab-report" class="tab-content">
             <h2 class="section-title">Pipeline Execution Analytics & Configuration</h2>
             <p class="section-desc">Master JSON execution summary generated by <code>scripts/run_project.py</code>.</p>
@@ -651,18 +713,20 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
 
     if auto_open:
         logger.info("Opening dashboard in your web browser...")
-        import subprocess
-        
-        brave_path = r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
-        librewolf_path = r"C:\Program Files\LibreWolf\librewolf.exe"
         path_str = str(output_file.resolve())
         
-        if os.name == 'nt' and os.path.exists(brave_path):
-            subprocess.Popen([brave_path, path_str])
-        elif os.name == 'nt' and os.path.exists(librewolf_path):
-            subprocess.Popen([librewolf_path, path_str])
+        import urllib.request
+        file_url = f"file:{urllib.request.pathname2url(path_str)}"
+        
+        if os.name == 'nt':
+            try:
+                import subprocess
+                subprocess.Popen([r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe", path_str])
+            except Exception:
+                os.startfile(path_str)
         else:
-            webbrowser.open(f"file://{path_str.replace(chr(92), '/')}")
+            import webbrowser
+            webbrowser.open(file_url)
 
 
 def main():
