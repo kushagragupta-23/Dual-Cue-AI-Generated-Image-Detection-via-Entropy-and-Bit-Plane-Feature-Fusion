@@ -1,0 +1,40 @@
+# Python / PyTorch / IDE / macOS Gitignore
+# Environments and Virtualenvs
+venv/
+env/
+.env
+.venv/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Project Outputs & Datasets (Do not push heavy datasets or test images to git!)
+outputs/
+data/
+datasets/
+*.jfif
+*.jpg
+*.png
+*.gif
+*.mp4
+
+# OS & Volume Metadata
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo

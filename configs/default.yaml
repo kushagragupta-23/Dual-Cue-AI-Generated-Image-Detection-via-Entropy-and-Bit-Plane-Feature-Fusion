@@ -1,0 +1,29 @@
+# Master Default Configuration for LOTA Preprocessing and Dataset Pipeline
+# Compliant with ICCV 2025 LOTA Specification and 2026 Roadmap
+
+dataset:
+  data_dir: "data/raw/forensynths"
+  image_size: 256
+  batch_size: 32
+  num_workers: 4
+  val_split: 0.15
+  test_split: 0.15
+  seed: 42
+  enable_augmentations: false
+  jpeg_quality_min: 70
+  jpeg_quality_max: 100
+  blur_sigma_min: 0.5
+  blur_sigma_max: 2.0
+
+lota:
+  bit_planes: [0, 1, 2]
+  k_patches: 4
+  patch_size: 32
+  grid_size: 8
+  normalization: "thresholding"
+  threshold_val: 255.0
+
+logging:
+  log_dir: "logs"
+  level: "INFO"
+  save_file: true
