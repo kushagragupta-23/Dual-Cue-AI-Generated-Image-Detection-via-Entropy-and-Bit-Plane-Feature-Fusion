@@ -74,7 +74,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
     }
 
     html_content = f"""<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -83,11 +83,11 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        :root {{
+        :root, :root[data-theme="dark"] {{
             --bg-primary: #0a0e17;
             --bg-secondary: #111827;
-            --glass-bg: rgba(26, 35, 50, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(26, 35, 50, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
             --accent-cyan: #00f2fe;
             --accent-blue: #4facfe;
             --accent-purple: #9b51e0;
@@ -95,6 +95,26 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
             --accent-rose: #ff5252;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
+            --card-bg: rgba(15, 23, 42, 0.65);
+            --img-bg: #000000;
+            --modal-bg: rgba(10, 14, 23, 0.92);
+        }}
+
+        :root[data-theme="light"] {{
+            --bg-primary: #f0f4f8;
+            --bg-secondary: #e2e8f0;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(0, 0, 0, 0.12);
+            --accent-cyan: #0284c7;
+            --accent-blue: #2563eb;
+            --accent-purple: #7c3aed;
+            --accent-emerald: #059669;
+            --accent-rose: #e11d48;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --img-bg: #f8fafc;
+            --modal-bg: rgba(240, 244, 248, 0.95);
         }}
 
         * {{
@@ -110,18 +130,45 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
             min-height: 100vh;
             padding: 2rem;
             line-height: 1.6;
+            transition: background 0.4s ease, color 0.4s ease;
         }}
 
         header {{
             text-align: center;
             margin-bottom: 2.5rem;
             position: relative;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }}
+
+        .theme-btn {{
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.6rem 1.25rem;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }}
+
+        .theme-btn:hover {{
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
         }}
 
         .badge {{
             display: inline-block;
             padding: 0.35rem 1rem;
             background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            color: #ffffff;
             border-radius: 9999px;
             font-size: 0.75rem;
             font-weight: 700;
@@ -134,7 +181,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         h1 {{
             font-size: 2.75rem;
             font-weight: 700;
-            background: linear-gradient(to right, #ffffff, var(--accent-cyan));
+            background: linear-gradient(to right, var(--text-main), var(--accent-cyan));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 0.5rem;
@@ -143,7 +190,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         .subtitle {{
             color: var(--text-muted);
             font-size: 1.1rem;
-            max-width: 600px;
+            max-width: 650px;
             margin: 0 auto;
         }}
 
@@ -163,7 +210,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
             border-radius: 16px;
             padding: 1.5rem;
             text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
             position: relative;
             overflow: hidden;
         }}
@@ -181,7 +228,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         .stat-card:hover {{
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 242, 254, 0.15);
-            border-color: rgba(0, 242, 254, 0.3);
+            border-color: var(--accent-cyan);
         }}
 
         .stat-label {{
@@ -218,7 +265,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         }}
 
         .tab-btn {{
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             color: var(--text-muted);
             padding: 0.75rem 1.75rem;
@@ -230,8 +277,9 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         }}
 
         .tab-btn:hover {{
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(79, 172, 254, 0.15);
             color: var(--text-main);
+            border-color: var(--accent-cyan);
         }}
 
         .tab-btn.active {{
@@ -249,8 +297,9 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
             border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 2.5rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
             animation: fadeIn 0.4s ease forwards;
+            transition: background 0.4s ease, border-color 0.4s ease;
         }}
 
         .tab-content.active {{
@@ -272,73 +321,154 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
 
         .section-desc {{
             color: var(--text-muted);
-            margin-bottom: 2rem;
-            font-size: 0.95rem;
+            margin-bottom: 2.5rem;
+            font-size: 1rem;
         }}
 
-        /* Image Display Cards */
+        /* HUGE Full-Width Vertical Image Layout */
         .vis-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-            gap: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+            width: 100%;
         }}
 
         .vis-card {{
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 1.25rem;
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
             transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }}
 
         .vis-card:hover {{
             border-color: var(--accent-cyan);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 25px rgba(0, 242, 254, 0.1);
+            box-shadow: 0 15px 35px rgba(0, 242, 254, 0.12);
         }}
 
         .vis-card h3 {{
-            font-size: 1.15rem;
+            font-size: 1.45rem;
             margin-bottom: 0.5rem;
             color: var(--accent-cyan);
         }}
 
         .vis-card p {{
-            font-size: 0.85rem;
+            font-size: 1rem;
             color: var(--text-muted);
-            margin-bottom: 1rem;
-            min-height: 40px;
+            margin-bottom: 1.5rem;
         }}
 
         .img-wrapper {{
             width: 100%;
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
-            background: #000;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--img-bg);
+            border: 1px solid var(--glass-border);
+            cursor: zoom-in;
+            position: relative;
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }}
+
+        .img-wrapper::after {{
+            content: '🔍 Click to Expand Fullscreen';
+            position: absolute;
+            bottom: 20px;
+            right: 25px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }}
+
+        .img-wrapper:hover::after {{
+            opacity: 1;
         }}
 
         .img-wrapper img {{
             width: 100%;
             height: auto;
+            max-height: 750px;
+            object-fit: contain;
             display: block;
-            transition: transform 0.5s ease;
+            margin: 0 auto;
+            transition: transform 0.3s ease;
         }}
 
         .img-wrapper:hover img {{
-            transform: scale(1.03);
+            transform: scale(1.01);
+        }}
+
+        /* Lightbox Modal */
+        .lightbox {{
+            display: none;
+            position: fixed;
+            z-index: 99999;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--modal-bg);
+            backdrop-filter: blur(25px);
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }}
+
+        .lightbox.active {{
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }}
+
+        .lightbox img {{
+            max-width: 96vw;
+            max-height: 92vh;
+            border-radius: 12px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--accent-cyan);
+            object-fit: contain;
+        }}
+
+        .lightbox-close {{
+            position: absolute;
+            top: 25px;
+            right: 35px;
+            background: var(--accent-rose);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 999px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 82, 82, 0.4);
+            transition: transform 0.2s ease;
+        }}
+
+        .lightbox-close:hover {{
+            transform: scale(1.08);
         }}
 
         /* JSON Display */
         pre {{
-            background: #0d1117;
+            background: var(--img-bg);
             padding: 1.5rem;
             border-radius: 12px;
             border: 1px solid var(--glass-border);
             overflow-x: auto;
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.9rem;
-            color: #58a6ff;
+            color: var(--accent-blue);
         }}
 
         footer {{
@@ -353,10 +483,17 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
 </head>
 <body>
 
+    <!-- Fullscreen Lightbox -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close" onclick="closeLightbox()">✕ Close</button>
+        <img id="lightbox-img" src="" alt="Fullscreen Image" onclick="event.stopPropagation()">
+    </div>
+
     <header>
+        <button id="theme-btn" class="theme-btn" onclick="toggleTheme()">☀️ Light Theme</button>
         <span class="badge">ICCV 2025 Architecture</span>
         <h1>LOTA Steganalysis & Preprocessing Dashboard</h1>
-        <p class="subtitle">Interactive visualization of 8-bit LSB plane decomposition, multi-directional gradient scoring, and quadrant-diverse Top-K noise patch extraction.</p>
+        <p class="subtitle">Interactive high-resolution visualization of 8-bit LSB plane decomposition, multi-directional gradient scoring, and quadrant-diverse Top-K noise patch extraction.</p>
     </header>
 
     <div class="stats-grid">
@@ -397,27 +534,27 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         <!-- TAB 1: BATCH RUN -->
         <div id="tab-batch" class="tab-content active">
             <h2 class="section-title">Dataset Integration Pipeline (Batch 1, Sample 0)</h2>
-            <p class="section-desc">Visualizing live outputs from the 50/50 class-balanced DataLoader passing clean 256x256 RGB tensors through the LOTA steganalysis feature extractor.</p>
+            <p class="section-desc">Visualizing live outputs from the 50/50 class-balanced DataLoader passing clean 256x256 RGB tensors through the LOTA steganalysis feature extractor. <strong>Click any figure below to open in fullscreen zoom mode.</strong></p>
             
             <div class="vis-grid">
                 <div class="vis-card">
                     <h3>1. 8 Bit-Plane Decomposition</h3>
-                    <p>Slicing binary planes from MSB (structure) down to LSB (steganographic noise where generator footprints reside).</p>
-                    <div class="img-wrapper">
+                    <p>Slicing binary planes from MSB (structure) down to LSB (steganographic noise where generator footprints reside). Rendered at full horizontal width for maximum clarity.</p>
+                    <div class="img-wrapper" onclick="openLightbox('{images['batch_bit_planes']}')">
                         <img src="{images['batch_bit_planes']}" alt="Batch Bit-Planes">
                     </div>
                 </div>
                 <div class="vis-card">
                     <h3>2. MGPS Divergence Heatmap</h3>
-                    <p>Convolving LSB composition against 4 directional gradient filters. Bright red squares indicate high AI generator quantization noise.</p>
-                    <div class="img-wrapper">
+                    <p>Convolving LSB composition against 4 directional gradient filters. Bright red/orange squares indicate high AI generator quantization noise.</p>
+                    <div class="img-wrapper" onclick="openLightbox('{images['batch_mgps']}')">
                         <img src="{images['batch_mgps']}" alt="Batch MGPS Heatmap">
                     </div>
                 </div>
                 <div class="vis-card">
                     <h3>3. Top-K Quadrant Noise Patches</h3>
                     <p>Extracting the Top-4 highest divergence 32x32 patches across distinct image quadrants to guarantee zero spatial overlap.</p>
-                    <div class="img-wrapper">
+                    <div class="img-wrapper" onclick="openLightbox('{images['batch_topk']}')">
                         <img src="{images['batch_topk']}" alt="Batch Top-K Patches">
                     </div>
                 </div>
@@ -427,27 +564,27 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         <!-- TAB 2: SYNTHETIC BENCHMARK -->
         <div id="tab-synth" class="tab-content">
             <h2 class="section-title">Standalone LOTA Steganalysis Benchmark</h2>
-            <p class="section-desc">Visualizing the baseline extraction engine on synthetic geometric test patterns with injected high-frequency LSB noise.</p>
+            <p class="section-desc">Visualizing the baseline extraction engine on synthetic geometric test patterns with injected high-frequency LSB noise. <strong>Click any figure below to open in fullscreen zoom mode.</strong></p>
             
             <div class="vis-grid">
                 <div class="vis-card">
                     <h3>1. Synthetic Bit-Planes</h3>
                     <p>Notice how bit-planes 0, 1, and 2 isolate pure high-frequency steganographic artifacts without semantic interference.</p>
-                    <div class="img-wrapper">
+                    <div class="img-wrapper" onclick="openLightbox('{images['synth_bit_planes']}')">
                         <img src="{images['synth_bit_planes']}" alt="Synthetic Bit-Planes">
                     </div>
                 </div>
                 <div class="vis-card">
                     <h3>2. MGPS Scoring Grid (8x8)</h3>
                     <p>The 8x8 grid computes spatial entropy variance across 32x32 pixel patches to detect synthetic texture boundaries.</p>
-                    <div class="img-wrapper">
+                    <div class="img-wrapper" onclick="openLightbox('{images['synth_mgps']}')">
                         <img src="{images['synth_mgps']}" alt="Synthetic MGPS Heatmap">
                     </div>
                 </div>
                 <div class="vis-card">
                     <h3>3. Top-K Bounding Box Crops</h3>
                     <p>Final extracted tensor representations delivered as input cues to the downstream MLEP cross-attention fusion network.</p>
-                    <div class="img-wrapper">
+                    <div class="img-wrapper" onclick="openLightbox('{images['synth_topk']}')">
                         <img src="{images['synth_topk']}" alt="Synthetic Top-K Patches">
                     </div>
                 </div>
@@ -468,17 +605,39 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
 
     <script>
         function switchTab(tabId) {{
-            // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            // Deactivate all buttons
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            
-            // Show selected tab
             document.getElementById(tabId).classList.add('active');
-            
-            // Highlight button
             event.target.classList.add('active');
         }}
+
+        function toggleTheme() {{
+            const body = document.documentElement;
+            const current = body.getAttribute('data-theme') || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', next);
+            const btn = document.getElementById('theme-btn');
+            if(btn) btn.innerHTML = next === 'dark' ? '☀️ Light Theme' : '🌙 Dark Theme';
+            localStorage.setItem('lota_theme', next);
+        }}
+
+        function openLightbox(src) {{
+            const lb = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            img.src = src;
+            lb.classList.add('active');
+        }}
+
+        function closeLightbox() {{
+            document.getElementById('lightbox').classList.remove('active');
+        }}
+
+        document.addEventListener('DOMContentLoaded', () => {{
+            const saved = localStorage.getItem('lota_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', saved);
+            const btn = document.getElementById('theme-btn');
+            if(btn) btn.innerHTML = saved === 'dark' ? '☀️ Light Theme' : '🌙 Dark Theme';
+        }});
     </script>
 </body>
 </html>
