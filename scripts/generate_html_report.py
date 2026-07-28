@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Interactive HTML Dashboard Generator for MLEP & LOTA Fusion
+Interactive HTML Dashboard Generator for MLEP Fusion
 Generates a self-contained, ultra-premium Glassmorphism HTML report with Base64-embedded diagnostic figures.
 Can be opened directly in Google Chrome or any web browser.
 """
@@ -78,7 +78,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dual-Cue AIGID | LOTA Steganalysis Dashboard</title>
+    <title>Dual-Cue AIGID | MLEP Steganalysis Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -492,7 +492,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
     <header>
         <button id="theme-btn" class="theme-btn" onclick="toggleTheme()">☀️ Light Theme</button>
         <span class="badge">ICCV 2025 Architecture</span>
-        <h1>LOTA Steganalysis & Preprocessing Dashboard</h1>
+        <h1>MLEP Steganalysis & Preprocessing Dashboard</h1>
         <p class="subtitle">Interactive high-resolution visualization of 8-bit LSB plane decomposition, multi-directional gradient scoring, and quadrant-diverse Top-K noise patch extraction.</p>
     </header>
 
@@ -534,7 +534,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         <!-- TAB 1: BATCH RUN -->
         <div id="tab-batch" class="tab-content active">
             <h2 class="section-title">Dataset Integration Pipeline (Batch 1, Sample 0)</h2>
-            <p class="section-desc">Visualizing live outputs from the 50/50 class-balanced DataLoader passing clean 256x256 RGB tensors through the LOTA steganalysis feature extractor. <strong>Click any figure below to open in fullscreen zoom mode.</strong></p>
+            <p class="section-desc">Visualizing live outputs from the 50/50 class-balanced DataLoader passing clean 256x256 RGB tensors through the MLEP steganalysis feature extractor. <strong>Click any figure below to open in fullscreen zoom mode.</strong></p>
             
             <div class="vis-grid">
                 <div class="vis-card">
@@ -563,7 +563,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
 
         <!-- TAB 2: SYNTHETIC BENCHMARK -->
         <div id="tab-synth" class="tab-content">
-            <h2 class="section-title">Standalone LOTA Steganalysis Benchmark</h2>
+            <h2 class="section-title">Standalone MLEP Steganalysis Benchmark</h2>
             <p class="section-desc">Visualizing the baseline extraction engine on synthetic geometric test patterns with injected high-frequency LSB noise. <strong>Click any figure below to open in fullscreen zoom mode.</strong></p>
             
             <div class="vis-grid">
@@ -600,7 +600,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
     </div>
 
     <footer>
-        <p>MLEP & LOTA Fusion Project | Optimized for Windows & NVIDIA RTX 4050 | 100% Vectorized PyTorch Steganalysis Core</p>
+        <p>MLEP Fusion Project | Optimized for Windows & NVIDIA RTX 4050 | 100% Vectorized PyTorch Steganalysis Core</p>
     </footer>
 
     <script>
@@ -618,7 +618,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
             body.setAttribute('data-theme', next);
             const btn = document.getElementById('theme-btn');
             if(btn) btn.innerHTML = next === 'dark' ? '☀️ Light Theme' : '🌙 Dark Theme';
-            localStorage.setItem('lota_theme', next);
+            localStorage.setItem('mlep_theme', next);
         }}
 
         function openLightbox(src) {{
@@ -633,7 +633,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         }}
 
         document.addEventListener('DOMContentLoaded', () => {{
-            const saved = localStorage.getItem('lota_theme') || 'dark';
+            const saved = localStorage.getItem('mlep_theme') || 'dark';
             document.documentElement.setAttribute('data-theme', saved);
             const btn = document.getElementById('theme-btn');
             if(btn) btn.innerHTML = saved === 'dark' ? '☀️ Light Theme' : '🌙 Dark Theme';
@@ -650,13 +650,24 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
     logger.info(f"Successfully generated self-contained interactive dashboard at: {output_file.resolve()}")
 
     if auto_open:
-        logger.info("Opening dashboard in your default web browser (Google Chrome)...")
-        webbrowser.open(f"file://{output_file.resolve()}")
+        logger.info("Opening dashboard in your web browser...")
+        import subprocess
+        
+        brave_path = r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
+        librewolf_path = r"C:\Program Files\LibreWolf\librewolf.exe"
+        path_str = str(output_file.resolve())
+        
+        if os.name == 'nt' and os.path.exists(brave_path):
+            subprocess.Popen([brave_path, path_str])
+        elif os.name == 'nt' and os.path.exists(librewolf_path):
+            subprocess.Popen([librewolf_path, path_str])
+        else:
+            webbrowser.open(f"file://{path_str.replace(chr(92), '/')}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate & Open Interactive LOTA HTML Dashboard.")
-    parser.add_argument("--output", type=str, default="outputs/LOTA_Dashboard.html", help="Path to save generated HTML file.")
+    parser = argparse.ArgumentParser(description="Generate & Open Interactive MLEP HTML Dashboard.")
+    parser.add_argument("--output", type=str, default="outputs/MLEP_Dashboard.html", help="Path to save generated HTML file.")
     parser.add_argument("--no_browser", action="store_true", help="Do not open browser automatically.")
     args = parser.parse_args()
 
@@ -666,3 +677,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Master Project Execution Script: MLEP & LOTA Fusion
-Connects the Shared Dataset Infrastructure directly into the LOTA Steganalysis & Preprocessing Engine.
+Master Project Execution Script: MLEP Fusion
+Connects the Shared Dataset Infrastructure directly into the MLEP Steganalysis & Preprocessing Engine.
 Demonstrates end-to-end data ingestion, stratified splitting, balanced batch sampling, and vectorized Top-K patch extraction.
 """
 
@@ -24,8 +24,8 @@ if str(root_path) not in sys.path:
 
 from src.data.dataset import SharedImageDataset
 from src.data.dataloader import create_dataloader
-from src.models.lota import TopKLOTAExtractor
-from src.utils.visualization import plot_bit_planes, plot_mgps_heatmap, plot_topk_patches
+from src.models.mlep import MLEPExtractor
+from src.utils.visualization import plot_entropy_heatmap, plot_multiscale_entropy
 from src.utils.logger import get_logger
 
 logger = get_logger("run_project")
@@ -83,12 +83,12 @@ def generate_benchmark_dataset(target_dir: Path, total_samples: int = 40) -> Non
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run Complete MLEP & LOTA Project Pipeline.")
+    parser = argparse.ArgumentParser(description="Run Complete MLEP Project Pipeline.")
     parser.add_argument("--data_dir", type=str, default="outputs/dataset_1400", help="Path to input dataset directory.")
     parser.add_argument("--output_dir", type=str, default="outputs/project_run", help="Directory to store run artifacts and logs.")
     parser.add_argument("--batch_size", type=int, default=8, help="Mini-batch size for DataLoader.")
     parser.add_argument("--num_workers", type=int, default=0, help="Number of data loading subprocess workers.")
-    parser.add_argument("--k_patches", type=int, default=4, help="Number of Top-K diverse noise patches to extract.")
+    parser.add_argument("--patch_size", type=int, default=2, help="Micro-patch size for spatial shuffling.")
     parser.add_argument("--export_visualizations", action="store_true", default=True, help="Export diagnostic sample visualizations.")
     args = parser.parse_args()
 
@@ -150,30 +150,30 @@ def main():
         drop_last=False,
     )
 
-    # ==================== STEP 2: INITIALIZE LOTA PREPROCESSING ENGINE ====================
+    # ==================== STEP 2: INITIALIZE MLEP PREPROCESSING ENGINE ====================
     print("\n" + "=" * 80)
-    print("STEP 2: INITIALIZING LOTA PREPROCESSING ENGINE (src.models)")
+    print("STEP 2: INITIALIZING MLEP PREPROCESSING ENGINE (src.models)")
     print("=" * 80)
 
-    lota_extractor = TopKLOTAExtractor(
-        k_patches=args.k_patches,
-        patch_size=32,
-        grid_size=8,
+    mlep_extractor = MLEPExtractor(
+        patch_size=args.patch_size,
+        scales=[1.0, 0.5, 0.25],
+        window_size=2,
     )
-    lota_extractor.eval()
+    mlep_extractor.eval()
     logger.info(
-        f"LOTA Extractor Configured -> Resolution: 256x256, Grid: 8x8 (32x32 patches), "
-        f"Top-K: {args.k_patches} (Quadrant Diverse)"
+        f"MLEP Extractor Configured -> Patch Size: {args.patch_size}x{args.patch_size}, "
+        f"Scales: [1.0, 0.5, 0.25], Window: 2x2"
     )
 
     # ==================== STEP 3: EXECUTING END-TO-END PIPELINE ====================
     print("\n" + "=" * 80)
-    print("STEP 3: EXECUTING END-TO-END DATASET -> LOTA BATCH PIPELINE")
+    print("STEP 3: EXECUTING END-TO-END DATASET -> MLEP BATCH PIPELINE")
     print("=" * 80)
 
     total_images_processed = 0
-    real_mgps_scores: List[float] = []
-    ai_mgps_scores: List[float] = []
+    real_entropy_scores: List[float] = []
+    ai_entropy_scores: List[float] = []
     batch_latencies: List[float] = []
 
     with torch.no_grad():
@@ -181,10 +181,9 @@ def main():
             b_start = time.time()
             batch_size_curr = images.shape[0]
 
-            # Execute LOTA Forward Pipeline on batch
-            lota_out = lota_extractor(images)
-            mgps_scores = lota_out["mgps_scores"]  # Shape: (B, 8, 8)
-            topk_indices = lota_out["topk_indices"]  # Shape: (B, K)
+            # Execute MLEP Forward Pipeline on batch
+            mlep_out = mlep_extractor(images)
+            entropy_maps = mlep_out["mlep_features"]  # Shape: (B, 9, H-1, W-1)
 
             b_latency = (time.time() - b_start) * 1000.0
             batch_latencies.append(b_latency)
@@ -192,28 +191,26 @@ def main():
 
             # Record divergence metrics across classes
             for i in range(batch_size_curr):
-                mean_score = mgps_scores[i].mean().item()
+                mean_score = entropy_maps[i].mean().item()
                 if labels[i].item() == 0:
-                    real_mgps_scores.append(mean_score)
+                    real_entropy_scores.append(mean_score)
                 else:
-                    ai_mgps_scores.append(mean_score)
+                    ai_entropy_scores.append(mean_score)
 
             logger.info(
                 f"Batch [{batch_idx + 1}/{len(loader)}] processed in {b_latency:.1f}ms "
                 f"({batch_size_curr / (b_latency / 1000.0):.1f} img/s) | "
-                f"Input: {tuple(images.shape)} -> Top-K Patches: (B={batch_size_curr}, K={args.k_patches}, C=3, H=32, W=32)"
+                f"Input: {tuple(images.shape)} -> MLEP Features: {tuple(entropy_maps.shape)}"
             )
 
             # Export visualizations for the first batch
             if args.export_visualizations and batch_idx == 0:
                 logger.info("Exporting sample diagnostic figures for Batch 1...")
                 sample_img = images[0:1]  # Slice first sample (1, 3, 256, 256)
-                sample_planes = lota_extractor.extract_all_bit_planes(sample_img)
-                sample_out = lota_extractor(sample_img)
+                sample_out = mlep_extractor(sample_img)
 
-                plot_bit_planes(sample_img, sample_planes, vis_dir / "batch1_sample0_bit_planes.png")
-                plot_mgps_heatmap(sample_img, sample_out["mgps_scores"], save_path=vis_dir / "batch1_sample0_mgps_heatmap.png")
-                plot_topk_patches(sample_img, sample_out["z_norm"], sample_out["topk_indices"], save_path=vis_dir / "batch1_sample0_topk_patches.png")
+                plot_entropy_heatmap(sample_img, sample_out["mlep_features"], scale_idx=0, save_path=vis_dir / "batch1_sample0_mlep_heatmap.png")
+                plot_multiscale_entropy(sample_out["mlep_features"], save_path=vis_dir / "batch1_sample0_mlep_multiscale.png")
                 logger.info(f"Batch 1 visualizations exported to: {vis_dir.resolve()}")
 
     # ==================== STEP 4: PIPELINE EXECUTION SUMMARY REPORT ====================
@@ -223,8 +220,8 @@ def main():
 
     avg_latency = np.mean(batch_latencies) if batch_latencies else 0.0
     throughput = (total_images_processed / (sum(batch_latencies) / 1000.0)) if batch_latencies else 0.0
-    mean_real_mgps = np.mean(real_mgps_scores) if real_mgps_scores else 0.0
-    mean_ai_mgps = np.mean(ai_mgps_scores) if ai_mgps_scores else 0.0
+    mean_real_entropy = np.mean(real_entropy_scores) if real_entropy_scores else 0.0
+    mean_ai_entropy = np.mean(ai_entropy_scores) if ai_entropy_scores else 0.0
 
     summary_data = {
         "dataset_root": str(data_path.resolve()),
@@ -235,9 +232,9 @@ def main():
             "throughput_images_per_sec": round(float(throughput), 2),
         },
         "steganalysis_metrics": {
-            "mean_mgps_divergence_real": round(float(mean_real_mgps), 4),
-            "mean_mgps_divergence_ai_generated": round(float(mean_ai_mgps), 4),
-            "divergence_contrast_ratio": round(float(mean_ai_mgps / (mean_real_mgps + 1e-8)), 2),
+            "mean_entropy_real": round(float(mean_real_entropy), 4),
+            "mean_entropy_ai_generated": round(float(mean_ai_entropy), 4),
+            "divergence_contrast_ratio": round(float(mean_ai_entropy / (mean_real_entropy + 1e-8)), 2),
         },
         "artifacts_generated": {
             "split_manifests_dir": str(manifest_dir.resolve()),
@@ -253,12 +250,44 @@ def main():
     print("\n" + "-" * 50)
     print(f"Total Images Processed  : {total_images_processed}")
     print(f"Throughput              : {throughput:.1f} images/second ({avg_latency:.1f} ms/batch)")
-    print(f"Real Mean MGPS Score    : {mean_real_mgps:.4f}")
-    print(f"AI Mean MGPS Score      : {mean_ai_mgps:.4f}")
+    print(f"Real Mean Entropy Score : {mean_real_entropy:.4f}")
+    print(f"AI Mean Entropy Score   : {mean_ai_entropy:.4f}")
     print(f"Divergence Contrast     : {summary_data['steganalysis_metrics']['divergence_contrast_ratio']}x")
     print(f"Visualizations Saved To : {vis_dir.resolve()}")
     print("-" * 50 + "\n")
     logger.info("Project execution finished successfully.")
+
+    if args.export_visualizations:
+        print("\n[5] Automatically opening the generated project previews...")
+        try:
+            mlep_img = vis_dir / "batch1_sample0_mlep_heatmap.png"
+            mlep_multi = vis_dir / "batch1_sample0_mlep_multiscale.png"
+            
+            import subprocess
+            def open_file(filepath):
+                path_str = str(filepath.resolve())
+                file_url = f"file:///{path_str.replace(chr(92), '/')}"
+                
+                brave_path = r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
+                librewolf_path = r"C:\Program Files\LibreWolf\librewolf.exe"
+                
+                if os.name == 'nt' and os.path.exists(brave_path):
+                    subprocess.Popen([brave_path, path_str])
+                elif os.name == 'nt' and os.path.exists(librewolf_path):
+                    subprocess.Popen([librewolf_path, path_str])
+                else:
+                    import webbrowser
+                    webbrowser.open(file_url)
+                    
+                print(f"    [Fallback] If it didn't pop up, please Ctrl+Click the URL below:\n    {file_url}")
+            
+            if mlep_img.exists():
+                open_file(mlep_img)
+            if mlep_multi.exists():
+                open_file(mlep_multi)
+        except Exception as e:
+            print(f"    Failed to auto-open project previews: {e}")
+
 
 
 if __name__ == "__main__":
