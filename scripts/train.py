@@ -139,8 +139,8 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logger.info(f"Using device: {device}")
     
-    # Initialize the complete model (MLEP + LOTA Fusion)
-    model = DualCueDetector(pretrained_backbones=False).to(device)
+    # Initialize the complete model (MLEP + LOTA Fusion) with Pre-trained ImageNet weights
+    model = DualCueDetector(pretrained_backbones=True).to(device)
     optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
     criterion = nn.BCEWithLogitsLoss()
