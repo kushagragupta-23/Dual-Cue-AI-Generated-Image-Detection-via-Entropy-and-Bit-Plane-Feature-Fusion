@@ -116,5 +116,5 @@ If no `--image_path` is provided, the script automatically generates a synthetic
 ## 5. Hardware Verification & Performance
 
 All operations in `TopKLOTAExtractor` are implemented using native PyTorch vectorized operations (`torch.bitwise_and`, `torch.nn.functional.conv2d`, and `torch.topk`), eliminating Python loops. This ensures 100% execution compatibility and zero-copy device transfers across:
-* **Apple Silicon Metal (MPS)**: macOS M1/M2/M3/M4 architectures (Aishwarya's environment).
-* **NVIDIA CUDA**: Standard Linux multi-GPU server environments (Kushagra's environment).
+* **Apple Silicon Metal (MPS)**: macOS M1/M2/M3/M4 architectures.
+* **NVIDIA CUDA**: Standard Linux multi-GPU server environments.
