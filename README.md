@@ -238,3 +238,5 @@ The entire pipeline is engineered using 100% vectorized PyTorch operations witho
 * **NVIDIA RTX GPUs (e.g. RTX 4050)**: Full compatibility with CUDA acceleration and CPU vectorized execution (~420+ img/s throughput).
 * **NVIDIA GPUs**: Full compatibility with CUDA acceleration for multi-worker distributed training.
 * **Standard CPUs**: High-throughput fallback execution on x86_64 / ARM architectures.
+
+
