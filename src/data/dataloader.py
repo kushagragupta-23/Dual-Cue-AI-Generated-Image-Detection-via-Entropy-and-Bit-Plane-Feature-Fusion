@@ -40,7 +40,7 @@ def create_dataloader(
         shuffle: Whether to shuffle data sequentially (ignored if balanced_sampling=True).
         num_workers: Number of background subprocesses for image loading and augmentations.
         balanced_sampling: If True, uses BalancedRealFakeSampler for 50/50 class ratios.
-        pin_memory: If True, pins memory for rapid CPU-to-GPU/MPS transfers.
+        pin_memory: If True, pins memory for rapid CPU-to-GPU transfers.
         drop_last: If True, drops incomplete final batches.
 
     Returns:
@@ -53,7 +53,7 @@ def create_dataloader(
         shuffle = False  # Mutually exclusive with sampler in PyTorch DataLoader
         logger.info(f"Configuring DataLoader with BalancedRealFakeSampler (batch_size={batch_size})")
 
-    # On macOS Apple Silicon or limited environments, fallback gracefully if workers fail
+    # On Windows or limited environments, fallback gracefully if workers fail
     persistent_workers = num_workers > 0
 
     loader = DataLoader(

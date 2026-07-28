@@ -600,7 +600,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
     </div>
 
     <footer>
-        <p>MLEP & LOTA Fusion Project | Developed with Apple Silicon M4 Optimization | 100% Vectorized PyTorch Steganalysis Core</p>
+        <p>MLEP & LOTA Fusion Project | Optimized for Windows & NVIDIA RTX 4050 | 100% Vectorized PyTorch Steganalysis Core</p>
     </footer>
 
     <script>

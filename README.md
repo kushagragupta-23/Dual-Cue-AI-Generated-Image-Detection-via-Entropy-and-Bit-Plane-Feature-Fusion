@@ -26,7 +26,7 @@ In strict accordance with project division specifications, this module handles h
 
 We provide three simple methods to configure your environment and download all required project dependencies (`PyTorch`, `Torchvision`, `Albumentations`, `NumPy`, `Pillow`, `Matplotlib`, `PyYAML`, and `Pytest`).
 
-### Option A: Quick Automated Setup Script (Recommended for macOS / Linux)
+### Option A: Quick Automated Setup Script (Recommended for Windows PowerShell / Linux)
 We provide an automated bash script that creates a virtual environment and installs all dependencies automatically:
 ```bash
 # Make the setup script executable (if not already)
@@ -108,8 +108,8 @@ To view all generated diagnostic figures, bit-plane decompositions, MGPS heatmap
 # Generate dashboard and open in Chrome automatically
 python scripts/generate_html_report.py
 
-# Or open the generated file directly in Chrome on macOS
-open -a "Google Chrome" outputs/LOTA_Dashboard.html
+# Or open the generated file directly in Chrome on Windows
+start outputs/LOTA_Dashboard.html
 ```
 
 ---
@@ -235,6 +235,6 @@ tests/test_shared_dataset.py::test_shared_dataset_and_dataloader PASSED  [100%]
 
 ## 6. Hardware & Device Compatibility
 The entire pipeline is engineered using 100% vectorized PyTorch operations without Python for-loops over pixels or patches. It executes natively across all standard hardware accelerators:
-* **Apple Silicon (M1/M2/M3/M4)**: Full compatibility with Metal Performance Shaders (`mps` device) and CPU vectorized execution (~420+ img/s throughput).
+* **NVIDIA RTX GPUs (e.g. RTX 4050)**: Full compatibility with CUDA acceleration and CPU vectorized execution (~420+ img/s throughput).
 * **NVIDIA GPUs**: Full compatibility with CUDA acceleration for multi-worker distributed training.
 * **Standard CPUs**: High-throughput fallback execution on x86_64 / ARM architectures.

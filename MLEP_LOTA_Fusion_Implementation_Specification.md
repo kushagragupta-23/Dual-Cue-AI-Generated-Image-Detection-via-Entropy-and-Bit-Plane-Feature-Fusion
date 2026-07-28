@@ -362,7 +362,7 @@ To solve MLEP's 45% accuracy collapse under JPEG compression (Project Extension 
 To optimize high-throughput evaluation across large academic datasets:
 - **Backbone Compression**: Replace heavy dual ResNet-50 backbones (which require ~50M parameters combined) with a single shared **ResNet-18** or **MobileNetV3-Large** stem encoder, branching only at the final feature pyramid layers for entropy vs. bit-plane processing.
 - **Mixed-Precision Optimization**: Integrate automatic mixed precision (`torch.cuda.amp` fp16 / bf16) to double batch throughput and half GPU memory consumption during large-scale evaluation on GenImage and ForenSynths.
-- **High-Throughput Benchmarking**: Build a clean computational pipeline to benchmark inference throughput (Images/Second) and ROC-AUC scaling curves across PyTorch CUDA and Apple Metal backend devices without requiring physical hardware demos.
+- **High-Throughput Benchmarking**: Build a clean computational pipeline to benchmark inference throughput (Images/Second) and ROC-AUC scaling curves across PyTorch CUDA without requiring physical hardware demos.
 
 ---
 
@@ -391,7 +391,7 @@ The following matrix provides an executive summary of exactly which modules from
 
 ### 14. Concrete PyTorch Implementation Architecture & Module Specifications
 
-To move from theoretical specification to execution, this section details the concrete, production-grade PyTorch architecture required to build the **Dual-Cue AIGID Fusion Model**. The codebase is structured around modular, vectorized operations that avoid slow Python loops and maximize GPU utilization on consumer hardware (e.g., RTX 4050 6GB VRAM or Apple M4 Unified Memory).
+To move from theoretical specification to execution, this section details the concrete, production-grade PyTorch architecture required to build the **Dual-Cue AIGID Fusion Model**. The codebase is structured around modular, vectorized operations that avoid slow Python loops and maximize GPU utilization on consumer hardware (e.g., Lenovo LOQ RTX 4050 6GB VRAM).
 
 #### 1. Project Directory Hierarchy
 ```text
