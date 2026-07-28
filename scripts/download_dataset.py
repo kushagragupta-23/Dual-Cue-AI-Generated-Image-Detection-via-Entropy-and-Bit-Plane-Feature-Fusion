@@ -69,9 +69,9 @@ def download_huggingface_dataset(target_dir: Path, num_samples_per_class: int = 
         return False
 
 
-def generate_large_scale_benchmark(target_dir: Path, total_samples: int = 1000) -> None:
+def generate_large_scale_benchmark(target_dir: Path, total_samples: int = 1400) -> None:
     """
-    Generate a large-scale 1,000+ image benchmark dataset locally for stress testing throughput and GPU training loops.
+    Generate a large-scale 1,400+ image benchmark dataset locally for stress testing throughput and GPU training loops.
     """
     logger.info(f"Generating large-scale local benchmark dataset ({total_samples} images) at: {target_dir}")
     target_dir.mkdir(parents=True, exist_ok=True)
@@ -126,7 +126,7 @@ def main():
     parser = argparse.ArgumentParser(description="Download or Generate Large-Scale Training Dataset.")
     parser.add_argument("--target_dir", type=str, default="outputs/big_dataset", help="Directory to save downloaded/generated images.")
     parser.add_argument("--source", type=str, choices=["huggingface", "local"], default="local", help="Source: download from HuggingFace or generate locally.")
-    parser.add_argument("--num_samples", type=int, default=1000, help="Total number of images to generate or download.")
+    parser.add_argument("--num_samples", type=int, default=1400, help="Total number of images to generate or download.")
     args = parser.parse_args()
 
     target_path = root_path / args.target_dir
