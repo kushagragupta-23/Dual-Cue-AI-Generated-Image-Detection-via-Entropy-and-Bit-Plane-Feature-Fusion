@@ -79,12 +79,21 @@ class LOTAPreprocessingTransform:
             sigma = random.uniform(self.blur_sigma_range[0], self.blur_sigma_range[1])
             img = GaussianBlurDegradation(sigma=sigma)(img)
         # Prevent overfitting with structural/spatial augmentations
-        if random.random() < 0.5:
+        # Increased probabilities to force better generalization for the >90% validation goal
+        if random.random() < 0.7:
             from torchvision.transforms import ColorJitter
-            img = ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1, hue=0.05)(img)
+            img = ColorJitter(brightness=0.15, contrast=0.15, saturation=0.15, hue=0.05)(img)
         if random.random() < 0.5:
             from torchvision.transforms.functional import hflip
             img = hflip(img)
+        if random.random() < 0.5:
+            from torchvision.transforms import RandomRotation
+            # Slight random rotation to prevent spatial memorization
+            img = RandomRotation(degrees=10)(img)
+        if random.random() < 0.5:
+            from torchvision.transforms import RandomResizedCrop
+            # Random scale crop prevents the model from relying on fixed object positioning
+            img = RandomResizedCrop(size=self.image_size, scale=(0.8, 1.0))(img)
         return img
 
     def __call__(self, img: Union[Image.Image, torch.Tensor]) -> torch.Tensor:
