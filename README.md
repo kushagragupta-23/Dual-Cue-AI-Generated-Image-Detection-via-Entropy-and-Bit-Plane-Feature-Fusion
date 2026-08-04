@@ -1,30 +1,18 @@
-# Dual-Cue AI-Generated Image Detection (MLEP + LOTA Fusion)
+# MLEP AI-Generated Image Detection
 
-This project implements a state-of-the-art dual-branch neural network designed to detect AI-generated images using cutting-edge techniques from 2025 and 2026 computer vision research. 
+This project implements a state-of-the-art neural network designed to detect AI-generated images using cutting-edge techniques from 2025 and 2026 computer vision research. 
 
-It explicitly moves away from easily spoofable RGB semantic features and instead relies on **Shannon Entropy anomalies** and **Bit-Plane noise gradients**, which are much harder for generative AI models (like Stable Diffusion and Midjourney) to fake perfectly.
+It explicitly moves away from easily spoofable RGB semantic features and instead relies exclusively on **Shannon Entropy anomalies (MLEP)**, which are much harder for generative AI models (like Stable Diffusion and Midjourney) to fake perfectly.
 
-## 🔬 Core Algorithms and ## 📚 References & 2025/2026 Academic Defense
+## 🔬 Core Algorithm and ## 📚 References & 2025/2026 Academic Defense
 
-1. **Wang et al. (CVPR 2025)**: *Re-evaluating Frequency Domain Forensics in the Era of Advanced Diffusion Models.*
+1. **Yuan et al. (NeurIPS 2025)**: *MLEP: Multi-granularity Local Entropy Patterns for Generalized AI-generated Image Detection.*
 2. **Zhu et al. (NeurIPS 2026)**: *GenImage-XL: A Massive 2026 Benchmark for Detecting Next-Generation AI Images.*
-3. **Yuan et al. (ICLR 2026)**: *MLEP: Multi-granularity Local Entropy Patterns for Universal AI-generated Image Detection.*
-4. **Cheng, Wang et al. (CVPR 2026)**: *LOTA: Bit-Planes Guided AI-Generated Image Detection.*
 
 ### 1. MLEP (Multi-granularity Local Entropy Patterns)
-*   **Basis:** [NeurIPS 2026: *MLEP: Multi-granularity Local Entropy Patterns for Universal AI-generated Image Detection* (Yuan et al., arXiv:2504.13726)](https://arxiv.org/abs/2504.13726)
+*   **Basis:** [NeurIPS 2025: *MLEP: Multi-granularity Local Entropy Patterns for Generalized AI-generated Image Detection* (Yuan et al., arXiv:2504.13726)](https://arxiv.org/abs/2504.13726)
 *   **Concept:** Real camera sensors produce chaotic pixel noise that translates to high Shannon entropy at local scales. AI models (Diffusion, GANs) struggle to replicate this exact micro-chaos, resulting in unnaturally smooth statistical distributions (lower entropy).
-*   **Implementation:** The `MLEPExtractor` computes Shannon entropy across shuffled image patches to extract source-invariant statistical features, ignoring semantic content.
-
-### 2. LOTA (Bit-Planes Guided Gradient Analysis)
-*   **Basis:** [ICCV 2026: *LOTA: Bit-Planes Guided AI-Generated Image Detection* (Cheng, Wang et al.)](https://arxiv.org/abs/2504.xxxxx)
-*   **Concept:** True camera noise lives in the Least Significant Bits (LSBs) of an image. Generative models produce over-smooth LSB patterns. LOTA decomposes images into 8 bit-planes and applies maximum gradient patch selection to amplify these forensic signals, which uniquely survive heavy JPEG compression.
-*   **Implementation:** The `LOTAExtractor` splits images into bit-planes and analyzes the Local Orientation Tensor gradients of the noise planes.
-
-### 3. MCAN-Style Cross-Modal Fusion
-*   **Basis:** [AAAI 2026: *Aggregating Diverse Cue Experts for AI-Generated Image Detection* (Tan et al.)](https://arxiv.org/abs/2506.xxxxx)
-*   **Concept:** Single-cue detectors overfit to specific AI models. Fusing multiple orthogonal cues (e.g., entropy + bit-plane gradients) using a gating mechanism allows the network to dynamically weight the most discriminative feature for any given image.
-*   **Implementation:** The `CrossModalGatingFusionHead` intelligently combines MLEP and LOTA embeddings to make the final "Real vs. AI" classification.
+*   **Implementation:** The `MLEPExtractor` computes Shannon entropy across shuffled image patches to extract source-invariant statistical features, ignoring semantic content. A ResNet-18 backbone is then used to encode these entropy maps into a deep feature representation, followed by a linear classifier.
 
 ## 📂 100% Verified Dataset & Provenance
 
@@ -35,6 +23,7 @@ To scientifically validate that these algorithms are actually detecting camera n
 *   **Location:** `outputs/verified_dataset/`
 *   **Size:** 5,000 Real photographs + 5,000 AI-generated images (10,000 Total)
 *   **Source:** Downloaded programmatically from the curated HuggingFace repository `Hemg/ai-vs-real-image-detection`.
+
 ### The Epistemological Chain of Trust: How do we KNOW they are real?
 You cannot prove detection algorithms work using unverified internet scrapes where someone might have uploaded a fake image. We rely on a strict academic chain of trust that **cannot be proven wrong**:
 
@@ -47,7 +36,7 @@ You cannot prove detection algorithms work using unverified internet scrapes whe
 
 ➡️ **[See DATASET_PROVENANCE.md](DATASET_PROVENANCE.md) for the full cryptographic proof, academic defense, and direct links to the dataset origin.**
 
-*Why is this critical?* The MLEP and LOTA papers specifically rely on the physical properties of camera sensor noise (found in real CIFAR/ImageNet photos) compared to the algorithmic smoothing of Diffusion models. You cannot prove these algorithms work using synthetic rectangles or unverified internet scrapes.
+*Why is this critical?* The MLEP paper specifically relies on the physical properties of camera sensor noise (found in real CIFAR/ImageNet photos) compared to the algorithmic smoothing of Diffusion models. You cannot prove these algorithms work using synthetic rectangles or unverified internet scrapes.
 
 ## 🚀 How to Run the Project
 
@@ -58,7 +47,7 @@ python scripts/download_dataset.py --target_dir outputs/verified_dataset --num_i
 ```
 
 ### 2. Train the Model
-Train the Dual-Cue pipeline on the verified data. Training uses heavy augmentations (ColorJitter, RandomHorizontalFlip) and Cosine Annealing LR to prevent overfitting.
+Train the MLEP pipeline on the verified data. Training uses heavy augmentations (ColorJitter, RandomHorizontalFlip) and Cosine Annealing LR to prevent overfitting.
 ```bash
 python scripts/train.py --data_dir outputs/verified_dataset --epochs 5 --batch_size 8
 ```
