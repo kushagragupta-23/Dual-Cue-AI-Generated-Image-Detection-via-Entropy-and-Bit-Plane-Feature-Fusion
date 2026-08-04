@@ -228,8 +228,9 @@ class MLEPExtractor(nn.Module):
         """
         B, C, H, W = x.shape
 
-        # 1: Channel-independent patch shuffling (π)
-        x_shuffled = self.shuffle_patches(x)
+        # 1: Channel-independent patch shuffling (π) [BYPASSED for Pretrained ResNet]
+        # Shuffling destroys the macro-semantics that pretrained ImageNet filters rely on.
+        x_shuffled = x
 
         # 2: Multi-scale resampling pyramid {1.0, 0.5, 0.25}
         x_pyramid = self.build_multiscale_pyramid(x_shuffled)
