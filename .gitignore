@@ -11,6 +11,7 @@ build/
 venv/
 .venv/
 env/
+env_mlep/
 
 # IDE
 .idea/

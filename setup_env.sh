@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Quick Environment Setup Script for MLEP & LOTA Fusion Project
+# Quick Environment Setup Script for MLEP Project
 set -e
 
 echo "================================================================================"
@@ -10,7 +10,7 @@ echo "==========================================================================
 if command -v conda &> /dev/null; then
     echo "[INFO] Conda detected. You can create the conda environment by running:"
     echo "       conda env create -f environment.yml"
-    echo "       conda activate mlep_lota"
+    echo "       conda activate mlep_only"
     echo ""
 fi
 

@@ -1,4 +1,4 @@
-# MLEP & LOTA Fusion - Project Dependencies
+# MLEP Project Dependencies
 # Python >= 3.10 recommended
 
 # Core Deep Learning & Vision
