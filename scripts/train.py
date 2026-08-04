@@ -112,7 +112,7 @@ def evaluate(model, loader, criterion, device, epoch, split_name="Validation"):
         f">>> {split_name} Results | Loss: {epoch_loss:.4f} | Acc: {epoch_acc:.2f}% | "
         f"Prec: {epoch_precision:.2f}% | Rec: {epoch_recall:.2f}% | F1: {epoch_f1:.2f}%"
     )
-    return epoch_loss, epoch_acc, epoch_precision, epoch_recall, epoch_f1
+    return epoch_loss, epoch_acc, epoch_precision, epoch_recall, epoch_f1, all_labels, all_preds
 
 
 def main():
@@ -207,7 +207,7 @@ def main():
             f"Loss: {train_loss:.4f} | Acc: {train_acc:.2f}% | Prec: {train_prec:.2f}%"
         )
         
-        val_loss, val_acc, val_prec, val_rec, val_f1 = evaluate(
+        val_loss, val_acc, val_prec, val_rec, val_f1, _, _ = evaluate(
             model, val_loader, criterion, device, epoch, "Validation"
         )
         scheduler.step()
@@ -252,7 +252,7 @@ def main():
     checkpoint = torch.load(best_model_path, map_location=device, weights_only=False)
     model.load_state_dict(checkpoint['model_state_dict'])
     
-    test_loss, test_acc, test_prec, test_rec, test_f1 = evaluate(
+    test_loss, test_acc, test_prec, test_rec, test_f1, test_labels, test_preds = evaluate(
         model, test_loader, criterion, device, "FINAL", "Test"
     )
     
@@ -267,6 +267,20 @@ def main():
     }
     with open(test_results_path, "w", encoding="utf-8") as f:
         json.dump(test_results, f, indent=2)
+
+    # -------------------------------------------------------------
+    # Generate Visualizations (Training Curves & Confusion Matrix)
+    # -------------------------------------------------------------
+    from src.utils.visualization import plot_training_curves, plot_confusion_matrix
+    
+    vis_dir = output_path.parent / "project_run" / "visualizations"
+    vis_dir.mkdir(parents=True, exist_ok=True)
+    
+    logger.info("Generating Training Curves...")
+    plot_training_curves(training_history, save_path=vis_dir / "training_curves.png")
+    
+    logger.info("Generating Test Set Confusion Matrix...")
+    plot_confusion_matrix(test_labels, test_preds, save_path=vis_dir / "confusion_matrix.png")
 
     print("\n" + "=" * 80)
     print(f"FINAL TEST RESULTS: Acc: {test_acc:.2f}% | Prec: {test_prec:.2f}%")

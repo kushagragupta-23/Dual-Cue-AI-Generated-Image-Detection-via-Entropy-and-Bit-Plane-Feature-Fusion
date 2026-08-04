@@ -136,3 +136,87 @@ def plot_multiscale_entropy(
         plt.close(fig)
 
     return fig
+
+
+def plot_training_curves(history_data: list, save_path: Optional[Union[str, Path]] = None) -> plt.Figure:
+    """
+    Render training and validation curves for Loss and Accuracy.
+    
+    Args:
+        history_data: List of dictionaries containing epoch metrics.
+        save_path: Optional path to save exported PNG figure.
+    """
+    epochs = [d['epoch'] for d in history_data]
+    train_loss = [d['train_loss'] for d in history_data]
+    val_loss = [d['val_loss'] for d in history_data]
+    train_acc = [d['train_acc'] for d in history_data]
+    val_acc = [d['val_acc'] for d in history_data]
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+
+    # Loss plot
+    ax1.plot(epochs, train_loss, label='Train Loss', color='#1f77b4', marker='o')
+    ax1.plot(epochs, val_loss, label='Validation Loss', color='#ff7f0e', marker='s')
+    ax1.set_title('Training & Validation Loss', fontsize=12, fontweight='bold')
+    ax1.set_xlabel('Epoch')
+    ax1.set_ylabel('Loss')
+    ax1.legend()
+    ax1.grid(True, linestyle='--', alpha=0.7)
+
+    # Accuracy plot
+    ax2.plot(epochs, train_acc, label='Train Accuracy', color='#2ca02c', marker='o')
+    ax2.plot(epochs, val_acc, label='Validation Accuracy', color='#d62728', marker='s')
+    ax2.set_title('Training & Validation Accuracy', fontsize=12, fontweight='bold')
+    ax2.set_xlabel('Epoch')
+    ax2.set_ylabel('Accuracy (%)')
+    ax2.legend()
+    ax2.grid(True, linestyle='--', alpha=0.7)
+
+    fig.tight_layout()
+
+    if save_path is not None:
+        path = Path(save_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(path, dpi=200, bbox_inches="tight")
+        logger.info(f"Saved training curves to: {path}")
+        plt.close(fig)
+        
+    return fig
+
+
+def plot_confusion_matrix(labels: list, preds: list, save_path: Optional[Union[str, Path]] = None) -> plt.Figure:
+    """
+    Render a clean confusion matrix.
+    
+    Args:
+        labels: Ground truth binary labels.
+        preds: Predicted binary labels.
+        save_path: Optional path to save exported PNG figure.
+    """
+    from sklearn.metrics import confusion_matrix
+    import seaborn as sns
+    
+    cm = confusion_matrix(labels, preds)
+    
+    fig, ax = plt.subplots(figsize=(6, 5))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax, cbar=False, 
+                annot_kws={"size": 14, "weight": "bold"})
+    
+    ax.set_title('Test Set Confusion Matrix', fontsize=13, fontweight='bold', pad=15)
+    ax.set_xlabel('Predicted Label', fontsize=11, fontweight='bold')
+    ax.set_ylabel('True Label', fontsize=11, fontweight='bold')
+    
+    # Assuming 0 is Real, 1 is AI-Generated as per dataset conventions
+    ax.set_xticklabels(['Real', 'AI-Generated'])
+    ax.set_yticklabels(['Real', 'AI-Generated'], rotation=0)
+    
+    fig.tight_layout()
+
+    if save_path is not None:
+        path = Path(save_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(path, dpi=200, bbox_inches="tight")
+        logger.info(f"Saved confusion matrix to: {path}")
+        plt.close(fig)
+        
+    return fig
