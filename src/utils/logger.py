@@ -1,5 +1,5 @@
 """
-Production logging utilities for tracking dataset metrics, LOTA extraction, and throughput.
+Production logging utilities for tracking dataset metrics and throughput.
 """
 
 import logging
@@ -9,7 +9,7 @@ from typing import Optional, Union
 
 
 def get_logger(
-    name: str = "lota_pipeline",
+    name: str = "mlep_pipeline",
     log_dir: Optional[Union[str, Path]] = None,
     level: str = "INFO",
     log_filename: str = "execution.log",

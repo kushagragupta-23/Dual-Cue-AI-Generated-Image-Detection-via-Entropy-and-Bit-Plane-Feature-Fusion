@@ -1,7 +1,7 @@
 """
 Multi-granularity Local Entropy Pattern (MLEP) Preprocessing and Feature Extraction Core.
 Exclusively implements MLEP channel-independent patch shuffling, multi-scale resampling pyramid,
-and 2×2 sliding window Shannon entropy without any LOTA or fusion modules.
+and 2×2 sliding window Shannon entropy.
 """
 
 from typing import Dict, List, Optional, Tuple

@@ -1,5 +1,5 @@
 """
-Configuration utilities and typed dataclasses for the MLEP & LOTA preprocessing pipelines.
+Configuration utilities and typed dataclasses for the MLEP preprocessing pipeline.
 """
 
 from dataclasses import dataclass, field, asdict
@@ -26,15 +26,7 @@ class DatasetConfig:
     blur_sigma_max: float = 2.0
 
 
-@dataclass
-class LOTAConfig:
-    """Configuration for LOw-biT pAtch (LOTA) extraction and MGPS."""
-    bit_planes: List[int] = field(default_factory=lambda: [0, 1, 2])
-    k_patches: int = 4
-    patch_size: int = 32
-    grid_size: int = 8
-    normalization: str = "thresholding"  # 'thresholding' or 'min_max'
-    threshold_val: float = 255.0
+
 
 
 @dataclass
@@ -56,10 +48,9 @@ class LoggingConfig:
 
 @dataclass
 class ProjectConfig:
-    """Master project configuration bundling dataset, MLEP, LOTA, and logging settings."""
+    """Master project configuration bundling dataset, MLEP, and logging settings."""
     dataset: DatasetConfig = field(default_factory=DatasetConfig)
     mlep: MLEPConfig = field(default_factory=MLEPConfig)
-    lota: LOTAConfig = field(default_factory=LOTAConfig)
     logging: LoggingConfig = field(default_factory=LoggingConfig)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -71,9 +62,8 @@ def _dict_to_config(data: Dict[str, Any]) -> ProjectConfig:
     """Helper to convert nested dictionary into ProjectConfig dataclass."""
     dataset_cfg = DatasetConfig(**data.get("dataset", {})) if "dataset" in data else DatasetConfig()
     mlep_cfg = MLEPConfig(**data.get("mlep", {})) if "mlep" in data else MLEPConfig()
-    lota_cfg = LOTAConfig(**data.get("lota", {})) if "lota" in data else LOTAConfig()
     logging_cfg = LoggingConfig(**data.get("logging", {})) if "logging" in data else LoggingConfig()
-    return ProjectConfig(dataset=dataset_cfg, mlep=mlep_cfg, lota=lota_cfg, logging=logging_cfg)
+    return ProjectConfig(dataset=dataset_cfg, mlep=mlep_cfg, logging=logging_cfg)
 
 
 def load_config(config_path: Union[str, Path]) -> ProjectConfig:
