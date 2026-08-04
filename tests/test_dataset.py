@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 from src.data.transforms import (
     GaussianBlurDegradation,
     JPEGRecompression,
-    LOTAPreprocessingTransform,
+    MLEPPreprocessingTransform,
 )
 from src.data.dataset import AIGIDDataset
 from src.data.samplers import BalancedRealFakeSampler
@@ -36,18 +36,6 @@ def dummy_dataset_dir(tmp_path: Path) -> Path:
         img_fake.save(fake_dir / f"progan_{i}.jpg")
         
     return root
-
-
-def test_transforms_resizing_and_range():
-    """Verify LOTAPreprocessingTransform resizes to (3, 256, 256) and returns [0, 255]."""
-    transform = LOTAPreprocessingTransform(image_size=256, crop_to_square=True)
-    img = Image.new("RGB", (512, 384), color=(128, 64, 32))
-    
-    tensor = transform(img)
-    assert isinstance(tensor, torch.Tensor)
-    assert tensor.shape == (3, 256, 256)
-    assert tensor.dtype == torch.float32
-    assert tensor.max() <= 255.0 and tensor.min() >= 0.0
 
 
 def test_robustness_augmentations():

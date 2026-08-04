@@ -32,7 +32,7 @@ def create_dataloader(
     drop_last: bool = False,
 ) -> DataLoader:
     """
-    Factory function to construct a PyTorch DataLoader for MLEP and LOTA branches.
+    Factory function to construct a PyTorch DataLoader for MLEP branches.
 
     Args:
         dataset: Target PyTorch Dataset instance (e.g., SharedImageDataset).

@@ -1,5 +1,5 @@
 """
-Albumentations transform pipelines for shared MLEP & LOTA dataset infrastructure.
+Albumentations transform pipelines for shared MLEP dataset infrastructure.
 Provides standardized 256x256 resizing and configurable online robustness augmentations.
 """
 

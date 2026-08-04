@@ -54,8 +54,8 @@ class AIGIDDataset(Dataset):
         self.root_dir = Path(root_dir)
         self.split = split
         if transform is None:
-            from src.data.transforms import LOTAPreprocessingTransform
-            self.transform = LOTAPreprocessingTransform(
+            from src.data.transforms import MLEPPreprocessingTransform
+            self.transform = MLEPPreprocessingTransform(
                 image_size=256, 
                 crop_to_square=True,
                 enable_augmentations=(split == "train")
@@ -258,8 +258,8 @@ class AIGIDDataset(Dataset):
             tensor = self.transform(img_rgb)
         else:
             # Default fallback transform to ensure 256x256 standardization
-            from src.data.transforms import LOTAPreprocessingTransform
-            default_tf = LOTAPreprocessingTransform(image_size=256, crop_to_square=True)
+            from src.data.transforms import MLEPPreprocessingTransform
+            default_tf = MLEPPreprocessingTransform(image_size=256, crop_to_square=True)
             tensor = default_tf(img_rgb)
 
         return tensor, label, {"path": str(file_path), "domain": sample_info["domain"]}
@@ -267,7 +267,7 @@ class AIGIDDataset(Dataset):
 
 class SharedImageDataset(Dataset):
     """
-    Unified PyTorch Dataset for Shared MLEP & LOTA Infrastructure.
+    Unified PyTorch Dataset for Shared MLEP Infrastructure.
     Supports ForenSynths, GenImage, and custom directory structures.
     Provides clean RGB float32 tensors of shape (3, 256, 256) to downstream pipelines.
     """

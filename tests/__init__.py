@@ -1,3 +1,3 @@
 """
-Test suite package for the LOTA preprocessing pipeline.
+Test suite package for the MLEP preprocessing pipeline.
 """

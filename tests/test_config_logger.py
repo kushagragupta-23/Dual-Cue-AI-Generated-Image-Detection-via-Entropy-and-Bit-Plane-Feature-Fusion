@@ -8,7 +8,6 @@ import pytest
 import yaml
 from src.utils.config import (
     DatasetConfig,
-    LOTAConfig,
     LoggingConfig,
     ProjectConfig,
     load_config,
@@ -22,9 +21,7 @@ def test_default_project_config():
     cfg = ProjectConfig()
     assert cfg.dataset.image_size == 256
     assert cfg.dataset.batch_size == 32
-    assert cfg.lota.bit_planes == [0, 1, 2]
-    assert cfg.lota.k_patches == 4
-    assert cfg.lota.grid_size == 8
+
     assert cfg.logging.level == "INFO"
 
 
@@ -32,7 +29,7 @@ def test_save_and_load_config(tmp_path: Path):
     """Verify round-trip YAML serialization and deserialization of ProjectConfig."""
     cfg = ProjectConfig()
     cfg.dataset.image_size = 512
-    cfg.lota.k_patches = 8
+
     
     config_file = tmp_path / "test_config.yaml"
     save_config(cfg, config_file)
@@ -42,7 +39,7 @@ def test_save_and_load_config(tmp_path: Path):
     loaded_cfg = load_config(config_file)
     assert isinstance(loaded_cfg, ProjectConfig)
     assert loaded_cfg.dataset.image_size == 512
-    assert loaded_cfg.lota.k_patches == 8
+
 
 
 def test_load_nonexistent_config():

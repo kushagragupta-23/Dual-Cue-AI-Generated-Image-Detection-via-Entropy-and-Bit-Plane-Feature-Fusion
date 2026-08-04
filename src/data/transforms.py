@@ -1,5 +1,5 @@
 """
-Image transformations, standardization, and online robustness augmentations for LOTA.
+Image transformations, standardization, and online robustness augmentations for MLEP.
 """
 
 from io import BytesIO
@@ -14,7 +14,7 @@ import torchvision.transforms.functional as TF
 class JPEGRecompression:
     """
     Simulate online JPEG compression degradation on PIL Images or Tensors.
-    Used for testing the robustness of LSB bit-plane noise fingerprints.
+    Used for testing the robustness of entropy-based noise fingerprints.
     """
     def __init__(self, quality: int = 80):
         if not (1 <= quality <= 100):
@@ -49,9 +49,9 @@ class GaussianBlurDegradation:
         return img.filter(ImageFilter.GaussianBlur(radius=self.sigma))
 
 
-class LOTAPreprocessingTransform:
+class MLEPPreprocessingTransform:
     """
-    Standard preprocessing transform for LOTA feature extraction.
+    Standard preprocessing transform for MLEP feature extraction.
     Converts image to RGB, applies optional center cropping and resizing to 256x256,
     executes optional robustness augmentations, and returns a PyTorch Tensor
     in range [0.0, 255.0] with shape (3, H, W).
@@ -137,7 +137,7 @@ class LOTAPreprocessingTransform:
         if img.size != (self.image_size, self.image_size):
             img = img.resize((self.image_size, self.image_size), resample=Image.Resampling.BILINEAR)
 
-        # Convert to Tensor without dividing by 255 (keep [0.0, 255.0] range for bit-plane slicing)
+        # Convert to Tensor without dividing by 255 (keep [0.0, 255.0] range for entropy computation)
         tensor = TF.to_tensor(img) * 255.0
         return tensor.to(torch.float32)
 
