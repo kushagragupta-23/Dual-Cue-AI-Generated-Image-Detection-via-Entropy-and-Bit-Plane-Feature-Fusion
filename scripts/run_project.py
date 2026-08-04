@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Master Project Execution Script: MLEP Fusion
+Master Project Execution Script: MLEP
 Connects the Shared Dataset Infrastructure directly into the MLEP Steganalysis & Preprocessing Engine.
 Demonstrates end-to-end data ingestion, stratified splitting, balanced batch sampling, and vectorized Top-K patch extraction.
 """

@@ -23,7 +23,7 @@ if str(root_path) not in sys.path:
 
 from src.data.dataset import SharedImageDataset
 from src.data.dataloader import create_dataloader
-from src.data.transforms import LOTAPreprocessingTransform
+from src.data.transforms import MLEPPreprocessingTransform
 from src.models.mlep_detector import MLEPDetector
 from src.utils.logger import get_logger
 
@@ -133,8 +133,8 @@ def main():
     print("STEP 1: INITIALIZING DATASETS")
     print("=" * 80)
 
-    train_tf = LOTAPreprocessingTransform(image_size=256, crop_to_square=True, enable_augmentations=True)
-    eval_tf = LOTAPreprocessingTransform(image_size=256, crop_to_square=True, enable_augmentations=False)
+    train_tf = MLEPPreprocessingTransform(image_size=256, crop_to_square=True, enable_augmentations=True)
+    eval_tf = MLEPPreprocessingTransform(image_size=256, crop_to_square=True, enable_augmentations=False)
 
     train_ds = SharedImageDataset(
         root_dir=data_path, split="train", val_ratio=0.2, test_ratio=0.2,

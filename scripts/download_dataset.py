@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Verified Dataset Downloader for Dual-Cue AI-Generated Image Detection
+Verified Dataset Downloader for AI-Generated Image Detection
 =====================================================================
 Downloads REAL photographs and REAL AI-generated images from academically
 verified sources with full provenance documentation.
@@ -131,7 +131,7 @@ PROVENANCE_LOCAL = {
         "WARNING: This dataset contains synthetic colored rectangles with random noise, "
         "NOT real photographs or real AI-generated images. It should ONLY be used for "
         "testing the pipeline mechanics (data loading, training loop, etc.), NOT for "
-        "validating the scientific claims of the MLEP/LOTA detection algorithms."
+        "validating the scientific claims of the MLEP detection algorithms."
     ),
     "label_justification": {
         "0_real": "SIMULATED: Green-tinted rectangles with low noise. NOT real photographs.",

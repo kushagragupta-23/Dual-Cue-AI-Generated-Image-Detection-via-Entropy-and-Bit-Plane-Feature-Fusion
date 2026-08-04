@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Interactive HTML Dashboard Generator for MLEP Fusion
+Interactive HTML Dashboard Generator for MLEP
 Generates a self-contained, ultra-premium Glassmorphism HTML report with Base64-embedded diagnostic figures.
 Can be opened directly in Google Chrome or any web browser.
 """
@@ -79,7 +79,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dual-Cue AIGID | MLEP Steganalysis Dashboard</title>
+    <title>AIGID | MLEP Steganalysis Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -600,7 +600,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
                 </div>
                 <div class="vis-card">
                     <h3>2. Multi-Scale Shannon Pyramid</h3>
-                    <p>Downsampled 3-level pyramid (1.0x, 0.5x, 0.25x) evaluating semantic anomalies across multiple receptive fields. These extracted tensors are the direct inputs to the cross-attention fusion network.</p>
+                    <p>Downsampled 3-level pyramid (1.0x, 0.5x, 0.25x) evaluating semantic anomalies across multiple receptive fields. These extracted tensors are the direct inputs to the ResNet-50 classification backbone.</p>
                     <div class="img-wrapper" onclick="openLightbox('{images['batch_mlep_multiscale']}')">
                         <img src="{images['batch_mlep_multiscale']}" alt="MLEP Multi-Scale Pyramid">
                     </div>
@@ -626,7 +626,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
 
         <!-- TAB 3: TRAINING HISTORY -->
         <div id="tab-training" class="tab-content">
-            <h2 class="section-title">Dual-Cue Detector Training History</h2>
+            <h2 class="section-title">MLEP Detector Training History</h2>
             <p class="section-desc">Epoch-by-epoch tracking of Train vs Validation Loss and Classification Accuracy metrics from <code>scripts/train.py</code>.</p>
             
             <div style="overflow-x: auto;">
@@ -662,7 +662,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
     </div>
 
     <footer>
-        <p>MLEP Fusion Project | Optimized for Windows & NVIDIA RTX 4050 | 100% Vectorized PyTorch Steganalysis Core</p>
+        <p>MLEP Project | Optimized for Windows & NVIDIA RTX 4050 | 100% Vectorized PyTorch Steganalysis Core</p>
     </footer>
 
     <script>
