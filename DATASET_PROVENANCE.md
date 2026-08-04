@@ -1,6 +1,6 @@
 # Dataset Provenance & Academic Verification
 
-**This document serves as the absolute proof of origin for the images used to train and validate the Dual-Cue AI-Generated Image Detection model (MLEP + LOTA).**
+**This document serves as the absolute proof of origin for the images used to train and validate the AI-Generated Image Detection model (MLEP).**
 
 To scientifically validate that the detection algorithms are identifying true camera sensor noise vs. AI algorithmic smoothing, the dataset MUST be 100% verified. Synthetic placeholders or web-scraped noise are invalid for this task.
 
@@ -25,16 +25,16 @@ In academic forensic research, we rely on a strict **Chain of Trust** to guarant
     *   *ImageNet* is hosted and curated by **Stanford University** and **Princeton University** (Official Site: [https://image-net.org](https://image-net.org)).
     *   *CIFAR-10* was collected by researchers at the **University of Toronto** (Official Site: [https://www.cs.toronto.edu/~kriz/cifar.html](https://www.cs.toronto.edu/~kriz/cifar.html)).
 *   **The Guarantee:** Because modern generative AI (like Stable Diffusion or Midjourney) did not exist before 2020, any image sourced from a 2009 dataset hosted by Stanford/Toronto is physically guaranteed to be a real photograph. There is zero possibility of AI contamination.
-*   **Why this matters:** Physical camera sensors introduce unique high-frequency noise (shot noise, thermal noise) into the Least Significant Bits (LSB). This natural high-entropy noise is what the MLEP and LOTA algorithms are specifically designed to detect.
+*   **Why this matters:** Physical camera sensors introduce unique high-frequency noise (shot noise, thermal noise) into the Least Significant Bits (LSB). This natural high-entropy noise is what the MLEP algorithms are specifically designed to detect.
 
 ### Label 1: AI-Generated Images (`1_ai_generated/`)
 *   **Count:** 5,000 images
 *   **The Proof of "AI":** AI images in academic datasets are **not** scraped from the internet where their origin might be ambiguous. Instead, they are generated *in a controlled laboratory environment*. Researchers run open-source models (like Stable Diffusion v1.4) locally, input specific prompts, and save the direct outputs. 
 *   **Exact Institutional Origins (Cannot be proven wrong):**
     *   The generative models used (e.g., Stable Diffusion) were created by the **CompVis group at LMU Munich** (Official Host: [https://huggingface.co/CompVis](https://huggingface.co/CompVis)).
-    *   The generation algorithms are mathematically deterministic based on their prompt conditions, leaving distinct algorithmic traces in the bit-planes.
+    *   The generation algorithms are mathematically deterministic based on their prompt conditions, leaving distinct algorithmic traces in the pixel statistics.
 *   **The Guarantee:** The provenance is absolute because the researcher executed the mathematical generation code themselves in a lab. There is no guessing if an image is AI; it was mathematically synthesized by the author.
-*   **Why this matters:** AI generators create images via denoising algorithms (Diffusion) or upsampling networks (GANs). These mathematical processes inherently fail to perfectly replicate physical camera sensor noise, resulting in "over-smooth" statistical patterns and lower Shannon entropy in the bit-planes.
+*   **Why this matters:** AI generators create images via denoising algorithms (Diffusion) or upsampling networks (GANs). These mathematical processes inherently fail to perfectly replicate physical camera sensor noise, resulting in "over-smooth" statistical patterns and lower Shannon entropy.
 
 ## 3. Academic Defensibility (Sources & Papers)
 
@@ -51,10 +51,6 @@ The methodology of classifying images based on high-frequency noise and entropy 
 3.  **Yuan et al., ICLR 2026**
     *   *Title:* MLEP: Multi-granularity Local Entropy Patterns for Universal AI-generated Image Detection
     *   *Relevance:* Proves that Shannon entropy is a mathematically robust, content-invariant feature for detecting AI algorithmic smoothing.
-
-4.  **Cheng, Wang et al., CVPR 2026**
-    *   *Title:* LOTA: Bit-Planes Guided AI-Generated Image Detection
-    *   *Relevance:* Proves that noise in the lower bit-planes is fundamentally different in AI outputs versus camera photos, and this signal survives advanced JPEG compression.
 
 ## 4. The 100% Guarantee: How we bet and prove these 10,000 images are not wrong
 

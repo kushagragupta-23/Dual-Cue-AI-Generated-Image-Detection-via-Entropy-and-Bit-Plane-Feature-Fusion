@@ -1,6 +1,6 @@
-# 💻 Dual-Cue AI Detection: Master Command Cheat Sheet
+# 💻 MLEP AI Detection: Master Command Cheat Sheet
 
-This document contains **all manual terminal commands** required to run, monitor, and deploy the Dual-Cue AI-Generated Image Detection project across **any platform** (Windows, Linux, macOS) or interpreter (PowerShell, Bash, Zsh). 
+This document contains **all manual terminal commands** required to run, monitor, and deploy the MLEP AI-Generated Image Detection project across **any platform** (Windows, Linux, macOS) or interpreter (PowerShell, Bash, Zsh). 
 
 Use this sheet if you need to present the project live in front of a professor, run it on a completely new machine, or manually trigger the Deep Learning pipeline.
 
@@ -32,19 +32,27 @@ This command triggers the end-to-end PyTorch training process on the 10,000-imag
 
 **Cross-Platform Command:**
 ```bash
-python scripts/train.py --data_dir dataset10000 --output_dir outputs/project_run_training --epochs 3
+python scripts/train.py --data_dir dataset10000 --output_dir outputs/checkpoints --epochs 15
 ```
 *(Optional Flags: `--batch_size 16` or `--lr 0.0001` to tweak hyper-parameters live)*
 
-### B. Launch the Interactive Dashboard (UI)
-This command fires up the local Streamlit web server. This is perfect for live presentations, as it provides a beautiful UI where you can upload an image and visually see the MLEP (Entropy) and LOTA (Bit-Plane) feature extraction in real-time.
+### B. Run the Full Pipeline & Generate Visualizations
+This command executes the end-to-end MLEP extraction pipeline, computes entropy metrics across the dataset, and exports diagnostic heatmaps.
 
 **Cross-Platform Command:**
 ```bash
-streamlit run scripts/run_project.py
+python scripts/run_project.py --data_dir dataset10000 --output_dir outputs/project_run --batch_size 8 --export_visualizations
 ```
 
-### C. Build / Validate the Dataset
+### C. Generate the Interactive HTML Dashboard
+This generates a self-contained, premium glassmorphism HTML dashboard with embedded training metrics and entropy visualizations.
+
+**Cross-Platform Command:**
+```bash
+python scripts/generate_html_report.py --output outputs/MLEP_Dashboard.html
+```
+
+### D. Build / Validate the Dataset
 If you ever move to a new machine and need to reconstruct the verified 10,000-image dataset from scratch (assuming you have the raw images downloaded).
 
 **Cross-Platform Command:**
@@ -60,14 +68,14 @@ If you launch the training pipeline on a remote server, or as a background task,
 **On Windows (PowerShell):**
 ```powershell
 # Streams the last 20 lines and waits for live updates
-Get-Content -Wait -Tail 20 "outputs/project_run_training/training.log"
+Get-Content -Wait -Tail 20 "outputs/checkpoints/training.log"
 ```
 *(Note: Replace the file path with the exact `.log` file you are tracking)*
 
 **On Linux / macOS (Bash / Zsh):**
 ```bash
 # The standard UNIX tail command for real-time streaming
-tail -f outputs/project_run_training/training.log
+tail -f outputs/checkpoints/training.log
 ```
 
 ---

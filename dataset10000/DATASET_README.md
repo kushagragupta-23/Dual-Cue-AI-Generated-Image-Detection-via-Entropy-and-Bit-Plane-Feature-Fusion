@@ -1,7 +1,7 @@
-# dataset10000: Dual-Cue AI-Generated Image Detection Benchmark
+# dataset10000: MLEP AI-Generated Image Detection Benchmark
 
 ## 1. Dataset Overview
-This is a production-grade, 10,000-image benchmark dataset specifically curated for evaluating the Dual-Cue AI Image Detection (MLEP & LOTA Fusion) project. It contains exactly 5,000 verified Real images and 5,000 verified AI-Generated images, strictly balanced and strictly split into Train (60%), Validation (20%), and Test (20%).
+This is a production-grade, 10,000-image benchmark dataset specifically curated for evaluating the AI Image Detection (MLEP) project. It contains exactly 5,000 verified Real images and 5,000 verified AI-Generated images, strictly balanced and strictly split into Train (60%), Validation (20%), and Test (20%).
 
 ## 2. Dataset Sources & Licensing
 *   **Real Images (Label 0):** Sourced strictly from foundational computer vision benchmarks (ImageNet, COCO) established between 2009-2014, long before modern generative AI existed. (License: CC BY 4.0 / Research Use)
