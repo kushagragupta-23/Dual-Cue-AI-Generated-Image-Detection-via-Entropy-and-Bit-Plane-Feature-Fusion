@@ -44,7 +44,7 @@ class SharedFeatureExtractor(nn.Module):
                 bias=original_conv.bias is not None
             )
             if pretrained and in_channels % 3 == 0:
-                # Mathematically copy the 3-channel pretrained weights across the new channels
+                # Copy the 3-channel pretrained weights across the new channels
                 # and divide by the replication factor to preserve the original variance.
                 repeats = in_channels // 3
                 with torch.no_grad():

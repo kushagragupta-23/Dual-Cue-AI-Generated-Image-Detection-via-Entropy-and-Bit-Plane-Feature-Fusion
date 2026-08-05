@@ -1,4 +1,4 @@
-name: mlep_only
+name: venv
 channels:
   - pytorch
   - conda-forge

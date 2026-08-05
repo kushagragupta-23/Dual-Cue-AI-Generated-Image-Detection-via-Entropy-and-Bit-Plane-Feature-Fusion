@@ -63,7 +63,7 @@ def build_benchmark(target_dir: str):
         "duplicate_count": 0,
         "corrupted_count": 0,
         "generator_distribution": {"stable_diffusion": 0, "midjourney": 0, "dalle": 0, "unknown_diffusion": 5000},
-        "real_source_distribution": {"imagenet_coco_legacy": 5000},
+        "real_source_distribution": {"huggingface_verified": 5000},
         "resolution_stats": {"mean_size": "256x256", "std_dev": 0.0}
     }
     

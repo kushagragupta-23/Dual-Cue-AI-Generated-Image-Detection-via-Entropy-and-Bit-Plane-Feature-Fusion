@@ -86,7 +86,7 @@ def main():
     parser = argparse.ArgumentParser(description="Run Complete MLEP Project Pipeline.")
     parser.add_argument("--data_dir", type=str, default="dataset10000", help="Path to input dataset directory.")
     parser.add_argument("--output_dir", type=str, default="outputs/project_run", help="Directory to store run artifacts and logs.")
-    parser.add_argument("--batch_size", type=int, default=8, help="Mini-batch size for DataLoader.")
+    parser.add_argument("--batch_size", type=int, default=32, help="Mini-batch size for DataLoader.")
     parser.add_argument("--num_workers", type=int, default=0, help="Number of data loading subprocess workers.")
     parser.add_argument("--patch_size", type=int, default=2, help="Micro-patch size for spatial shuffling.")
     parser.add_argument("--export_visualizations", action="store_true", default=True, help="Export diagnostic sample visualizations.")
@@ -155,11 +155,12 @@ def main():
     print("STEP 2: INITIALIZING MLEP PREPROCESSING ENGINE (src.models)")
     print("=" * 80)
 
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     mlep_extractor = MLEPExtractor(
         patch_size=args.patch_size,
         scales=[1.0, 0.5, 0.25],
         window_size=2,
-    )
+    ).to(device)
     mlep_extractor.eval()
     logger.info(
         f"MLEP Extractor Configured -> Patch Size: {args.patch_size}x{args.patch_size}, "
@@ -182,9 +183,15 @@ def main():
             for batch_idx, (images, labels, metas) in enumerate(loader):
                 b_start = time.time()
                 batch_size_curr = images.shape[0]
+                images = images.to(device)
     
                 # Execute MLEP Forward Pipeline on batch
-                mlep_out = mlep_extractor(images)
+                if device.type == 'cuda':
+                    with torch.amp.autocast('cuda'):
+                        mlep_out = mlep_extractor(images)
+                else:
+                    mlep_out = mlep_extractor(images)
+                    
                 entropy_maps = mlep_out["mlep_features"]  # Shape: (B, 9, H-1, W-1)
     
                 b_latency = (time.time() - b_start) * 1000.0
@@ -210,7 +217,12 @@ def main():
                 if args.export_visualizations and batch_idx == 0:
                     logger.info("Exporting sample diagnostic figures for Batch 1...")
                     sample_img = images[0:1]  # Slice first sample (1, 3, 256, 256)
-                    sample_out = mlep_extractor(sample_img)
+                    
+                    if device.type == 'cuda':
+                        with torch.amp.autocast('cuda'):
+                            sample_out = mlep_extractor(sample_img)
+                    else:
+                        sample_out = mlep_extractor(sample_img)
     
                     plot_entropy_heatmap(sample_img, sample_out["mlep_features"], scale_idx=0, save_path=vis_dir / "batch1_sample0_mlep_heatmap.png")
                     plot_multiscale_entropy(sample_out["mlep_features"], save_path=vis_dir / "batch1_sample0_mlep_multiscale.png")

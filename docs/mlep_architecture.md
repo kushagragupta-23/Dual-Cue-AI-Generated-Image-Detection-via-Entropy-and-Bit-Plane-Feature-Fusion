@@ -1,55 +1,51 @@
-# Multi-Level Entropy Pyramid (MLEP): Macro-Texture Analyzer
+# MLEP Architecture: Multi-Level Entropy Pyramid
 
-The **Multi-Level Entropy Pyramid (MLEP)** architecture is explicitly engineered to detect **Generative Oversmoothing** in AI-generated images.
+## 1. Overview
 
-Generative models (like Diffusion Models and GANs) synthesize images that look globally coherent to the human eye, but because they rely on gradient estimation to denoise, they mathematically smooth out high-frequency **Photonic Noise**. Our testing proves this results in an **Entropy Collapse** (Real: 1.911 vs AI: 1.906).
+The MLEP (Multi-Level Entropy Pyramid) architecture detects AI-generated images by analyzing their entropy characteristics. The key insight is that generative models (Stable Diffusion, GANs, etc.) tend to smooth out high-frequency noise during the denoising process. Real camera sensors capture natural photonic noise that produces higher local entropy compared to AI-generated images.
 
-MLEP exposes these structural flaws by employing **Local Windowed Patch Shuffling** and calculating **Shannon Entropy** across a multi-scale feature pyramid. A ResNet-50 backbone then encodes these entropy maps into a deep feature representation, followed by a multi-layer classifier head. This mathematical anomaly is further mapped using 15 advanced forensic visualizations including Fast Fourier Transforms (FFT) and Local Binary Patterns (LBP).
-
----
-
-## 2. Mathematical Formulation of MLEP
-
-### A. Local Windowed Patch Shuffling
-Given an input image tensor X, MLEP first divides the image into non-overlapping Macro-Windows of size M x M. 
-
-Within each Macro-Window, the pixels are further subdivided into Micro-Patches of size L x L. 
-A pseudo-random permutation is applied to the Micro-Patches strictly *within* their respective Macro-Windows.
-
-This local shuffling achieves a critical objective:
-* **Global Semantics are Preserved**: Because patches are only shuffled locally, the overall scene (e.g., a face, a car) remains globally recognizable to the ResNet backbone.
-* **Local Continuity is Destroyed**: The micro-structure is aggressively corrupted. Real images, possessing natural high entropy, exhibit massive statistical drops in feature confidence when shuffled. AI images, possessing low entropy (over-smoothed patches), exhibit surprisingly little change when shuffled.
-
-### B. Multi-Scale Feature Pyramid
-The shuffled tensor X_shuffled is processed through a multi-scale resampling pyramid at three distinct scales (1.0x, 0.5x, 0.25x) to capture both fine-grained texture anomalies and coarse semantic flaws:
-* Level 1 (1.0x): Full resolution — captures pixel-level noise patterns
-* Level 2 (0.5x): Half resolution — captures texture-level anomalies
-* Level 3 (0.25x): Quarter resolution — captures semantic structure
-
-### C. Shannon Entropy Calculation
-For each spatial location (i, j) at each scale, we compute a 2x2 sliding window Shannon Entropy. The entropy H(i,j) is calculated as:
-
-    H(i,j) = - Sum(p_d(i,j) * log2(p_d(i,j)))
-
-Where p_d is the normalized pixel probability within the local window. The resulting 2D Entropy Map serves as a dense anomaly heatmap. The 3 scales × 3 RGB channels yield a 9-channel entropy feature tensor.
+Our experiments show a small but consistent entropy gap: Real images have a mean entropy of ~1.911 while AI-generated images measure ~1.906. MLEP computes Shannon entropy across a multi-scale feature pyramid and feeds the resulting entropy maps into a ResNet-50 backbone for classification.
 
 ---
 
-## 3. Classification Head
+## 2. Pipeline
 
-The 9-channel entropy feature tensor is passed through:
+### Step 1: Patch Shuffling (Optional — Currently Disabled)
 
-1. **BatchNorm2d**: Normalizes the entropy maps to zero-mean, unit-variance to match the ResNet backbone's expected input distribution.
-2. **ResNet-50 Backbone**: Encodes the normalized entropy maps into a 2048-dimensional global average pooled feature vector.
-3. **MLP Classifier**: A dropout-regularized multi-layer perceptron (Dropout → Linear(2048→512) → ReLU → Dropout → Linear(512→1)) outputs a binary logit for Real vs. AI-Generated classification.
+The MLEP paper describes a local patch shuffling step where the image is divided into micro-patches that are spatially permuted. The idea is that real images with natural noise should show larger statistical changes when shuffled compared to smooth AI images.
+
+**Current status:** This step is implemented (`MLEPExtractor.shuffle_patches()`) but disabled in the forward pass (`use_shuffling=False`). The reason is that our backbone uses pretrained ImageNet weights which expect spatially coherent input. Enabling shuffling would require training the backbone from scratch.
+
+### Step 2: Multi-Scale Resampling Pyramid
+
+The input image is processed through a 3-scale resampling pyramid:
+- **Scale 1.0x:** Full resolution — captures pixel-level noise patterns
+- **Scale 0.5x:** Half resolution then upsampled — captures texture-level smoothing
+- **Scale 0.25x:** Quarter resolution then upsampled — captures coarse structural artifacts
+
+Each scale is bilinearly downsampled then upsampled back to the original resolution. The three scales are concatenated along the channel dimension, producing a 9-channel tensor (3 scales × 3 RGB channels).
+
+### Step 3: Shannon Entropy Computation
+
+For each spatial location, a 2×2 sliding window computes discrete Shannon entropy:
+
+    H(i,j) = -Σ p(x) · log₂(p(x))
+
+where p(x) is the empirical frequency of each pixel value within the 4-pixel window. Possible entropy values are {0.0, 0.8113, 1.0, 1.5, 2.0}. This produces a 9-channel entropy feature map of shape (B, 9, H-1, W-1).
+
+### Step 4: Classification
+
+The 9-channel entropy map passes through:
+
+1. **BatchNorm2d:** Normalizes the entropy values to zero-mean, unit-variance to match the ResNet backbone's expected input distribution.
+2. **ResNet-50 Backbone:** Encodes the entropy maps into a 2048-D global average pooled feature vector. The first convolutional layer is adapted from 3 to 9 input channels by tiling pretrained weights.
+3. **MLP Classifier:** `Dropout(0.5) → Linear(2048→512) → ReLU → Dropout(0.3) → Linear(512→1)` outputs a binary logit (Real vs AI).
 
 ---
 
-## 4. Hardware Implementation & Vectorization
+## 3. Hardware Details
 
-The MLEP architecture has been rigorously optimized for execution on modern Windows hardware.
-
-* **Target Device**: Lenovo LOQ with NVIDIA RTX 4050
-* **Vectorized Execution**: The Local Windowed Patch Shuffling is implemented natively in PyTorch utilizing advanced `einops` style reshaping and CUDA-accelerated `gather` operations. There are no Python `for` loops in the critical execution path.
-* **VRAM Efficiency**: The multi-scale pyramid leverages in-place operations and gradient checkpointing where applicable to remain well within the 6GB VRAM constraint of the RTX 4050.
-* **Mixed Precision**: Automatic Mixed Precision (AMP) with GradScaler maximizes throughput on the RTX 4050's Tensor Cores.
+- **GPU:** NVIDIA RTX 4050 (6GB VRAM)
+- **Throughput:** ~39 images/sec at batch size 8
+- **Mixed Precision:** Automatic Mixed Precision (AMP) with GradScaler
+- **Entropy Computation:** Fully vectorized using `F.unfold` — no Python loops over spatial dimensions

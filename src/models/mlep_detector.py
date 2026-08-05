@@ -18,7 +18,7 @@ class MLEPDetector(nn.Module):
     """
     End-to-end MLEP Architecture.
     Processes a raw input image through the MLEP entropy pathway, 
-    extracts features via a ResNet-18 backbone, and classifies it.
+    extracts features via a ResNet-50 backbone, and classifies it.
     """
 
     def __init__(

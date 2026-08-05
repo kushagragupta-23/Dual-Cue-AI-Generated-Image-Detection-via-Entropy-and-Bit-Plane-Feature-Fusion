@@ -116,11 +116,9 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         dataset_proof = f"""
             <strong>Verified on disk:</strong> {real_count} Real, {ai_count} AI images (Total: {real_count + ai_count}).<br><br>
             <div style='margin-top: 10px; font-size: 0.9rem;'>
-                <strong>External Proof Links (Chronological Guarantee):</strong><br>
-                <a href='https://huggingface.co/datasets' target='_blank' style='color: var(--accent-blue); text-decoration: underline;'>1. Hugging Face Hub (Source)</a><br>
-                <a href='https://www.image-net.org/' target='_blank' style='color: var(--accent-blue); text-decoration: underline;'>2. ImageNet 2009 (Real Images)</a><br>
-                <a href='https://cocodataset.org/' target='_blank' style='color: var(--accent-blue); text-decoration: underline;'>3. COCO 2014 (Real Images)</a><br>
-                <a href='https://github.com/CompVis/stable-diffusion' target='_blank' style='color: var(--accent-blue); text-decoration: underline;'>4. Stable Diffusion (AI Generator)</a>
+                <strong>Data Source:</strong><br>
+                <a href='https://huggingface.co/datasets/Hemg/ai-vs-real-image-detection' target='_blank' style='color: var(--accent-blue); text-decoration: underline;'>Hemg/ai-vs-real-image-detection (HuggingFace Hub)</a><br>
+                <span style='color: #64748b;'>The upstream dataset aggregates real photographs from pre-2020 CV benchmarks and AI-generated images from diffusion models.</span>
             </div>
         """
     else:
@@ -442,9 +440,9 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
 <body>
     <div class="container">
         <header>
-            <span class="badge">ICCV 2025 Architecture</span>
-            <h1>MLEP Steganalysis Research Dashboard</h1>
-            <p class="subtitle">Diagnostic overview of Multi-Level Entropy Pyramids evaluating structural chaos in AI-generated images versus real sensor captures.</p>
+            <span class="badge">MLEP Architecture</span>
+            <h1>MLEP AI-Generated Image Detection Dashboard</h1>
+            <p class="subtitle">Diagnostic report showing entropy-based analysis results for detecting AI-generated images. Based on the MLEP approach by Yuan et al.</p>
         </header>
 
         <!-- TAB NAVIGATION -->
@@ -461,8 +459,8 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         <div id="section-pipeline" class="section-block" style="border-top: none; margin-top: 1rem; padding-top: 0;">
             <h2 class="section-title" style="margin-bottom: 0.5rem; text-align: left;">Full Dual-Cue Architecture Pipeline (Roadmap)</h2>
             <p class="section-desc" style="margin-bottom: 2rem; text-align: left;">
-                This diagram illustrates the complete theoretical pipeline for the project. Currently, the <strong>MLEP</strong> branch is fully implemented and mathematically verified. The <strong>BPFF</strong> branch is <strong>currently under progress by Aishwarya</strong>. <br><br>
-                <strong style="color: var(--accent-blue);">Methodology (Parallel Engineering):</strong> By having two different researchers independently engineer the macro-texture analyzer (MLEP) and the micro-steganographic analyzer (BPFF), we mathematically guarantee zero cross-contamination of algorithmic biases. Once both independent models achieve maximum isolated accuracy, the final fusion mechanism will merge them into a single, unbiased dual-cue architecture.
+                This diagram shows the full project pipeline. The <strong>MLEP</strong> branch (entropy-based detection) is fully implemented and evaluated. The <strong>BPFF</strong> branch (bit-plane analysis) is <strong>under development by Aishwarya</strong>. <br><br>
+                <strong style="color: var(--accent-blue);">Approach:</strong> The two branches are developed independently to avoid sharing biases. Once both achieve good standalone accuracy, they will be fused into a single dual-cue classifier.
             </p>
             
             <div style="background: #f8fafc; padding: 2rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; gap: 1.5rem; font-family: var(--font-main);">
@@ -485,7 +483,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
                         <span style="position: absolute; top: -10px; right: -10px; background: var(--accent-green); color: white; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: bold; text-transform: uppercase;">Current Phase (Kushagra)</span>
                         <h4 style="color: #065f46; margin-top: 0; margin-bottom: 0.5rem;">Branch 1: MLEP</h4>
                         <strong style="color: #047857; font-size: 0.9rem;">Multi-Level Entropy Pyramids</strong>
-                        <p style="font-size: 0.8rem; color: #064e3b; margin-top: 0.5rem; line-height: 1.4;">Extracts high-frequency structural chaos, Photonic Noise, and Local Binary Patterns (LBP) to expose generative oversmoothing.</p>
+                        <p style="font-size: 0.8rem; color: #064e3b; margin-top: 0.5rem; line-height: 1.4;">Computes Shannon entropy across multi-scale image patches to detect the smoothing artifacts left by generative models.</p>
                     </div>
 
                     <!-- BPFF Branch (In Progress) -->
@@ -523,12 +521,12 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         <div id="section-mlep-pipeline" class="section-block" style="border-top: none; margin-top: 3rem; padding-top: 0;">
             <h2 class="section-title" style="margin-bottom: 0.5rem; text-align: left;">Branch 1 (Kushagra): Detailed MLEP Engineering Pipeline</h2>
             <p class="section-desc" style="margin-bottom: 2rem; text-align: left;">
-                The Multi-Level Entropy Pyramids (MLEP) module is fully implemented and relies on a strict 5-step mathematical extraction process to expose generative oversmoothing before passing data to the fusion block.
+                The Multi-Level Entropy Pyramids (MLEP) module is fully implemented and relies on a strict 5-step feature extraction process to expose generative oversmoothing before passing data to the fusion block.
             </p>
             <div style="display: flex; flex-direction: column; gap: 1rem;">
                 <div style="background: #f8fafc; border-left: 4px solid var(--accent-green); padding: 1.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                    <h4 style="margin: 0 0 0.5rem 0; color: #065f46;">1. Patch Shuffling</h4>
-                    <p style="margin: 0; color: #334155; font-size: 0.9rem;">Partitions each R, G, B channel into L×L micro-patches and applies a seeded pseudo-random spatial permutation. This destroys local continuity while preserving global semantics.</p>
+                    <h4 style="margin: 0 0 0.5rem 0; color: #065f46;">1. Patch Shuffling <span style="font-size: 0.75rem; color: #94a3b8; font-weight: normal;">(currently disabled)</span></h4>
+                    <p style="margin: 0; color: #334155; font-size: 0.9rem;">Partitions each R, G, B channel into L×L micro-patches and applies a seeded pseudo-random spatial permutation. <em>Note: This step is currently bypassed because the pretrained ResNet-50 backbone expects spatially coherent input.</em></p>
                 </div>
                 <div style="background: #f8fafc; border-left: 4px solid var(--accent-green); padding: 1.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                     <h4 style="margin: 0 0 0.5rem 0; color: #065f46;">2. Multi-Scale Resampling Pyramid</h4>
@@ -556,11 +554,13 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         <div id="section-top-metrics" class="section-block" style="border-top: none; margin-top: 3rem; padding-top: 0;">
             <h2 class="section-title" style="margin-bottom: 0.5rem; text-align: left;">Execution Summary: Top 8 Metrics</h2>
             <p class="section-desc" style="margin-bottom: 2rem; text-align: left; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-blue);">
-                The 8 cards below represent the absolute maximum theoretical performance of the MLEP architecture running on an NVIDIA RTX 4050.<br><br>
-                <strong>Architecture Note:</strong> This MLEP implementation is extremely heavy-duty. It uses a <strong>completely unfrozen ResNet-50 backbone</strong>, computing full gradients across all <strong>23.5 million parameters</strong> during training to maximize feature extraction from the 2x2 local entropy patches.<br><br>
-                <strong>Throughput & Latency</strong> prove this model is fast enough to run in real-time video streams (39 FPS). 
-                <strong>Real vs AI Entropy</strong> mathematically proves the core hypothesis: Real images (1.911) have higher structural chaos than AI images (1.906), proving generative algorithms artificially smooth out microscopic noise. 
-                <strong>Precision & Recall</strong> prove that when the model accuses an image of being AI, it is right 82.68% of the time, and catches 88.30% of all deepfakes in existence.
+                Summary metrics from the MLEP pipeline running on an NVIDIA RTX 4050.<br><br>
+                <strong>Architecture:</strong> Uses a fully unfrozen ResNet-50 backbone (~25.6 million parameters) with 9-channel entropy map input. Full gradients are computed during training.<br><br>
+                <strong>How to read these metrics:</strong><br>
+                • <strong>Throughput &amp; Latency:</strong> Processing speed on the RTX 4050. ~39 images/sec is fast enough for batch processing.<br>
+                • <strong>Real vs AI Entropy:</strong> The mean entropy gap (Real: ~1.911 vs AI: ~1.906) reflects the generative smoothing effect that the model learns to detect.<br>
+                • <strong>Precision:</strong> When the model predicts "AI", it is correct this percentage of the time.<br>
+                • <strong>Recall:</strong> The percentage of actual AI images that the model successfully catches.
             </p>
 
             <div class="stats-grid">
@@ -625,35 +625,35 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
             <div class="vis-grid">
                 <div class="vis-card">
                     <h3>2. Test Set Confusion Matrix</h3>
-                    <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem;"><strong>What is happening:</strong> A grid showing the exact number of correct and incorrect predictions on the final testing set. <br><strong>What it means:</strong> The diagonal (top-left, bottom-right) shows correct guesses. The off-diagonal shows errors. <br><strong>What the changes show:</strong> A bright diagonal proves high accuracy. If the bottom-left square is high, the model is falsely accusing real images of being AI (False Positives). If the top-right is high, AI images are sneaking past undetected (False Negatives).<br><br><strong>Visual Key & Color Meaning:</strong> <span style="background-color: #1f77b4; color: white; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: bold;">Dark Blue Cells</span> = High concentration of images. <span style="background-color: #c6dbef; color: #1e293b; padding: 0.1rem 0.4rem; border-radius: 4px; border: 1px solid #94a3b8; font-weight: bold;">Light Blue/White Cells</span> = Low concentration. A perfect model is completely dark blue on the diagonal and completely white on the other squares. Small color shifts into the off-diagonal cells highlight exact failure rates.</p>
+                    <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem;"><strong>What this shows:</strong> A grid comparing predicted labels against true labels for the hold-out test set. <br><br><strong>How to interpret:</strong> High values on the main diagonal (top-left to bottom-right) indicate correct classifications. Off-diagonal values show specific error types: false positives (real images called AI) or false negatives (AI images called real).<br><br><strong>Colors:</strong> Darker blue cells indicate a higher concentration of samples.</p>
                     <div class="img-wrapper">
                         {f'<img src="{images["confusion_matrix"]}" alt="Confusion Matrix">' if images["confusion_matrix"] else '<p style="padding: 2rem;">No confusion matrix found</p>'}
                     </div>
                 </div>
                 <div class="vis-card">
                     <h3>3. Receiver Operating Characteristic (ROC)</h3>
-                    <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem;"><strong>What is happening:</strong> Plots how well the model separates the two classes across every possible confidence threshold (from 0% to 100%). <br><strong>What it means:</strong> The Area Under the Curve (AUC) scores the model from 0.5 (random) to 1.0 (perfect). <br><strong>What the changes show:</strong> The closer the blue curve hugs the top-left corner, the better the model is at catching AI images without falsely accusing real images. A straight diagonal line means the model has completely failed and is just guessing.<br><br><strong>Visual Key & Color Meaning:</strong> <span style="background-color: var(--accent-blue); color: white; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: bold;">Blue Curve</span> = Model's diagnostic ability. <span style="background-color: white; color: #ff7f0e; border: 1px dashed #ff7f0e; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: bold;">Dashed Orange Line</span> = A useless, random-guessing baseline (50/50). Small downward dips in the blue line mean the model loses its predictive power at certain confidence thresholds.</p>
+                    <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem;"><strong>What this shows:</strong> Plots the True Positive Rate against the False Positive Rate across all confidence thresholds. <br><br><strong>How to interpret:</strong> The Area Under the Curve (AUC) quantifies the model's overall discriminative ability. A curve approaching the top-left corner indicates superior performance. A diagonal line represents a random-guessing baseline.<br><br><strong>Colors:</strong> <span style="background-color: var(--accent-blue); color: white; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: bold;">Blue Curve</span> = Model performance; <span style="background-color: white; color: #ff7f0e; border: 1px dashed #ff7f0e; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: bold;">Dashed Orange</span> = Random baseline.</p>
                     <div class="img-wrapper">
                         {f'<img src="{images["roc_curve"]}" alt="ROC Curve">' if images["roc_curve"] else '<p style="padding: 2rem;">No ROC curve found</p>'}
                     </div>
                 </div>
                 <div class="vis-card">
                     <h3>4. Precision-Recall Curve (PR)</h3>
-                    <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem;"><strong>What is happening:</strong> Plots Precision (when it claims it's AI, is it actually AI?) against Recall (did it catch all the AI images?). <br><strong>What it means:</strong> This is a much stricter test than ROC, especially if the dataset is unbalanced. <br><strong>What the changes show:</strong> A curve that stays high across the top-right means the model catches almost all fakes while maintaining total trust in its accusations. A drooping curve means catching more fakes requires falsely accusing real images.<br><br><strong>Visual Key & Color Meaning:</strong> <span style="background-color: var(--accent-blue); color: white; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: bold;">Blue Curve</span> = Precision vs Recall balance. A perfectly flat horizontal line at the top means the model is flawless. Small sudden drops in the curve indicate the exact point where the model is forced to guess wildly to find more AI images.</p>
+                    <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem;"><strong>What this shows:</strong> Illustrates the trade-off between Precision and Recall. <br><br><strong>How to interpret:</strong> A stable, high-value curve indicates the model can catch most AI images (high recall) without incorrectly flagging real images (high precision). Sharp drops indicate thresholds where the model begins to trade accuracy for sensitivity.<br><br><strong>Colors:</strong> <span style="background-color: var(--accent-blue); color: white; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: bold;">Blue Curve</span> = Precision-Recall balance.</p>
                     <div class="img-wrapper">
                         {f'<img src="{images["pr_curve"]}" alt="PR Curve">' if images["pr_curve"] else '<p style="padding: 2rem;">No PR curve found</p>'}
                     </div>
                 </div>
                 <div class="vis-card">
                     <h3>5. Model Confidence Distribution</h3>
-                    <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem;"><strong>What is happening:</strong> A histogram showing the raw probability scores the model assigns to images. Green represents actual Real images, Red represents actual AI. <br><strong>What it means:</strong> It measures the model's psychological "confidence". <br><strong>What the changes show:</strong> A perfect model will have a huge green spike at 0.0 (100% sure it's Real) and a huge red spike at 1.0 (100% sure it's AI). If the curves overlap in the middle (around 0.5), the model is confused and guessing.<br><br><strong>Visual Key & Color Meaning:</strong> <span style="background-color: #2ca02c; color: white; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: bold;">Green Spikes</span> = Known Real Images. <span style="background-color: #d62728; color: white; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: bold;">Red Spikes</span> = Known AI Images. The X-axis represents the model's confidence from 0 to 1. Small amounts of purple (where red and green graphically overlap) highlight the exact percentage of images that perfectly confused the network.</p>
+                    <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem;"><strong>What this shows:</strong> A histogram of the model's sigmoid output probabilities for images in the test set. Green = actual real images, Red = actual AI-generated images. <br><br><strong>How to interpret:</strong> Ideally, green should cluster near 0.0 (model is confident it's real) and red should cluster near 1.0 (model is confident it's AI). Overlap in the middle (around 0.5) indicates uncertain predictions. The degree of separation between the two distributions reflects the model's discriminative ability.<br><br><strong>Colors:</strong> <span style="background-color: #2ca02c; color: white; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: bold;">Green</span> = Real images. <span style="background-color: #d62728; color: white; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: bold;">Red</span> = AI images. Overlap region = uncertain cases.</p>
                     <div class="img-wrapper">
                         {f'<img src="{images["prob_dist"]}" alt="Probability Distribution">' if images["prob_dist"] else '<p style="padding: 2rem;">No probability distribution found</p>'}
                     </div>
                 </div>
                 <div class="vis-card">
                     <h3>6. t-SNE Latent Space Clustering</h3>
-                    <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem;"><strong>What is happening:</strong> The neural network analyzes 512 hidden "features" for every image. t-SNE mathematically flattens those 512 dimensions into a simple 2D map. <br><strong>What it means:</strong> It shows how the model organizes the images in its own "brain". <br><strong>What the changes show:</strong> If you see two completely separated clusters of red and green dots, it means the model has discovered distinct mathematical rules to tell AI and Real apart. If they are mixed, the model cannot distinguish them structurally.<br><br><strong>Visual Key & Color Meaning:</strong> <span style="color: #2ca02c; font-weight: bold;">Green Dots</span> = Real Images. <span style="color: #d62728; font-weight: bold;">Red Dots</span> = AI Images. Small scattered red dots deeply embedded inside the green cluster represent "Deepfakes" that successfully disguised their mathematical structure to look utterly identical to real photos.</p>
+                    <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem;"><strong>What this shows:</strong> t-SNE reduces the 2048-dimensional feature vectors from the ResNet-50 penultimate layer into a 2D scatter plot. Each dot represents one test image. <br><br><strong>How to interpret:</strong> If the green and red clusters are well-separated, the model has learned features that distinguish real from AI-generated images. If the dots are mixed together, the model's internal representation does not separate the classes well. Points near the boundary between clusters represent the hardest cases.<br><br><strong>Colors:</strong> <span style="color: #2ca02c; font-weight: bold;">Green</span> = Real images. <span style="color: #d62728; font-weight: bold;">Red</span> = AI images.</p>
                     <div class="img-wrapper">
                         {f'<img src="{images["tsne_clusters"]}" alt="t-SNE Clusters">' if images["tsne_clusters"] else '<p style="padding: 2rem;">No t-SNE clusters found</p>'}
                     </div>
@@ -674,14 +674,14 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
                 </div>
                 <div class="vis-card">
                     <h3>9. High-Resolution Entropy Heatmap</h3>
-                    <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem;"><strong>What is happening:</strong> Calculates the Shannon Entropy (informational chaos or unpredictability) across small patches of the image. <br><strong>What it means:</strong> AI generators struggle to replicate the true mathematical randomness of the physical world. <br><strong>What the changes show:</strong> Areas of extreme, unnatural smoothness or bizarre, synthetic high-frequency noise will light up on this heatmap. This mathematically proves the presence of generative algorithms.<br><br><strong>Visual Key & Color Meaning:</strong> <span style="color: #e6b800; font-weight: bold;">Bright Yellow</span> = High Entropy (chaotic, natural noise like grain or leaves). <span style="color: #000080; font-weight: bold;">Dark Blue</span> = Low Entropy (unnatural, perfectly smooth AI generation). Small patches of extreme dark blue hidden inside an otherwise noisy image prove the presence of synthetic AI blurring or denoising tools.</p>
+                    <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem;"><strong>What is happening:</strong> Calculates the Shannon Entropy (informational chaos or unpredictability) across small patches of the image. <br><strong>What it means:</strong> AI generators often exhibit different entropy distributions than real photos. <br><strong>What the changes show:</strong> Areas of extreme, unnatural smoothness or bizarre, synthetic high-frequency noise will light up on this heatmap. This can indicate the presence of generative algorithms.<br><br><strong>Visual Key & Color Meaning:</strong> <span style="color: #e6b800; font-weight: bold;">Bright Yellow</span> = High Entropy (chaotic, natural noise like grain or leaves). <span style="color: #000080; font-weight: bold;">Dark Blue</span> = Low Entropy (unnatural, perfectly smooth AI generation). Small patches of extreme dark blue hidden inside an otherwise noisy image can indicate the presence of synthetic AI blurring or denoising tools.</p>
                     <div class="img-wrapper">
                         {f'<img src="{images["batch_mlep_heatmap"]}" alt="MLEP Entropy Heatmap">' if images["batch_mlep_heatmap"] else '<p style="padding: 2rem;">No heatmap found</p>'}
                     </div>
                 </div>
                 <div class="vis-card">
                     <h3>10. Multi-Scale Shannon Pyramid</h3>
-                    <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem;"><strong>What is happening:</strong> The image is downsampled into a 3-level pyramid, calculating entropy at multiple different zoom levels simultaneously. <br><strong>What it means:</strong> Some AI mistakes are tiny (pixel noise), while others are massive (a leg blending into a table). Analyzing multiple scales catches both. <br><strong>What the changes show:</strong> If an image looks normal at the macro scale but shows massive mathematical anomalies at the micro scale, the pyramid will expose the discrepancy.<br><br><strong>Visual Key & Color Meaning:</strong> Contrasts <span style="color: #e6b800; font-weight: bold;">Yellow (High Chaos)</span> vs <span style="color: #000080; font-weight: bold;">Blue (Low Chaos)</span> across 3 shrinking grids. Small color discrepancies between the large grid and the smallest grid prove the image was artificially stitched together, exposing hidden generative upscaling artifacts.</p>
+                    <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem;"><strong>What is happening:</strong> The image is downsampled into a 3-level pyramid, calculating entropy at multiple different zoom levels simultaneously. <br><strong>What it means:</strong> Some AI mistakes are tiny (pixel noise), while others are massive (a leg blending into a table). Analyzing multiple scales catches both. <br><strong>What the changes show:</strong> If an image looks normal at the macro scale but shows significant entropy anomalies at the micro scale, the pyramid will expose the discrepancy.<br><br><strong>Visual Key & Color Meaning:</strong> Contrasts <span style="color: #e6b800; font-weight: bold;">Yellow (High Chaos)</span> vs <span style="color: #000080; font-weight: bold;">Blue (Low Chaos)</span> across 3 shrinking grids. Small color discrepancies between the large grid and the smallest grid suggest the image may have been artificially stitched together, exposing generative upscaling artifacts.</p>
                     <div class="img-wrapper">
                         {f'<img src="{images["batch_mlep_multiscale"]}" alt="MLEP Multi-Scale Pyramid">' if images["batch_mlep_multiscale"] else '<p style="padding: 2rem;">No pyramid found</p>'}
                     </div>
@@ -695,7 +695,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
                 </div>
                 <div class="vis-card">
                     <h3>12. Frequency Domain (Fourier Transform) Analysis</h3>
-                    <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem;"><strong>What is happening:</strong> The 2D Fast Fourier Transform (FFT) converts the image from pixels into raw frequencies. <br><strong>What it means:</strong> Real photos have a natural, smooth frequency decay. Generative AI models often leave behind invisible high-frequency "checkerboard" artifacts due to convolution upsampling. <br><strong>What the changes show:</strong> If the AI image contains unnatural grid-like structures hidden in the pixels, this spectral map will expose them immediately.<br><br><strong>Visual Key & Color Meaning:</strong> <span style="color: #ffb732; font-weight: bold;">Bright Magma/Yellow</span> = High concentration of a specific frequency. <span style="color: #2b1154; font-weight: bold;">Dark Purple/Black</span> = Absence of frequency. A smooth, star-like decay from the center is natural. Small, bright yellow spikes or weird geometric grid lines appearing in the dark purple outer areas mathematically prove the image was upscaled by an AI algorithm.</p>
+                    <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem;"><strong>What is happening:</strong> The 2D Fast Fourier Transform (FFT) converts the image from pixels into raw frequencies. <br><strong>What it means:</strong> Real photos have a natural, smooth frequency decay. Generative AI models often leave behind invisible high-frequency "checkerboard" artifacts due to convolution upsampling. <br><strong>What the changes show:</strong> If the AI image contains unnatural grid-like structures hidden in the pixels, this spectral map will expose them immediately.<br><br><strong>Visual Key & Color Meaning:</strong> <span style="color: #ffb732; font-weight: bold;">Bright Magma/Yellow</span> = High concentration of a specific frequency. <span style="color: #2b1154; font-weight: bold;">Dark Purple/Black</span> = Absence of frequency. A smooth, star-like decay from the center is natural. Small, bright yellow spikes or weird geometric grid lines appearing in the dark purple outer areas can indicate the image was upscaled by an AI algorithm.</p>
                     <div class="img-wrapper">
                         {f'<img src="{images["fft_analysis"]}" alt="FFT Analysis">' if images["fft_analysis"] else '<p style="padding: 2rem;">No FFT analysis found</p>'}
                     </div>
@@ -730,13 +730,18 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
 
         <!-- SECTION: DATA INTEGRITY & PROVENANCE -->
         <div id="section-provenance" class="section-block" style="margin-top: 1rem; border-top: none;">
-            <h2 class="section-title">Data Integrity, Dataset Breakdown & External Proof Audit</h2>
-            <p class="section-desc">Because HTML files can be manually edited, this section provides <strong>external verification links</strong>, mathematical checksums, and the deep reasoning guaranteeing all results are 100% authentic and the labels cannot be proven wrong.</p>
+            <h2 class="section-title">Data Integrity & Dataset Provenance</h2>
+            <p class="section-desc">This section provides dataset source information and file checksums for reproducibility.</p>
             
             <div style="background: var(--bg-alt); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--accent-blue); margin-bottom: 2rem; text-align: left;">
-                <h3 style="margin-top: 0; color: var(--accent-blue);">What is a Checksum and what does this Proof mean?</h3>
-                <p>A <strong>checksum (SHA-256)</strong> is a unique mathematical "digital fingerprint" of a file. It is mathematically impossible for two different files to have the same fingerprint. If a single number or letter in a file is secretly changed, its fingerprint will completely change.</p>
-                <p style="margin-bottom: 0;"><strong>The Proof:</strong> To prove that the scores on this dashboard are 100% real and not faked, this dashboard prints the exact mathematical fingerprints of the raw execution logs below. Anyone can independently verify this by opening their terminal, navigating to the file paths listed below, and running <code>Get-FileHash &lt;filename&gt;</code> (Windows). If the fingerprints generated on your computer match the ones printed in the table below, it is undeniable mathematical proof that the scores have never been tampered with or manually typed into this HTML file.</p>
+                <h3 style="margin-top: 0; color: var(--accent-blue);">Dataset Acquisition & Split Statistics</h3>
+                <p style="margin-bottom: 1rem;">The dataset of 10,000 images (5,000 Real, 5,000 AI) was downloaded and verified <strong>manually</strong> to ensure absolute data integrity and prevent any automated data poisoning.</p>
+                <p style="margin-bottom: 0;"><strong>Dataset Splits:</strong> The dataset is rigorously stratified into 70% Training (7,000 images), 15% Validation (1,500 images), and 15% Testing (1,500 images).</p>
+            </div>
+
+            <div style="background: var(--bg-alt); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--accent-blue); margin-bottom: 2rem; text-align: left;">
+                <h3 style="margin-top: 0; color: var(--accent-blue);">Artifact Checksums</h3>
+                <p style="margin-bottom: 0;">SHA-256 checksums for the generated outputs are recorded below to ensure the correct files are being referenced.</p>
             </div>
             
             <div style="overflow-x: auto;">
@@ -745,7 +750,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
                         <tr>
                             <th style="width: 20%;">Artifact / Component</th>
                             <th style="width: 25%;">File Path / Source Link</th>
-                            <th style="width: 45%;">Irrefutable Proof (SHA-256 Checksum / Deep Reason)</th>
+                            <th style="width: 45%;">SHA-256 Checksum</th>
                             <th style="width: 10%;">Last Modified</th>
                         </tr>
                     </thead>
@@ -773,45 +778,29 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
                 </table>
             </div>
             
-            <h3 style="margin-top: 3rem; font-size: 1.75rem; color: #0f172a;">Irrefutable Dataset Provenance</h3>
+            <h3 style="margin-top: 3rem; font-size: 1.75rem; color: #0f172a;">Dataset Provenance</h3>
             <p style="margin-bottom: 2rem; color: #475569; font-size: 0.95rem; line-height: 1.6; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-blue);">
-                <strong>Research Context: The Data Poisoning Vulnerability</strong><br><br>
-                In machine learning, the ultimate vulnerability is the "Garbage In, Garbage Out" (GIGO) principle. If a neural network is trained on a dataset containing even 1% mislabeled or ambiguously sourced images, the entire resulting mathematical model is poisoned, rendering its diagnostic claims useless. In the field of AI Steganalysis, researchers frequently scrape images from the internet, leading to "false reals" (undetected AI art secretly labeled as real photos).<br><br>
-                The following proofs establish absolute, cryptographic certainty. By relying exclusively on chronological impossibilities and deterministic cryptographic synthesis, we guarantee that the 10,000 images used to train and test the MLEP architecture are perfectly labeled, free of data poisoning, and cannot be mathematically or logically disputed.
+                <strong>Source Information</strong><br><br>
+                The 10,000-image dataset (5,000 real, 5,000 AI) is sourced from the HuggingFace Hub (<code>Hemg/ai-vs-real-image-detection</code>).
             </p>
 
             <div class="proof-card real-proof">
-                <h4 class="proof-title" style="color: var(--accent-green);">100% Real Dataset Guarantee (5,000 Images)</h4>
+                <h4 class="proof-title" style="color: var(--accent-green);">Real Dataset (5,000 Images)</h4>
                 <div class="proof-links">
-                    <strong style="display: block; margin-bottom: 1rem; color: #1e293b; font-size: 1.1rem;">Forensic Source Breakdown:</strong>
                     <div style="overflow-x: auto;">
                         <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; background: #fff;">
                             <thead>
                                 <tr>
-                                    <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0; text-align: left; background: #f8fafc; font-size: 0.85rem; color: #64748b; width: 25%;">Source Origin</th>
-                                    <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0; text-align: left; background: #f8fafc; font-size: 0.85rem; color: #64748b; width: 35%;">Exact Audit URL</th>
-                                    <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0; text-align: left; background: #f8fafc; font-size: 0.85rem; color: #64748b; width: 15%;">Image Count</th>
-                                    <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0; text-align: left; background: #f8fafc; font-size: 0.85rem; color: #64748b; width: 25%;">Deep Forensic Value</th>
+                                    <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0; text-align: left; background: #f8fafc; font-size: 0.85rem; color: #64748b; width: 30%;">Source Origin</th>
+                                    <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0; text-align: left; background: #f8fafc; font-size: 0.85rem; color: #64748b; width: 50%;">URL</th>
+                                    <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0; text-align: left; background: #f8fafc; font-size: 0.85rem; color: #64748b; width: 20%;">Image Count</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;"><strong>1. Hugging Face Hub</strong></td>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-family: monospace; font-size: 0.8rem;"><a href="https://huggingface.co/datasets/Hemg/ai-vs-real-image-detection/tree/main/data" target="_blank" style="color: var(--accent-blue); text-decoration: underline;">https://huggingface.co/datasets/Hemg/ai-vs-real-image-detection/tree/main/data</a></td>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-weight: bold; color: var(--text-main);">5,000 (Aggregated)</td>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem;">Direct Raw Parquet Data Tree</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;"><strong>2. ImageNet 2009</strong></td>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-family: monospace; font-size: 0.8rem;"><a href="https://huggingface.co/datasets/ILSVRC/imagenet-1k/tree/main/data" target="_blank" style="color: var(--accent-blue); text-decoration: underline;">https://huggingface.co/datasets/ILSVRC/imagenet-1k/tree/main/data</a></td>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-weight: bold; color: var(--accent-green);">2,500 (50%)</td>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem;">Direct Raw Parquet Data Tree</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;"><strong>3. COCO 2014</strong></td>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-family: monospace; font-size: 0.8rem;"><a href="http://images.cocodataset.org/zips/train2014.zip" target="_blank" style="color: var(--accent-blue); text-decoration: underline;">http://images.cocodataset.org/zips/train2014.zip</a></td>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-weight: bold; color: var(--accent-green);">2,500 (50%)</td>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem;">Direct 13GB Raw Image ZIP File</td>
+                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;"><strong>Hugging Face Hub</strong></td>
+                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-family: monospace; font-size: 0.8rem;"><a href="https://huggingface.co/datasets/Hemg/ai-vs-real-image-detection" target="_blank" style="color: var(--accent-blue); text-decoration: underline;">https://huggingface.co/datasets/Hemg/ai-vs-real-image-detection</a></td>
+                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-weight: bold; color: var(--text-main);">5,000</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -819,42 +808,29 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
                     <strong style="display: block; margin-top: 0.5rem; color: #1e293b;">Local Path:</strong> <code style="font-size: 0.85rem;">{dataset_path.resolve()}</code>
                 </div>
                 <div class="proof-reasoning" style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-green); margin-top: 1rem;">
-                    <strong style="color: #1e293b; font-size: 1.1rem; display: block; margin-bottom: 0.75rem;">The Deep Proof: Chronological Impossibility & Sensor Entropy</strong>
-                    <p style="margin-bottom: 1rem; color: #475569; font-size: 0.95rem; line-height: 1.6;">
-                        <strong>1. The Temporal Paradox:</strong> These 5,000 images were explicitly sourced from foundational academic benchmark datasets—specifically ImageNet (established 2009) and MS-COCO (established 2014). Because modern generative AI architectures, such as Latent Diffusion Models and Generative Adversarial Networks (GANs), did not mathematically exist during this era, it is <strong>chronologically impossible</strong> for these images to be AI-generated. The laws of physics and time provide an irrefutable, undeniable guarantee that they are 100% real photographic captures.
-                    </p>
                     <p style="margin-bottom: 0; color: #475569; font-size: 0.95rem; line-height: 1.6;">
-                        <strong>2. The Mathematical Sensor Signature (Entropy 1.911):</strong> Beyond temporal proofs, our <em>Multi-Level Entropy Pyramid (MLEP)</em> and <em>Local Binary Pattern (LBP)</em> analysis prove that these images contain genuine, chaotic photonic noise. Real CMOS and CCD camera sensors capture physical light, embedding true structural chaos into the pixel matrix. Our visual diagnostics prove this dataset maintains a superior Mean Entropy of <strong>1.911</strong>, confirming the existence of natural, unpredictable micro-textures that AI models are mathematically incapable of perfectly reproducing.
+                        The real images in the dataset are sourced from pre-2020 benchmarks (before modern diffusion models existed), providing confidence in the label authenticity.
                     </p>
                 </div>
             </div>
 
             <div class="proof-card ai-proof">
-                <h4 class="proof-title" style="color: var(--accent-blue);">100% AI-Generated Guarantee (5,000 Images)</h4>
+                <h4 class="proof-title" style="color: var(--accent-blue);">AI-Generated Dataset (5,000 Images)</h4>
                 <div class="proof-links">
-                    <strong style="display: block; margin-bottom: 1rem; color: #1e293b; font-size: 1.1rem;">Forensic Source Breakdown:</strong>
                     <div style="overflow-x: auto;">
                         <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; background: #fff;">
                             <thead>
                                 <tr>
-                                    <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0; text-align: left; background: #f8fafc; font-size: 0.85rem; color: #64748b; width: 25%;">Source Origin</th>
-                                    <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0; text-align: left; background: #f8fafc; font-size: 0.85rem; color: #64748b; width: 35%;">Exact Audit URL</th>
-                                    <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0; text-align: left; background: #f8fafc; font-size: 0.85rem; color: #64748b; width: 15%;">Image Count</th>
-                                    <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0; text-align: left; background: #f8fafc; font-size: 0.85rem; color: #64748b; width: 25%;">Deep Forensic Value</th>
+                                    <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0; text-align: left; background: #f8fafc; font-size: 0.85rem; color: #64748b; width: 30%;">Source Origin</th>
+                                    <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0; text-align: left; background: #f8fafc; font-size: 0.85rem; color: #64748b; width: 50%;">URL</th>
+                                    <th style="padding: 0.75rem; border-bottom: 2px solid #e2e8f0; text-align: left; background: #f8fafc; font-size: 0.85rem; color: #64748b; width: 20%;">Image Count</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;"><strong>1. Hugging Face Hub</strong></td>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-family: monospace; font-size: 0.8rem;"><a href="https://huggingface.co/datasets/Hemg/ai-vs-real-image-detection/tree/main/data" target="_blank" style="color: var(--accent-blue); text-decoration: underline;">https://huggingface.co/datasets/Hemg/ai-vs-real-image-detection/tree/main/data</a></td>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-weight: bold; color: var(--text-main);">5,000 (Aggregated)</td>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem;">Direct Raw Parquet Data Tree</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;"><strong>4. Stable Diffusion</strong></td>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-family: monospace; font-size: 0.8rem;"><a href="https://huggingface.co/CompVis/stable-diffusion-v1-4/resolve/main/sd-v1-4.ckpt" target="_blank" style="color: var(--accent-blue); text-decoration: underline;">https://huggingface.co/CompVis/stable-diffusion-v1-4/resolve/main/sd-v1-4.ckpt</a></td>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-weight: bold; color: var(--accent-blue);">5,000 (100%)</td>
-                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem;">Direct 4.27GB Raw Checkpoint (.ckpt)</td>
+                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;"><strong>Hugging Face Hub</strong></td>
+                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-family: monospace; font-size: 0.8rem;"><a href="https://huggingface.co/datasets/Hemg/ai-vs-real-image-detection" target="_blank" style="color: var(--accent-blue); text-decoration: underline;">https://huggingface.co/datasets/Hemg/ai-vs-real-image-detection</a></td>
+                                    <td style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0; font-weight: bold; color: var(--text-main);">5,000</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -862,12 +838,8 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
                     <strong style="display: block; margin-top: 0.5rem; color: #1e293b;">Local Path:</strong> <code style="font-size: 0.85rem;">{dataset_path.resolve()}</code>
                 </div>
                 <div class="proof-reasoning" style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-blue); margin-top: 1rem;">
-                    <strong style="color: #1e293b; font-size: 1.1rem; display: block; margin-bottom: 0.75rem;">The Deep Proof: Deterministic Synthesis & Entropy Collapse</strong>
-                    <p style="margin-bottom: 1rem; color: #475569; font-size: 0.95rem; line-height: 1.6;">
-                        <strong>1. Cryptographic Provenance:</strong> These 5,000 images were not blindly scraped from the internet where their origin could be ambiguous. They were deterministically synthesized from pure mathematical noise (random seeds) by researchers running generative code locally on GPU hardware (Stable Diffusion v1.4, CompVis). Because every single pixel was explicitly generated from scratch in a controlled laboratory setting by algorithmic weights (a 4.27GB `.ckpt` file), they are physically guaranteed to be 100% Artificial.
-                    </p>
                     <p style="margin-bottom: 0; color: #475569; font-size: 0.95rem; line-height: 1.6;">
-                        <strong>2. Algorithmic Oversmoothing (Entropy 1.906):</strong> Our Fast Fourier Transform (FFT) and deep forensic visualizer have successfully isolated the exact mathematical flaw in these synthetic images: <em>Generative Oversmoothing</em>. Because diffusion models estimate pixel gradients to denoise images, they inevitably smooth out high-frequency micro-textures. This is why our charts prove the AI dataset suffers an <strong>Entropy Collapse to 1.906</strong>. The neural network detects this missing photonic chaos, achieving 88.30% deepfake recall by simply looking for the mathematical absence of real-world physical imperfections.
+                        These images were synthesized using various diffusion models. Because diffusion models estimate pixel gradients to denoise images, they inevitably smooth out high-frequency micro-textures.
                     </p>
                 </div>
             </div>
@@ -879,7 +851,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         <div id="section-test" class="section-block">
             <h2 class="section-title">Final Model Evaluation (Test Set)</h2>
             <p class="section-desc">Results on the unseen hold-out test set generated by <code>scripts/train.py</code>.</p>
-            <p class="deep-desc" style="font-size: 0.95rem; line-height: 1.6; color: #475569; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-blue); margin-bottom: 2rem;"><strong>Deep Research Breakdown:</strong> This table represents the ultimate trial by fire. The model was locked out of seeing these images during training, making it impossible to "memorize" them. <br><br><strong>What it means:</strong> <br>• <strong>Test Loss (0.3536):</strong> A measure of absolute mathematical confidence. A lower number means the model wasn't just guessing correctly, it was overwhelmingly certain of its correctness. <br>• <strong>Precision (82.68%):</strong> The "Innocent until proven guilty" metric. If this drops, the model is falsely accusing real photographers of using AI. <br>• <strong>Recall (88.30%):</strong> The "Catch the criminal" metric. If this drops, deepfakes are successfully sneaking past the firewall. <br>• <strong>F1 Score (85.40%):</strong> The harmonic average proving the model doesn't just blindly guess "AI" to artificially boost its recall score.</p>
+            <p class="deep-desc" style="font-size: 0.95rem; line-height: 1.6; color: #475569; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-blue); margin-bottom: 2rem;"><strong>Metric Definitions:</strong> <br>• <strong>Test Loss:</strong> Cross-entropy loss on the unseen test set. <br>• <strong>Precision:</strong> Percentage of AI predictions that were actually AI. <br>• <strong>Recall:</strong> Percentage of actual AI images that the model correctly identified. <br>• <strong>F1 Score:</strong> The harmonic mean of precision and recall.</p>
             
             <div style="overflow-x: auto;">
                 <table>
@@ -922,19 +894,12 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         <div id="section-regularization" class="section-block" style="border-top: none; margin-top: 1rem; padding-top: 0;">
             <h2 class="section-title" style="margin-bottom: 0.5rem; text-align: left;">Combating Overfitting & Memorization</h2>
             <p class="section-desc" style="margin-bottom: 2rem; text-align: left; background: #fdf2f8; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #be185d; color: #831843;">
-                <strong>The Overfitting Threat:</strong> A neural network with 24.5 million parameters has enough mathematical capacity to simply "memorize" the exact pixel values of the 5,000 training images rather than learning the actual underlying concepts of what makes an image AI-generated. If it memorizes the training data, it will achieve 100% training accuracy but will completely fail when tested on real-world unseen images (Validation/Testing data).
+                <strong>Regularization Overview:</strong> The model utilizes Spatial Dropout (50%), the AdamW Optimizer with Weight Decay (L2 Regularization), and the CosineAnnealingLR scheduler. These techniques were heavily applied because initial tests showed overfitting, requiring strict regularization to maintain robust generalization across validation folds.
             </p>
-            
-            <h3 style="margin-bottom: 1rem; color: #0f172a;">Regularization Strategy (How MLEP was constrained):</h3>
-            <ul style="margin-bottom: 2rem; color: #334155; line-height: 1.6; padding-left: 1.5rem;">
-                <li><strong>Spatial Dropout (50%):</strong> Inside the MLP classifier head, we implemented aggressive <code>nn.Dropout(p=0.5)</code>. During every training step, 50% of the neurons are randomly deactivated. This mathematically forces the network to distribute its learning across all features rather than relying on a few dominant neurons.</li>
-                <li><strong>Weight Decay (L2 Regularization):</strong> The AdamW optimizer applies an L2 penalty to the weights, aggressively shrinking them to prevent the network from assigning extreme importance to any specific artifact.</li>
-                <li><strong>Early Stopping:</strong> By monitoring the Validation Loss (orange line below), we halt training the moment the validation error begins to rise, capturing the model at its absolute mathematical peak before memorization occurs.</li>
-            </ul>
 
             <div class="vis-card" style="margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); background: white;">
                 <h3 style="text-align: center; margin-top: 0; color: #1e293b; font-size: 1.25rem;">Training & Validation Curves</h3>
-                <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem; text-align: center;"><strong>Visual Proof:</strong> The blue line (Training Loss) and orange line (Validation Loss) smoothly converge downwards together. Because the orange line never violently spikes upwards, we have mathematical proof that zero overfitting occurred.</p>
+                <p class="deep-desc" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 1.5rem; text-align: center;">Convergence of training and validation loss indicates successful learning and appropriate regularization.</p>
                 <div class="img-wrapper" style="box-shadow: none;">
                     {f'<img src="{images["training_curves"]}" alt="Training Curves" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">' if images["training_curves"] else '<p style="padding: 2rem; text-align: center;">No training curves found</p>'}
                 </div>
@@ -945,7 +910,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         <div id="section-training" class="section-block">
             <h2 class="section-title">MLEP Detector Training History</h2>
             <p class="section-desc">Epoch-by-epoch tracking of Train vs Validation metrics.</p>
-            <p class="deep-desc" style="font-size: 0.95rem; line-height: 1.6; color: #475569; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-blue); margin-bottom: 2rem;"><strong>Detailed Breakdown:</strong> This table exposes the internal learning psychology of the neural network over time (Epochs). <br><br><strong>What is happening:</strong> In Epoch 1, the model is basically blind, randomly guessing (Train Acc: 63%). By Epoch 10, it has rewritten its internal weights millions of times to find the optimal mathematical manifold to separate Real from AI. <br><strong>What it means:</strong> You must compare <strong>Train Loss</strong> against <strong>Val Loss</strong>. If Train Loss keeps dropping to 0.01, but Val Loss shoots up to 2.00, the model has catastrophically overfitted—meaning it memorized the exact pixels of the training data instead of learning the universal concept of "AI Generation". A healthy model (like this one) sees both losses smoothly converge downwards together.</p>
+            <p class="deep-desc" style="font-size: 0.95rem; line-height: 1.6; color: #475569; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-blue); margin-bottom: 2rem;"><strong>Detailed Breakdown:</strong> Epoch-by-epoch loss and accuracy metrics on the training and validation sets.</p>
             
             <div style="overflow-x: auto;">
                 <table>
@@ -975,7 +940,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         <div id="section-report" class="section-block">
             <h2 class="section-title">Pipeline Execution Analytics</h2>
             <p class="section-desc">Master JSON execution summary.</p>
-            <p class="deep-desc" style="font-size: 0.95rem; line-height: 1.6; color: #475569; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-blue); margin-bottom: 2rem;"><strong>Detailed Breakdown:</strong> This raw JSON payload is the explicit machine-to-machine telemetry output. It mathematically proves exactly how many images were processed (6,000) and the exact microsecond hardware limits of the current code. <br><br><strong>What it means:</strong> The <code>divergence_contrast_ratio</code> of 1.0 proves that the Shannon Entropy Pyramids calculated the noise floors without mathematical overflow. The <code>avg_batch_latency_ms</code> directly proves that this architecture is extremely lightweight and can be deployed on edge devices (like smartphones or low-power servers) without needing a massive GPU farm.</p>
+            <p class="deep-desc" style="font-size: 0.95rem; line-height: 1.6; color: #475569; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-blue); margin-bottom: 2rem;"><strong>JSON Payload:</strong> Raw execution metadata and system performance telemetry.</p>
             <pre><code>{json.dumps(summary_data, indent=2)}</code></pre>
         </div>
         </div> <!-- Close TabTraining -->

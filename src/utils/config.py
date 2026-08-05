@@ -11,7 +11,7 @@ import yaml
 @dataclass
 class DatasetConfig:
     """Configuration for data loading, transformations, and augmentation hooks."""
-    data_dir: str = "data/raw/forensynths"
+    data_dir: str = "dataset10000"
     image_size: int = 256
     batch_size: int = 32
     num_workers: int = 4

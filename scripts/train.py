@@ -120,7 +120,7 @@ def main():
     parser.add_argument("--data_dir", type=str, required=True, help="Path to dataset")
     parser.add_argument("--output_dir", type=str, default="outputs/checkpoints", help="Where to save model weights")
     parser.add_argument("--epochs", type=int, default=10, help="Number of training epochs")
-    parser.add_argument("--batch_size", type=int, default=8, help="Batch size")
+    parser.add_argument("--batch_size", type=int, default=32, help="Batch size")
     parser.add_argument("--lr", type=float, default=2e-4, help="Learning rate")
     args = parser.parse_args()
 

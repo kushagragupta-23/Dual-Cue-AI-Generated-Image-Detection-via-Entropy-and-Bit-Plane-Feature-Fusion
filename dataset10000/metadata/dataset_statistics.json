@@ -11,7 +11,7 @@
         "unknown_diffusion": 5000
     },
     "real_source_distribution": {
-        "imagenet_coco_legacy": 5000
+        "huggingface_verified": 5000
     },
     "resolution_stats": {
         "mean_size": "256x256",

@@ -1,8 +1,7 @@
-# Master Default Configuration for MLEP Preprocessing and Dataset Pipeline
-# Compliant with NeurIPS 2025 MLEP Specification
+# Default Configuration for MLEP Preprocessing and Dataset Pipeline
 
 dataset:
-  data_dir: "data/raw/forensynths"
+  data_dir: "dataset10000"
   image_size: 256
   batch_size: 32
   num_workers: 4

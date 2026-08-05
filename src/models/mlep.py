@@ -15,11 +15,15 @@ logger = get_logger("mlep_extractor")
 
 class MLEPExtractor(nn.Module):
     """
-    Multi-granularity Local Entropy Pattern (MLEP) Extractor (NeurIPS 2025).
+    Multi-granularity Local Entropy Pattern (MLEP) Extractor.
+    Based on the MLEP approach by Yuan et al. for AI-generated image detection.
 
     Operations:
-        1. Channel-Independent Patch Shuffling: Partitions each R, G, B channel into
-           L×L micro-patches and applies a seeded pseudo-random spatial permutation π.
+        1. Channel-Independent Patch Shuffling (Optional, disabled by default):
+           Partitions each R, G, B channel into L×L micro-patches and applies
+           a seeded pseudo-random spatial permutation π. Currently disabled
+           because it destroys the spatial structure that pretrained ResNet
+           backbone filters rely on.
         2. Multi-Scale Resampling Pyramid: Bilinear downsampling at scales {1.0, 0.5, 0.25}
            followed by bilinear upsampling back to original resolution, concatenated along channels.
         3. 2×2 Sliding Window Shannon Entropy (LEP): Computes discrete Shannon entropy over
@@ -34,6 +38,7 @@ class MLEPExtractor(nn.Module):
         scales: Optional[List[float]] = None,
         window_size: int = 2,
         seed: int = 42,
+        use_shuffling: bool = False,
     ):
         """
         Initialize the MLEP Extractor.
@@ -49,13 +54,15 @@ class MLEPExtractor(nn.Module):
         self.scales = scales if scales is not None else [1.0, 0.5, 0.25]
         self.window_size = window_size
         self.seed = seed
+        self.use_shuffling = use_shuffling
 
         if any(s <= 0.0 or s > 1.0 for s in self.scales):
             raise ValueError(f"All scales must be in (0.0, 1.0]. Got: {self.scales}")
 
         logger.info(
             f"Initialized MLEPExtractor: patch_size={patch_size}, "
-            f"scales={self.scales}, window_size={window_size}, seed={seed}"
+            f"scales={self.scales}, window_size={window_size}, seed={seed}, "
+            f"use_shuffling={use_shuffling}"
         )
 
     def shuffle_patches(self, x: torch.Tensor) -> torch.Tensor:
@@ -228,9 +235,14 @@ class MLEPExtractor(nn.Module):
         """
         B, C, H, W = x.shape
 
-        # 1: Channel-independent patch shuffling (π) [BYPASSED for Pretrained ResNet]
-        # Shuffling destroys the macro-semantics that pretrained ImageNet filters rely on.
-        x_shuffled = x
+        # Step 1: Patch shuffling (optional)
+        # Shuffling is disabled by default because pretrained ResNet weights
+        # expect spatially coherent input. Enabling shuffling would require
+        # training the backbone from scratch.
+        if self.use_shuffling:
+            x_shuffled = self.shuffle_patches(x)
+        else:
+            x_shuffled = x
 
         # 2: Multi-scale resampling pyramid {1.0, 0.5, 0.25}
         x_pyramid = self.build_multiscale_pyramid(x_shuffled)

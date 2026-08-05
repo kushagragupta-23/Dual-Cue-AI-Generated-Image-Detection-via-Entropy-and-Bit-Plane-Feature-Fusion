@@ -11,7 +11,7 @@ Sources:
      - AI images: AI-generated images with binary labels
   
   2. Fallback: CIFAKE-XL (Bird & Lotfi, 2025)
-     - Real images: CIFAR-10 (Chronological Impossibility Proof)
+     - Real images: CIFAR-10
      - AI images: Stable Diffusion v3.0 outputs
      - Paper: "CIFAKE-XL: 2025 Benchmarks for Explainable Identification
               of AI-Generated Synthetic Images"
@@ -83,7 +83,7 @@ PROVENANCE_DIMA806 = {
             "authors": "Yuan et al.",
             "venue": "ICLR 2026",
             "url": "https://arxiv.org/abs/2604.13726",
-            "relevance": "Proves that Shannon entropy is a mathematically robust feature for detecting AI algorithmic smoothing."
+            "relevance": "Shows that Shannon entropy is a feature for detecting AI algorithmic smoothing."
         }
     ],
     "license": "Open access for research purposes"
@@ -435,10 +435,10 @@ def main():
     print(f"  Provenance:  {target_path / 'provenance_manifest.json'}")
     print()
     print("To train on this dataset, run:")
-    print(f"  python scripts/train.py --data_dir {args.target_dir} --epochs 5 --batch_size 8")
+    print(f"  python scripts/train.py --data_dir {args.target_dir} --epochs 10 --batch_size 32")
     print()
     print("To run the full pipeline, run:")
-    print(f"  python scripts/run_project.py --data_dir {args.target_dir} --batch_size 8 --export_visualizations")
+    print(f"  python scripts/run_project.py --data_dir {args.target_dir} --batch_size 32 --export_visualizations")
     print("=" * 80 + "\n")
 
 
