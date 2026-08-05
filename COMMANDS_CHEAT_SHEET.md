@@ -97,8 +97,8 @@ git config user.email
 
 **Fix your Git Identity to your correct GitHub Account:**
 ```bash
-git config --global user.name "Your Name"
-git config --global user.email "your.actual.github.email@example.com"
+git config --global user.name "kushagragupta-23"
+git config --global user.email "aakg2310@gmail.com"
 ```
 
 **Standard Push to GitHub (After fixing identity):**
