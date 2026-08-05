@@ -435,7 +435,16 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
                         <span style="position: absolute; top: -10px; right: -10px; background: var(--accent-green); color: white; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: bold; text-transform: uppercase;">Current Phase (Kushagra)</span>
                         <h4 style="color: #065f46; margin-top: 0; margin-bottom: 0.5rem;">Branch 1: MLEP</h4>
                         <strong style="color: #047857; font-size: 0.9rem;">Multi-Level Entropy Pyramids</strong>
-                        <p style="font-size: 0.8rem; color: #064e3b; margin-top: 0.5rem; line-height: 1.4;">Extracts high-frequency structural chaos, Photonic Noise, and Local Binary Patterns (LBP) to expose generative oversmoothing.</p>
+                        <div style="font-size: 0.75rem; color: #064e3b; margin-top: 0.8rem; text-align: left; background: rgba(255,255,255,0.6); padding: 0.8rem; border-radius: 6px;">
+                            <div style="font-weight: bold; margin-bottom: 4px;">Pipeline Steps:</div>
+                            <ol style="margin: 0; padding-left: 1.2rem; line-height: 1.5;">
+                                <li><strong>Patch Shuffling:</strong> Local L×L micro-patch permutation to isolate structural chaos.</li>
+                                <li><strong>Multi-Scale Pyramid:</strong> Resampling to 1.0x, 0.5x, 0.25x resolutions.</li>
+                                <li><strong>Shannon Entropy:</strong> 2x2 sliding window entropy extraction.</li>
+                                <li><strong>Spatial Encoder:</strong> ImageNet-tiled ResNet-50 backbone.</li>
+                                <li><strong>MLP Head:</strong> Dropout-regularized logit projection.</li>
+                            </ol>
+                        </div>
                     </div>
 
                     <!-- BPFF Branch (In Progress) -->
