@@ -1,8 +1,6 @@
 # Multi-Level Entropy Pyramid (MLEP): Macro-Texture Analyzer
 
-## 1. Abstract: The Dual-Cue Architecture Context
-
-The **Multi-Level Entropy Pyramid (MLEP)** serves as Branch 1 (The Macro-Texture Analyzer) of the overall Dual-Cue Architecture. While its sister branch (BPFF, currently in parallel engineering) focuses on micro-steganographic anomalies, MLEP is explicitly engineered to detect **Generative Oversmoothing** in AI-generated images.
+The **Multi-Level Entropy Pyramid (MLEP)** architecture is explicitly engineered to detect **Generative Oversmoothing** in AI-generated images.
 
 Generative models (like Diffusion Models and GANs) synthesize images that look globally coherent to the human eye, but because they rely on gradient estimation to denoise, they mathematically smooth out high-frequency **Photonic Noise**. Our testing proves this results in an **Entropy Collapse** (Real: 1.911 vs AI: 1.906).
 
