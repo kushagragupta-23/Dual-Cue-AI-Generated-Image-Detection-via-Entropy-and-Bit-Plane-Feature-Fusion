@@ -30,7 +30,7 @@ from src.utils.logger import get_logger
 logger = get_logger("train_pipeline")
 
 
-def train_one_epoch(model, loader, criterion, optimizer, device, epoch, scaler):
+def train_one_epoch(model, loader, criterion, optimizer, device, epoch, scaler, use_amp=True):
     model.train()
     running_loss = 0.0
     
@@ -44,15 +44,24 @@ def train_one_epoch(model, loader, criterion, optimizer, device, epoch, scaler):
         
         optimizer.zero_grad()
         
-        # Forward pass with AMP
-        with torch.amp.autocast('cuda'):
+        # Forward pass with AMP (only on CUDA)
+        if use_amp:
+            with torch.amp.autocast('cuda'):
+                logits = model(images)
+                loss = criterion(logits, labels)
+            # Backward pass with scaler
+            scaler.scale(loss).backward()
+            # Gradient clipping to prevent explosion
+            scaler.unscale_(optimizer)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+            scaler.step(optimizer)
+            scaler.update()
+        else:
             logits = model(images)
             loss = criterion(logits, labels)
-        
-        # Backward pass with scaler
-        scaler.scale(loss).backward()
-        scaler.step(optimizer)
-        scaler.update()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+            optimizer.step()
         
         running_loss += loss.item() * images.size(0)
         
@@ -79,7 +88,7 @@ def train_one_epoch(model, loader, criterion, optimizer, device, epoch, scaler):
     return epoch_loss, epoch_acc, epoch_precision, epoch_recall, epoch_f1, epoch_time
 
 
-def evaluate(model, loader, criterion, device, epoch, split_name="Validation"):
+def evaluate(model, loader, criterion, device, epoch, split_name="Validation", use_amp=True):
     model.eval()
     running_loss = 0.0
     
@@ -92,7 +101,11 @@ def evaluate(model, loader, criterion, device, epoch, split_name="Validation"):
         for images, labels, _ in loader:
             images, labels = images.to(device), labels.to(device).float().unsqueeze(1)
             
-            with torch.amp.autocast('cuda'):
+            if use_amp:
+                with torch.amp.autocast('cuda'):
+                    logits = model(images)
+                    loss = criterion(logits, labels)
+            else:
                 logits = model(images)
                 loss = criterion(logits, labels)
             
@@ -122,6 +135,7 @@ def main():
     parser.add_argument("--epochs", type=int, default=10, help="Number of training epochs")
     parser.add_argument("--batch_size", type=int, default=32, help="Batch size")
     parser.add_argument("--lr", type=float, default=2e-4, help="Learning rate")
+    parser.add_argument("--patience", type=int, default=5, help="Early stopping patience (epochs without val improvement)")
     args = parser.parse_args()
 
     data_path = root_path / args.data_dir
@@ -149,21 +163,28 @@ def main():
         transform=eval_tf, validate_integrity=False, split_manifest_dir=manifest_dir
     )
     
-    train_loader = create_dataloader(train_ds, batch_size=args.batch_size, num_workers=4, balanced_sampling=True, pin_memory=True)
-    val_loader = create_dataloader(val_ds, batch_size=args.batch_size, num_workers=0, balanced_sampling=False, pin_memory=True)
-    test_loader = create_dataloader(test_ds, batch_size=args.batch_size, num_workers=0, balanced_sampling=False, pin_memory=True)
+    # Windows-safe num_workers (>0 can cause multiprocessing issues on Windows)
+    n_workers = 2 if os.name != 'nt' else 0
+    train_loader = create_dataloader(train_ds, batch_size=args.batch_size, num_workers=n_workers, balanced_sampling=True, pin_memory=torch.cuda.is_available())
+    val_loader = create_dataloader(val_ds, batch_size=args.batch_size, num_workers=0, balanced_sampling=False, pin_memory=torch.cuda.is_available())
+    test_loader = create_dataloader(test_ds, batch_size=args.batch_size, num_workers=0, balanced_sampling=False, pin_memory=torch.cuda.is_available())
 
     print("\n" + "=" * 80)
     print("STEP 2: INITIALIZING MLEP DETECTOR")
     print("=" * 80)
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    use_amp = device.type == 'cuda'
     logger.info(f"Using device: {device}")
     
     if torch.cuda.is_available():
-        # EXTREME HARDWARE UTILIZATION: Enable cudnn benchmark for optimal convolution algorithms
+        # RTX 4050 Full Utilization: cuDNN benchmark + TF32 Tensor Core acceleration
         torch.backends.cudnn.benchmark = True
-        logger.info("Enabled torch.backends.cudnn.benchmark for optimal RTX 4050 performance.")
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
+        gpu_name = torch.cuda.get_device_name(0)
+        gpu_mem = torch.cuda.get_device_properties(0).total_mem / (1024**3)
+        logger.info(f"GPU: {gpu_name} ({gpu_mem:.1f} GB) | cuDNN benchmark=ON | TF32=ON")
     
     # Initialize the complete model (MLEP) with Pre-trained ImageNet weights
     model = MLEPDetector(pretrained_backbones=True).to(device)
@@ -182,15 +203,20 @@ def main():
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=1e-6)
     criterion = nn.BCEWithLogitsLoss()
     
-    # Enable Automatic Mixed Precision (AMP) to maximize RTX 4050 utilization
-    scaler = torch.amp.GradScaler('cuda')
-    logger.info("Enabled Automatic Mixed Precision (AMP) GradScaler.")
+    # Enable Automatic Mixed Precision (AMP) only on CUDA
+    scaler = torch.amp.GradScaler('cuda') if use_amp else None
+    if use_amp:
+        logger.info("Enabled Automatic Mixed Precision (AMP) GradScaler.")
+    else:
+        logger.info("Running on CPU — AMP disabled.")
 
     print("\n" + "=" * 80)
     print(f"STEP 3: STARTING TRAINING LOOP (Epochs: {args.epochs})")
     print("=" * 80)
 
     best_val_acc = 0.0
+    best_val_loss = float('inf')
+    epochs_no_improve = 0
     best_model_path = output_path / "mlep_best.pth"
     history_path = output_path.parent / "training_history.json"
     
@@ -200,33 +226,51 @@ def main():
         logger.info(f"--- Epoch {epoch}/{args.epochs} ---")
         
         train_loss, train_acc, train_prec, train_rec, train_f1, epoch_time = train_one_epoch(
-            model, train_loader, criterion, optimizer, device, epoch, scaler
+            model, train_loader, criterion, optimizer, device, epoch, scaler, use_amp=use_amp
         )
         logger.info(
             f"Epoch {epoch} Training Completed in {epoch_time:.1f}s | "
-            f"Loss: {train_loss:.4f} | Acc: {train_acc:.2f}% | Prec: {train_prec:.2f}%"
+            f"Loss: {train_loss:.4f} | Acc: {train_acc:.2f}% | Prec: {train_prec:.2f}% | Rec: {train_rec:.2f}% | F1: {train_f1:.2f}%"
         )
         
         val_loss, val_acc, val_prec, val_rec, val_f1, _, _ = evaluate(
-            model, val_loader, criterion, device, epoch, "Validation"
+            model, val_loader, criterion, device, epoch, "Validation", use_amp=use_amp
         )
+        
+        # Compute current learning rates for logging
+        current_lrs = [pg['lr'] for pg in optimizer.param_groups]
+        logger.info(f"LR Schedule: backbone={current_lrs[0]:.6f}, head={current_lrs[1]:.6f}, extractor={current_lrs[2]:.6f}")
         scheduler.step()
         
-        # Save history
+        # Overfitting gap diagnosis
+        overfit_gap = train_acc - val_acc
+        gap_status = "⚠️ OVERFITTING" if overfit_gap > 10.0 else "✓ Healthy"
+        logger.info(f"Overfit Gap: {overfit_gap:.2f}% ({gap_status})")
+        
+        # Save FULL history (including recall, F1, LR, overfit gap)
         training_history.append({
             "epoch": epoch,
             "train_loss": round(train_loss, 4),
             "train_acc": round(train_acc, 2),
             "train_prec": round(train_prec, 2),
+            "train_rec": round(train_rec, 2),
+            "train_f1": round(train_f1, 2),
             "val_loss": round(val_loss, 4),
             "val_acc": round(val_acc, 2),
             "val_prec": round(val_prec, 2),
+            "val_rec": round(val_rec, 2),
+            "val_f1": round(val_f1, 2),
+            "lr_backbone": round(current_lrs[0], 8),
+            "lr_head": round(current_lrs[1], 8),
+            "overfit_gap": round(overfit_gap, 2),
         })
         with open(history_path, "w", encoding="utf-8") as f:
             json.dump(training_history, f, indent=2)
             
         if val_acc > best_val_acc:
             best_val_acc = val_acc
+            best_val_loss = val_loss
+            epochs_no_improve = 0
             logger.info(f"*** New best validation accuracy: {best_val_acc:.2f}%. Saving checkpoint... ***")
             torch.save({
                 'epoch': epoch,
@@ -235,8 +279,18 @@ def main():
                 'best_val_acc': best_val_acc,
                 'train_acc': train_acc,
                 'train_prec': train_prec,
-                'val_prec': val_prec
+                'train_rec': train_rec,
+                'train_f1': train_f1,
+                'val_prec': val_prec,
+                'val_rec': val_rec,
+                'val_f1': val_f1,
             }, best_model_path)
+        else:
+            epochs_no_improve += 1
+            logger.info(f"No improvement for {epochs_no_improve}/{args.patience} epochs.")
+            if epochs_no_improve >= args.patience:
+                logger.info(f"[EARLY STOPPING] Validation accuracy did not improve for {args.patience} epochs. Stopping training.")
+                break
             
     print("\n" + "=" * 80)
     print(f"TRAINING COMPLETE! Best Validation Accuracy: {best_val_acc:.2f}%")
@@ -253,7 +307,7 @@ def main():
     model.load_state_dict(checkpoint['model_state_dict'])
     
     test_loss, test_acc, test_prec, test_rec, test_f1, test_labels, test_preds = evaluate(
-        model, test_loader, criterion, device, "FINAL", "Test"
+        model, test_loader, criterion, device, "FINAL", "Test", use_amp=use_amp
     )
     
     # Save final test metrics

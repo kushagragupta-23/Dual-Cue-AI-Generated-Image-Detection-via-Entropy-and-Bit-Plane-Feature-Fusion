@@ -98,6 +98,16 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         "test_loss": 0.0, "test_acc": 0.0, "test_prec": 0.0, "test_rec": 0.0, "test_f1": 0.0
     }
     test_results = load_json_safe(test_path, default_test)
+    
+    # Compute overfitting analysis data
+    overfit_gaps = []
+    for row in training_history:
+        gap = float(row.get("train_acc", 0)) - float(row.get("val_acc", 0))
+        overfit_gaps.append(round(gap, 2))
+    max_overfit_gap = max(overfit_gaps) if overfit_gaps else 0.0
+    final_overfit_gap = overfit_gaps[-1] if overfit_gaps else 0.0
+    best_epoch_idx = max(range(len(training_history)), key=lambda i: float(training_history[i].get("val_acc", 0))) if training_history else 0
+    best_epoch = training_history[best_epoch_idx] if training_history else {}
 
     # Cryptographic Provenance
     history_meta = get_file_metadata(history_path)
@@ -448,70 +458,60 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         <!-- TAB NAVIGATION -->
         <div class="tab">
             <button class="tablinks active" onclick="openTab(event, 'TabArchitecture')">1. Architecture</button>
-            <button class="tablinks" onclick="openTab(event, 'TabTraining')">2. Model Training & Regularization</button>
-            <button class="tablinks" onclick="openTab(event, 'TabVisuals')">3. Diagnostic Visuals</button>
-            <button class="tablinks" onclick="openTab(event, 'TabData')">4. Data Provenance</button>
+            <button class="tablinks" onclick="openTab(event, 'TabTraining')">2. Training & Regularization</button>
+            <button class="tablinks" onclick="openTab(event, 'TabOptimizer')">3. Optimizer & Overfitting</button>
+            <button class="tablinks" onclick="openTab(event, 'TabVisuals')">4. Diagnostic Visuals</button>
+            <button class="tablinks" onclick="openTab(event, 'TabData')">5. Data Provenance</button>
+            <button class="tablinks" onclick="openTab(event, 'TabCommands')">6. Commands & Reproduction</button>
         </div>
         
         <div id="TabArchitecture" class="tabcontent" style="display:block;">
 
-        <!-- SECTION: COMPLETE ARCHITECTURE PIPELINE -->
+        <!-- SECTION: MLEP ARCHITECTURE PIPELINE -->
         <div id="section-pipeline" class="section-block" style="border-top: none; margin-top: 1rem; padding-top: 0;">
-            <h2 class="section-title" style="margin-bottom: 0.5rem; text-align: left;">Full Dual-Cue Architecture Pipeline (Roadmap)</h2>
+            <h2 class="section-title" style="margin-bottom: 0.5rem; text-align: left;">MLEP Architecture Pipeline</h2>
             <p class="section-desc" style="margin-bottom: 2rem; text-align: left;">
-                This diagram shows the full project pipeline. The <strong>MLEP</strong> branch (entropy-based detection) is fully implemented and evaluated. The <strong>BPFF</strong> branch (bit-plane analysis) is <strong>under development by Aishwarya</strong>. <br><br>
-                <strong style="color: var(--accent-blue);">Approach:</strong> The two branches are developed independently to avoid sharing biases. Once both achieve good standalone accuracy, they will be fused into a single dual-cue classifier.
+                The complete end-to-end pipeline for detecting AI-generated images using Multi-granularity Local Entropy Patterns (MLEP). Based on the approach by Yuan et al. which exploits the entropy gap caused by generative oversmoothing.
             </p>
             
-            <div style="background: #f8fafc; padding: 2rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; gap: 1.5rem; font-family: var(--font-main);">
+            <div style="background: #f8fafc; padding: 2rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
                 
                 <!-- Input Block -->
                 <div style="background: #e2e8f0; padding: 1rem 2rem; border-radius: 8px; font-weight: bold; color: #1e293b; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #cbd5e1;">
-                    Raw Image Input (Real or AI-Generated)
+                    Raw Image Input (B, 3, 256, 256)
                 </div>
                 
-                <!-- Split Arrows -->
-                <div style="display: flex; gap: 8rem; color: #94a3b8; font-weight: bold;">
-                    <div>&#x2199;</div>
-                    <div>&#x2198;</div>
+                <div style="color: #94a3b8; font-weight: bold; font-size: 1.5rem;">&#x2193;</div>
+
+                <!-- MLEP Extractor -->
+                <div style="background: #ecfdf5; padding: 1.5rem; border-radius: 8px; border: 2px solid var(--accent-green); width: 70%; text-align: center; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.15);">
+                    <h4 style="color: #065f46; margin-top: 0; margin-bottom: 0.5rem;">MLEP Extractor</h4>
+                    <p style="font-size: 0.85rem; color: #064e3b; margin: 0.25rem 0; line-height: 1.4;">1. Patch Shuffling <span style="color: #94a3b8;">(disabled — pretrained backbone needs spatial coherence)</span></p>
+                    <p style="font-size: 0.85rem; color: #064e3b; margin: 0.25rem 0; line-height: 1.4;">2. Multi-Scale Pyramid: scales {1.0, 0.5, 0.25} → 9-channel tensor</p>
+                    <p style="font-size: 0.85rem; color: #064e3b; margin: 0.25rem 0; line-height: 1.4;">3. 2×2 Sliding Window Shannon Entropy → (B, 9, 255, 255)</p>
                 </div>
 
-                <!-- Dual Branches -->
-                <div style="display: flex; gap: 2rem; width: 100%; justify-content: center;">
-                    <!-- MLEP Branch (Active) -->
-                    <div style="background: #ecfdf5; padding: 1.5rem; border-radius: 8px; border: 2px solid var(--accent-green); width: 45%; text-align: center; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.15); position: relative;">
-                        <span style="position: absolute; top: -10px; right: -10px; background: var(--accent-green); color: white; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: bold; text-transform: uppercase;">Current Phase (Kushagra)</span>
-                        <h4 style="color: #065f46; margin-top: 0; margin-bottom: 0.5rem;">Branch 1: MLEP</h4>
-                        <strong style="color: #047857; font-size: 0.9rem;">Multi-Level Entropy Pyramids</strong>
-                        <p style="font-size: 0.8rem; color: #064e3b; margin-top: 0.5rem; line-height: 1.4;">Computes Shannon entropy across multi-scale image patches to detect the smoothing artifacts left by generative models.</p>
-                    </div>
+                <div style="color: #94a3b8; font-weight: bold; font-size: 1.5rem;">&#x2193;</div>
 
-                    <!-- BPFF Branch (In Progress) -->
-                    <div style="background: #f1f5f9; padding: 1.5rem; border-radius: 8px; border: 2px dashed #3b82f6; width: 45%; text-align: center; opacity: 0.9; position: relative; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);">
-                        <span style="position: absolute; top: -10px; right: -10px; background: #3b82f6; color: white; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: bold; text-transform: uppercase;">Under Progress (Aishwarya)</span>
-                        <h4 style="color: #1e3a8a; margin-top: 0; margin-bottom: 0.5rem;">Branch 2: BPFF</h4>
-                        <strong style="color: #1d4ed8; font-size: 0.9rem;">Bit-Plane Feature Fusion</strong>
-                        <p style="font-size: 0.8rem; color: #1e40af; margin-top: 0.5rem; line-height: 1.4;">Slices images into bit-planes to detect low-level steganographic tampering. Independently engineered to prevent bias contamination.</p>
-                    </div>
+                <!-- BatchNorm + ResNet -->
+                <div style="background: #eff6ff; padding: 1.5rem; border-radius: 8px; border: 2px solid var(--accent-blue); width: 70%; text-align: center; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.15);">
+                    <h4 style="color: #1e3a8a; margin-top: 0; margin-bottom: 0.5rem;">BatchNorm2d → ResNet-50 Backbone</h4>
+                    <p style="font-size: 0.85rem; color: #1e40af; margin: 0; line-height: 1.4;">ImageNet-pretrained weights tiled across 9 channels. Produces a 2048-D global average pooled feature vector.</p>
                 </div>
 
-                <!-- Merge Arrows -->
-                <div style="display: flex; gap: 8rem; color: #94a3b8; font-weight: bold;">
-                    <div>&#x2198;</div>
-                    <div>&#x2199;</div>
+                <div style="color: #94a3b8; font-weight: bold; font-size: 1.5rem;">&#x2193;</div>
+
+                <!-- Classifier -->
+                <div style="background: #fef3c7; padding: 1.5rem; border-radius: 8px; border: 2px solid #d97706; width: 70%; text-align: center; box-shadow: 0 4px 6px rgba(217, 119, 6, 0.15);">
+                    <h4 style="color: #92400e; margin-top: 0; margin-bottom: 0.5rem;">MLP Classifier</h4>
+                    <p style="font-size: 0.85rem; color: #78350f; margin: 0; line-height: 1.4;">Dropout(0.5) → Linear(2048→512) → ReLU → Dropout(0.3) → Linear(512→1) → BCEWithLogitsLoss</p>
                 </div>
 
-                <!-- Fusion Block -->
-                <div style="background: #f8fafc; padding: 1rem 2rem; border-radius: 8px; font-weight: bold; color: #475569; border: 2px dashed #cbd5e1; width: 60%; text-align: center;">
-                    Dual-Cue Feature Fusion Module (Kushagra & Aishwarya)
-                </div>
+                <div style="color: #94a3b8; font-weight: bold; font-size: 1.5rem;">&#x2193;</div>
 
-                <!-- Down Arrow -->
-                <div style="color: #94a3b8; font-weight: bold;">&#x2193;</div>
-
-                <!-- Final Output -->
-                <div style="background: #f8fafc; padding: 1rem 2rem; border-radius: 8px; font-weight: bold; color: #475569; border: 2px solid #cbd5e1; width: 40%; text-align: center;">
-                    Final Diagnostic Classifier (Kushagra & Aishwarya)
+                <!-- Output -->
+                <div style="background: #e2e8f0; padding: 1rem 2rem; border-radius: 8px; font-weight: bold; color: #1e293b; border: 1px solid #cbd5e1;">
+                    Binary Prediction: Real (0) vs AI-Generated (1)
                 </div>
 
             </div>
@@ -519,9 +519,9 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
 
         <!-- SECTION: MLEP DETAILED PIPELINE -->
         <div id="section-mlep-pipeline" class="section-block" style="border-top: none; margin-top: 3rem; padding-top: 0;">
-            <h2 class="section-title" style="margin-bottom: 0.5rem; text-align: left;">Branch 1 (Kushagra): Detailed MLEP Engineering Pipeline</h2>
+            <h2 class="section-title" style="margin-bottom: 0.5rem; text-align: left;">Detailed MLEP Engineering Pipeline</h2>
             <p class="section-desc" style="margin-bottom: 2rem; text-align: left;">
-                The Multi-Level Entropy Pyramids (MLEP) module is fully implemented and relies on a strict 5-step feature extraction process to expose generative oversmoothing before passing data to the fusion block.
+                The Multi-granularity Local Entropy Patterns (MLEP) module relies on a strict 5-step feature extraction process to expose generative oversmoothing.
             </p>
             <div style="display: flex; flex-direction: column; gap: 1rem;">
                 <div style="background: #f8fafc; border-left: 4px solid var(--accent-green); padding: 1.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
@@ -534,7 +534,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
                 </div>
                 <div style="background: #f8fafc; border-left: 4px solid var(--accent-green); padding: 1.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                     <h4 style="margin: 0 0 0.5rem 0; color: #065f46;">3. 2×2 Sliding Window Shannon Entropy</h4>
-                    <p style="margin: 0; color: #334155; font-size: 0.9rem;">Computes discrete Shannon entropy over every 4-pixel window to quantify structural chaos, outputting a dense 9-channel anomaly heatmap.</p>
+                    <p style="margin: 0; color: #334155; font-size: 0.9rem;">Computes discrete Shannon entropy over every 4-pixel window to quantify structural chaos, outputting a dense 9-channel anomaly heatmap. Possible values: {0.0, 0.8113, 1.0, 1.5, 2.0}.</p>
                 </div>
                 <div style="background: #f8fafc; border-left: 4px solid var(--accent-green); padding: 1.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                     <h4 style="margin: 0 0 0.5rem 0; color: #065f46;">4. Spatial Encoder (ResNet-50)</h4>
@@ -944,6 +944,252 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
             <pre><code>{json.dumps(summary_data, indent=2)}</code></pre>
         </div>
         </div> <!-- Close TabTraining -->
+
+        <div id="TabOptimizer" class="tabcontent">
+        <!-- SECTION: OPTIMIZER CONFIGURATION -->
+        <div id="section-optimizer" class="section-block" style="border-top: none; margin-top: 1rem; padding-top: 0;">
+            <h2 class="section-title" style="margin-bottom: 0.5rem; text-align: left;">Optimizer & Learning Rate Configuration</h2>
+            <p class="section-desc" style="margin-bottom: 2rem; text-align: left; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-blue);">
+                <strong>Strategy:</strong> We use AdamW with weight decay (L2 regularization) and differential learning rates — the pretrained ResNet-50 backbone trains at a lower rate to preserve its learned features, while the new classifier head trains faster.
+            </p>
+
+            <div style="overflow-x: auto; margin-bottom: 2rem;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Value</th>
+                            <th>Rationale</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Optimizer</strong></td>
+                            <td style="font-family: var(--font-mono);">AdamW</td>
+                            <td>Decoupled weight decay regularization — prevents L2 penalty from interfering with adaptive moment estimates</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Base Learning Rate</strong></td>
+                            <td style="font-family: var(--font-mono);">2e-4 (0.0002)</td>
+                            <td>Standard for fine-tuning pretrained models; low enough to avoid catastrophic forgetting</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Backbone LR</strong></td>
+                            <td style="font-family: var(--font-mono);">1e-4 (0.5× base)</td>
+                            <td>Pretrained ResNet-50 layers — slow learning to preserve ImageNet features</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Classifier Head LR</strong></td>
+                            <td style="font-family: var(--font-mono);">1e-3 (5× base)</td>
+                            <td>Randomly initialized MLP head — needs fast learning to catch up</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MLEP Extractor LR</strong></td>
+                            <td style="font-family: var(--font-mono);">2e-4 (1× base)</td>
+                            <td>Entropy computation module — standard rate</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Weight Decay</strong></td>
+                            <td style="font-family: var(--font-mono);">0.01</td>
+                            <td>L2 penalty strength — prevents weight magnitudes from growing too large</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LR Scheduler</strong></td>
+                            <td style="font-family: var(--font-mono);">CosineAnnealingLR</td>
+                            <td>Smoothly decays LR from initial value to eta_min following a cosine curve</td>
+                        </tr>
+                        <tr>
+                            <td><strong>T_max (scheduler)</strong></td>
+                            <td style="font-family: var(--font-mono);">10 epochs</td>
+                            <td>One full cosine half-cycle spans the entire training run</td>
+                        </tr>
+                        <tr>
+                            <td><strong>eta_min</strong></td>
+                            <td style="font-family: var(--font-mono);">1e-6</td>
+                            <td>Minimum LR floor — prevents learning rate from reaching absolute zero</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gradient Clipping</strong></td>
+                            <td style="font-family: var(--font-mono);">max_norm=1.0</td>
+                            <td>Prevents gradient explosion during backpropagation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Early Stopping</strong></td>
+                            <td style="font-family: var(--font-mono);">patience=5</td>
+                            <td>Stops training if validation accuracy doesn't improve for 5 consecutive epochs</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Regularization Techniques</h3>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="background: #f8fafc; border-left: 4px solid #be185d; padding: 1.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #be185d;">Spatial Dropout (50% + 30%)</h4>
+                    <p style="margin: 0; color: #334155; font-size: 0.9rem;">Two dropout layers in the classifier head randomly zero out neurons during training to prevent co-adaptation. The first layer (50%) acts as heavy regularization, the second (30%) provides lighter supplemental regularization.</p>
+                </div>
+                <div style="background: #f8fafc; border-left: 4px solid #be185d; padding: 1.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #be185d;">Weight Decay (AdamW L2)</h4>
+                    <p style="margin: 0; color: #334155; font-size: 0.9rem;">AdamW applies decoupled weight decay (λ=0.01) which penalizes large weight magnitudes without interfering with the adaptive learning rate estimates, unlike classical L2 regularization in SGD.</p>
+                </div>
+                <div style="background: #f8fafc; border-left: 4px solid #be185d; padding: 1.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #be185d;">Balanced Sampling</h4>
+                    <p style="margin: 0; color: #334155; font-size: 0.9rem;">WeightedRandomSampler ensures equal representation of real and AI classes during training, preventing the model from developing a bias toward the majority class.</p>
+                </div>
+                <div style="background: #f8fafc; border-left: 4px solid #be185d; padding: 1.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #be185d;">BatchNorm2d on Entropy Maps</h4>
+                    <p style="margin: 0; color: #334155; font-size: 0.9rem;">Normalizes the 9-channel entropy maps to zero-mean unit-variance before feeding into the ResNet backbone, providing an implicit regularization effect and matching the distribution the backbone expects.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: OVERFITTING ANALYSIS -->
+        <div id="section-overfit" class="section-block">
+            <h2 class="section-title">Overfitting Diagnosis</h2>
+            <p class="section-desc" style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid {'var(--accent-red)' if max_overfit_gap > 10.0 else 'var(--accent-green)'};">
+                <strong>Overfitting Gap = Train Accuracy - Validation Accuracy.</strong><br>
+                A gap &gt; 10% indicates the model may be memorizing training data instead of learning generalizable features.<br><br>
+                <strong>Current Status:</strong> Final gap is <strong style="color: {'var(--accent-red)' if final_overfit_gap > 10.0 else 'var(--accent-green)'};">{final_overfit_gap:.2f}%</strong>
+                {'⚠️ — The model shows signs of overfitting. Consider more regularization or more diverse training data.' if final_overfit_gap > 10.0 else '✓ — The model generalizes well to unseen data.'}
+            </p>
+
+            <div class="stats-grid" style="margin-top: 2rem;">
+                <div class="stat-card">
+                    <div class="stat-label">Max Overfit Gap</div>
+                    <div class="stat-value {'red' if max_overfit_gap > 10.0 else 'green'}">{max_overfit_gap:.2f}%</div>
+                    <div class="stat-subtext">Worst-case epoch</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Final Overfit Gap</div>
+                    <div class="stat-value {'red' if final_overfit_gap > 10.0 else 'green'}">{final_overfit_gap:.2f}%</div>
+                    <div class="stat-subtext">Last epoch</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Best Epoch</div>
+                    <div class="stat-value blue">{best_epoch.get('epoch', 'N/A')}</div>
+                    <div class="stat-subtext">Val Acc: {best_epoch.get('val_acc', 'N/A')}%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Best Val F1</div>
+                    <div class="stat-value blue">{best_epoch.get('val_f1', best_epoch.get('val_prec', 'N/A'))}%</div>
+                    <div class="stat-subtext">At best epoch</div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Per-Epoch Gap Analysis</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Epoch</th>
+                            <th>Train Acc</th>
+                            <th>Val Acc</th>
+                            <th>Gap</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {"".join([f'''<tr>
+                            <td>{row.get("epoch", i+1)}</td>
+                            <td style="font-family: var(--font-mono);">{row.get("train_acc", 0):.2f}%</td>
+                            <td style="font-family: var(--font-mono);">{row.get("val_acc", 0):.2f}%</td>
+                            <td style="font-family: var(--font-mono); color: {'var(--accent-red)' if overfit_gaps[i] > 10.0 else 'var(--accent-green)'}; font-weight: 600;">{overfit_gaps[i]:.2f}%</td>
+                            <td>{'⚠️ Overfitting' if overfit_gaps[i] > 10.0 else '✓ Healthy'}</td>
+                        </tr>''' for i, row in enumerate(training_history)]) if training_history else '<tr><td colspan="5" style="text-align: center;">No training history found.</td></tr>'}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION: HARDWARE UTILIZATION -->
+        <div id="section-hardware" class="section-block">
+            <h2 class="section-title">Hardware Utilization (RTX 4050)</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Status</th>
+                            <th>Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>GPU</strong></td>
+                            <td style="font-family: var(--font-mono);">NVIDIA RTX 4050 (6 GB VRAM)</td>
+                            <td>Ada Lovelace architecture, 2560 CUDA cores</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Automatic Mixed Precision (AMP)</strong></td>
+                            <td style="color: var(--accent-green); font-weight: bold;">✓ Enabled</td>
+                            <td>FP16 forward pass + FP32 gradients. Reduces VRAM usage ~40% and increases throughput ~1.5×</td>
+                        </tr>
+                        <tr>
+                            <td><strong>cuDNN Benchmark</strong></td>
+                            <td style="color: var(--accent-green); font-weight: bold;">✓ Enabled</td>
+                            <td>Auto-tunes convolution algorithms for fixed input sizes. ~10-15% speedup after warmup.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TF32 Tensor Cores</strong></td>
+                            <td style="color: var(--accent-green); font-weight: bold;">✓ Enabled</td>
+                            <td>19-bit mantissa precision for matrix multiplications. ~2× throughput vs FP32 with negligible accuracy loss.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>GradScaler</strong></td>
+                            <td style="color: var(--accent-green); font-weight: bold;">✓ Enabled</td>
+                            <td>Dynamic loss scaling prevents FP16 underflow during backpropagation.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>pin_memory</strong></td>
+                            <td style="color: var(--accent-green); font-weight: bold;">✓ Enabled</td>
+                            <td>Page-locks CPU memory for faster host-to-device transfers.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        </div> <!-- Close TabOptimizer -->
+
+        <div id="TabCommands" class="tabcontent">
+        <!-- SECTION: COMMANDS -->
+        <div id="section-commands" class="section-block" style="border-top: none; margin-top: 1rem; padding-top: 0;">
+            <h2 class="section-title">Commands & Reproduction Guide</h2>
+            <p class="section-desc">Complete set of commands to reproduce all results from scratch.</p>
+
+            <h3 style="margin-top: 2rem;">1. Environment Setup</h3>
+            <pre><code>python -m venv venv
+.\\venv\\Scripts\\activate        # Windows
+pip install -r requirements.txt</code></pre>
+
+            <h3 style="margin-top: 2rem;">2. Download Dataset</h3>
+            <pre><code>python scripts/download_dataset.py --target_dir dataset10000 --num_images 10000 --source auto</code></pre>
+
+            <h3 style="margin-top: 2rem;">3. Build Benchmark Splits</h3>
+            <pre><code>python scripts/build_benchmark_dataset.py</code></pre>
+
+            <h3 style="margin-top: 2rem;">4. Train the MLEP Detector</h3>
+            <pre><code>python scripts/train.py --data_dir dataset10000 --output_dir outputs/checkpoints --epochs 10 --batch_size 32 --lr 0.0002 --patience 5</code></pre>
+
+            <h3 style="margin-top: 2rem;">5. Run MLEP Extraction Pipeline</h3>
+            <pre><code>python scripts/run_project.py --data_dir dataset10000 --output_dir outputs/project_run --batch_size 32 --export_visualizations</code></pre>
+
+            <h3 style="margin-top: 2rem;">6. Generate Diagnostic Visualizations</h3>
+            <pre><code>python scripts/generate_extra_visuals.py</code></pre>
+
+            <h3 style="margin-top: 2rem;">7. Generate This Dashboard</h3>
+            <pre><code>python scripts/generate_html_report.py --output outputs/MLEP_Dashboard.html</code></pre>
+
+            <h3 style="margin-top: 2rem;">8. Run Tests</h3>
+            <pre><code>python -m pytest tests/ -v</code></pre>
+
+            <h3 style="margin-top: 2rem;">9. Git Commit & Push</h3>
+            <pre><code>git add .
+git commit -m "Update MLEP pipeline"
+git push origin main</code></pre>
+        </div>
+        </div> <!-- Close TabCommands -->
+
     </div> <!-- Close Container -->
 
     <script>

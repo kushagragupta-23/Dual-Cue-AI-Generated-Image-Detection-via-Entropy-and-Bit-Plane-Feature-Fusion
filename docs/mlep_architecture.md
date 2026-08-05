@@ -43,9 +43,25 @@ The 9-channel entropy map passes through:
 
 ---
 
-## 3. Hardware Details
+## 3. Training & Regularization
 
-- **GPU:** NVIDIA RTX 4050 (6GB VRAM)
-- **Throughput:** ~39 images/sec at batch size 8
-- **Mixed Precision:** Automatic Mixed Precision (AMP) with GradScaler
-- **Entropy Computation:** Fully vectorized using `F.unfold` — no Python loops over spatial dimensions
+To combat overfitting when training on entropy patterns:
+
+- **Optimizer**: AdamW with weight decay (L2 penalty) of 0.01.
+- **Differential Learning Rates**: 
+  - Base: 2e-4
+  - Backbone: 1e-4 (0.5x) to preserve ImageNet pretraining.
+  - Head: 1e-3 (5x) for rapid convergence of the new classifier.
+- **LR Scheduler**: CosineAnnealingLR (T_max=epochs) to smoothly anneal the learning rate.
+- **Dropout**: Strong spatial regularization using Dropout(0.5) and Dropout(0.3) in the MLP head.
+- **Early Stopping**: Patience set to 5 epochs (monitors validation accuracy).
+
+---
+
+## 4. Hardware Details (Optimized)
+
+- **GPU**: NVIDIA RTX 4050 (6GB VRAM, Ada Lovelace)
+- **Automatic Mixed Precision (AMP)**: Enabled with GradScaler for FP16 training speedups and reduced VRAM.
+- **TF32 Tensor Cores**: Enabled (`torch.backends.cuda.matmul.allow_tf32 = True`) for near-FP16 speed with FP32 precision.
+- **cuDNN Benchmark**: Enabled for auto-tuning convolutional kernels.
+- **Entropy Computation**: Fully vectorized using `F.unfold` — no Python loops over spatial dimensions.
