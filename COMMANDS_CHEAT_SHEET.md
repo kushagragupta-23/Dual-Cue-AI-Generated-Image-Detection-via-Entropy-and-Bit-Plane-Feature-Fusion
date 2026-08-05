@@ -51,7 +51,7 @@ This standalone script runs the dataset through the LBP, FFT, and Noise Residual
 python scripts/generate_extra_visuals.py
 ```
 ### D. Generate the Interactive HTML Dashboard
-This generates a self-contained, premium glassmorphism HTML dashboard with embedded training metrics, entropy Pyramids, and the Dual-Cue architectural pipeline.
+This generates a self-contained, premium glassmorphism HTML dashboard with embedded training metrics, entropy Pyramids, and the MLEP architectural pipeline.
 
 **Cross-Platform Command:**
 ```bash
