@@ -409,10 +409,10 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
 
         <!-- SECTION: COMPLETE ARCHITECTURE PIPELINE -->
         <div id="section-pipeline" class="section-block" style="border-top: none; margin-top: 1rem; padding-top: 0;">
-            <h2 class="section-title" style="margin-bottom: 0.5rem; text-align: left;">MLEP Architecture Pipeline</h2>
+            <h2 class="section-title" style="margin-bottom: 0.5rem; text-align: left;">Full Dual-Cue Architecture Pipeline (Roadmap)</h2>
             <p class="section-desc" style="margin-bottom: 2rem; text-align: left;">
-                This diagram illustrates the complete theoretical pipeline for the project. The <strong>MLEP</strong> architecture is fully implemented and mathematically verified. <br><br>
-                <strong style="color: var(--accent-blue);">Deep Research Methodology:</strong> We rely exclusively on Multi-granularity Local Entropy Patterns to mathematically guarantee detection of generative oversmoothing, eliminating content biases found in standard RGB semantic detectors.
+                This diagram illustrates the complete theoretical pipeline for the project. Currently, the <strong>MLEP</strong> branch is fully implemented and mathematically verified. The <strong>BPFF</strong> branch is <strong>currently under progress by Aishwarya</strong>. <br><br>
+                <strong style="color: var(--accent-blue);">Deep Research Methodology (Parallel Engineering):</strong> By having two different researchers independently engineer the macro-texture analyzer (MLEP) and the micro-steganographic analyzer (BPFF), we mathematically guarantee zero cross-contamination of algorithmic biases. Once both independent models achieve maximum isolated accuracy, the final fusion mechanism will merge them into a single, unbiased dual-cue architecture.
             </p>
             
             <div style="background: #f8fafc; padding: 2rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; gap: 1.5rem; font-family: var(--font-main);">
@@ -422,18 +422,40 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
                     Raw Image Input (Real or AI-Generated)
                 </div>
                 
-                <!-- Down Arrow -->
-                <div style="color: #94a3b8; font-weight: bold;">&#x2193;</div>
+                <!-- Split Arrows -->
+                <div style="display: flex; gap: 8rem; color: #94a3b8; font-weight: bold;">
+                    <div>&#x2199;</div>
+                    <div>&#x2198;</div>
+                </div>
 
-                <!-- Single Branch -->
+                <!-- Dual Branches -->
                 <div style="display: flex; gap: 2rem; width: 100%; justify-content: center;">
                     <!-- MLEP Branch (Active) -->
-                    <div style="background: #ecfdf5; padding: 1.5rem; border-radius: 8px; border: 2px solid var(--accent-green); width: 60%; text-align: center; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.15); position: relative;">
-                        <span style="position: absolute; top: -10px; right: -10px; background: var(--accent-green); color: white; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: bold; text-transform: uppercase;">Active</span>
-                        <h4 style="color: #065f46; margin-top: 0; margin-bottom: 0.5rem;">MLEP Architecture</h4>
+                    <div style="background: #ecfdf5; padding: 1.5rem; border-radius: 8px; border: 2px solid var(--accent-green); width: 45%; text-align: center; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.15); position: relative;">
+                        <span style="position: absolute; top: -10px; right: -10px; background: var(--accent-green); color: white; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: bold; text-transform: uppercase;">Current Phase</span>
+                        <h4 style="color: #065f46; margin-top: 0; margin-bottom: 0.5rem;">Branch 1: MLEP</h4>
                         <strong style="color: #047857; font-size: 0.9rem;">Multi-Level Entropy Pyramids</strong>
                         <p style="font-size: 0.8rem; color: #064e3b; margin-top: 0.5rem; line-height: 1.4;">Extracts high-frequency structural chaos, Photonic Noise, and Local Binary Patterns (LBP) to expose generative oversmoothing.</p>
                     </div>
+
+                    <!-- BPFF Branch (In Progress) -->
+                    <div style="background: #f1f5f9; padding: 1.5rem; border-radius: 8px; border: 2px dashed #3b82f6; width: 45%; text-align: center; opacity: 0.9; position: relative; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);">
+                        <span style="position: absolute; top: -10px; right: -10px; background: #3b82f6; color: white; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: bold; text-transform: uppercase;">Under Progress (Aishwarya)</span>
+                        <h4 style="color: #1e3a8a; margin-top: 0; margin-bottom: 0.5rem;">Branch 2: BPFF</h4>
+                        <strong style="color: #1d4ed8; font-size: 0.9rem;">Bit-Plane Feature Fusion</strong>
+                        <p style="font-size: 0.8rem; color: #1e40af; margin-top: 0.5rem; line-height: 1.4;">Slices images into bit-planes to detect low-level steganographic tampering. Independently engineered to prevent bias contamination.</p>
+                    </div>
+                </div>
+
+                <!-- Merge Arrows -->
+                <div style="display: flex; gap: 8rem; color: #94a3b8; font-weight: bold;">
+                    <div>&#x2198;</div>
+                    <div>&#x2199;</div>
+                </div>
+
+                <!-- Fusion Block -->
+                <div style="background: #f8fafc; padding: 1rem 2rem; border-radius: 8px; font-weight: bold; color: #475569; border: 2px dashed #cbd5e1; width: 60%; text-align: center;">
+                    Dual-Cue Feature Fusion Module
                 </div>
 
                 <!-- Down Arrow -->
