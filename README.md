@@ -4,23 +4,16 @@ This project implements a state-of-the-art neural network designed to detect AI-
 
 It explicitly moves away from easily spoofable RGB semantic features and instead relies exclusively on **Shannon Entropy anomalies (MLEP)**, which are much harder for generative AI models (like Stable Diffusion and Midjourney) to fake perfectly.
 
-## 🔬 Core Algorithm: Dual-Cue Architecture (ICCV 2025/2026 Focus)
+## 🔬 Core Algorithm: MLEP (NeurIPS 2025 Focus)
 
 1. **Yuan et al. (NeurIPS 2025)**: *MLEP: Multi-granularity Local Entropy Patterns for Generalized AI-generated Image Detection.*
-2. **Zhu et al. (NeurIPS 2026)**: *GenImage-XL: A Massive 2026 Benchmark for Detecting Next-Generation AI Images.*
 
-This project relies on a full **Dual-Cue Architecture**, engineered in parallel by two researchers to guarantee zero cross-contamination of algorithmic biases:
+This project is entirely focused on the **Multi-granularity Local Entropy Patterns (MLEP)** architecture to detect AI-generated images through macro-texture analysis:
 
-### Branch 1: MLEP (Macro-Texture Analyzer) - [ACTIVE]
 *   **Concept (Generative Oversmoothing):** Real camera sensors capture physical light, embedding true structural chaos (Photonic Noise) into the pixel matrix. Generative models (like Diffusion Models) rely on gradient estimation to denoise images, which mathematically smooths out high-frequency micro-textures.
 *   **The Entropy Collapse:** Our diagnostics prove that Real images maintain a superior Mean Entropy of **1.911**, while AI-generated images suffer an **Entropy Collapse to 1.906**.
 *   **Implementation:** The `MLEPExtractor` computes Shannon entropy across shuffled image patches to expose this generative oversmoothing. The system extracts 15 Advanced Forensic Visuals (LBP, FFT, Noise Residuals) to mathematically map the missing physical imperfections.
 *   **Hardware Latency:** Evaluated strictly on an NVIDIA RTX 4050, demonstrating real-time throughput of **39.35 FPS**.
-
-### Branch 2: BPFF (Micro-Steganographic Analyzer) - [IN PROGRESS]
-*   **Parallel Engineering:** Currently under independent development by a teammate. 
-*   **Concept:** While MLEP detects macro-texture smoothing, the **Bit-Plane Feature Fusion (BPFF)** branch slices images into 8 binary bit-planes to detect low-level cryptographic and steganographic anomalies hidden in the Least Significant Bits (LSB).
-*   **Ultimate Fusion:** Once both branches reach maximum isolated accuracy, they will be combined into a single, unbeatable diagnostic classifier.
 
 ## 📂 100% Verified Dataset & Provenance
 
@@ -65,4 +58,15 @@ Run the end-to-end evaluation, extract features, and generate the interactive HT
 ```bash
 python scripts/run_project.py --data_dir dataset10000 --output_dir outputs/project_run --batch_size 8 --export_visualizations
 ```
+
+## 🎤 Live Demonstration & Presentation Guide
+
+If you need to present this project live, train the model in front of an audience, or reproduce the exact outputs shown on the HTML dashboard, please refer to the dedicated presentation guide:
+
+➡️ **[LIVE_DEMONSTRATION_GUIDE.md](LIVE_DEMONSTRATION_GUIDE.md)**
+
+This guide contains the exact copy-paste commands to show:
+1. Live Data Training, Testing, and Validating (Terminal Output).
+2. Generating the 15 Advanced Forensic Visuals (LBP, FFT, Noise Residuals).
+3. Compiling the final Premium HTML Dashboard live.
 The resulting `outputs/MLEP_Dashboard.html` will contain premium glassmorphism visuals, live training metrics, and interactive entropy visualizations.
