@@ -432,7 +432,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
                 <div style="display: flex; gap: 2rem; width: 100%; justify-content: center;">
                     <!-- MLEP Branch (Active) -->
                     <div style="background: #ecfdf5; padding: 1.5rem; border-radius: 8px; border: 2px solid var(--accent-green); width: 45%; text-align: center; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.15); position: relative;">
-                        <span style="position: absolute; top: -10px; right: -10px; background: var(--accent-green); color: white; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: bold; text-transform: uppercase;">Current Phase</span>
+                        <span style="position: absolute; top: -10px; right: -10px; background: var(--accent-green); color: white; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: bold; text-transform: uppercase;">Current Phase (Kushagra)</span>
                         <h4 style="color: #065f46; margin-top: 0; margin-bottom: 0.5rem;">Branch 1: MLEP</h4>
                         <strong style="color: #047857; font-size: 0.9rem;">Multi-Level Entropy Pyramids</strong>
                         <p style="font-size: 0.8rem; color: #064e3b; margin-top: 0.5rem; line-height: 1.4;">Extracts high-frequency structural chaos, Photonic Noise, and Local Binary Patterns (LBP) to expose generative oversmoothing.</p>
@@ -455,7 +455,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
 
                 <!-- Fusion Block -->
                 <div style="background: #f8fafc; padding: 1rem 2rem; border-radius: 8px; font-weight: bold; color: #475569; border: 2px dashed #cbd5e1; width: 60%; text-align: center;">
-                    Dual-Cue Feature Fusion Module
+                    Dual-Cue Feature Fusion Module (Kushagra & Aishwarya)
                 </div>
 
                 <!-- Down Arrow -->
@@ -463,7 +463,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
 
                 <!-- Final Output -->
                 <div style="background: #f8fafc; padding: 1rem 2rem; border-radius: 8px; font-weight: bold; color: #475569; border: 2px solid #cbd5e1; width: 40%; text-align: center;">
-                    Final Diagnostic Classifier (AI vs Real)
+                    Final Diagnostic Classifier (Kushagra & Aishwarya)
                 </div>
 
             </div>
