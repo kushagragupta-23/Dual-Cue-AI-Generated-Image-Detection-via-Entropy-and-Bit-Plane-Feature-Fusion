@@ -724,7 +724,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
             
             <h3 style="margin-top: 3rem; font-size: 1.75rem; color: #0f172a;">Irrefutable Dataset Provenance</h3>
             <p style="margin-bottom: 2rem; color: #475569; font-size: 0.95rem; line-height: 1.6; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-blue);">
-                <strong>Deep Research Context: The Data Poisoning Vulnerability</strong><br><br>
+                <strong>Research Context: The Data Poisoning Vulnerability</strong><br><br>
                 In machine learning, the ultimate vulnerability is the "Garbage In, Garbage Out" (GIGO) principle. If a neural network is trained on a dataset containing even 1% mislabeled or ambiguously sourced images, the entire resulting mathematical model is poisoned, rendering its diagnostic claims useless. In the field of AI Steganalysis, researchers frequently scrape images from the internet, leading to "false reals" (undetected AI art secretly labeled as real photos).<br><br>
                 The following proofs establish absolute, cryptographic certainty. By relying exclusively on chronological impossibilities and deterministic cryptographic synthesis, we guarantee that the 10,000 images used to train and test the MLEP architecture are perfectly labeled, free of data poisoning, and cannot be mathematically or logically disputed.
             </p>
@@ -868,17 +868,17 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         <div id="section-training" class="section-block">
             <h2 class="section-title">MLEP Detector Training History</h2>
             <p class="section-desc">Epoch-by-epoch tracking of Train vs Validation metrics.</p>
-            <p class="deep-desc" style="font-size: 0.95rem; line-height: 1.6; color: #475569; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-blue); margin-bottom: 2rem;"><strong>Deep Research Breakdown:</strong> This table exposes the internal learning psychology of the neural network over time (Epochs). <br><br><strong>What is happening:</strong> In Epoch 1, the model is basically blind, randomly guessing (Train Acc: 63%). By Epoch 10, it has rewritten its internal weights millions of times to find the optimal mathematical manifold to separate Real from AI. <br><strong>What it means:</strong> You must compare <strong>Train Loss</strong> against <strong>Val Loss</strong>. If Train Loss keeps dropping to 0.01, but Val Loss shoots up to 2.00, the model has catastrophically overfitted—meaning it memorized the exact pixels of the training data instead of learning the universal concept of "AI Generation". A healthy model (like this one) sees both losses smoothly converge downwards together.</p>
+            <p class="deep-desc" style="font-size: 0.95rem; line-height: 1.6; color: #475569; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-blue); margin-bottom: 2rem;"><strong>Detailed Breakdown:</strong> This table exposes the internal learning psychology of the neural network over time (Epochs). <br><br><strong>What is happening:</strong> In Epoch 1, the model is basically blind, randomly guessing (Train Acc: 63%). By Epoch 10, it has rewritten its internal weights millions of times to find the optimal mathematical manifold to separate Real from AI. <br><strong>What it means:</strong> You must compare <strong>Train Loss</strong> against <strong>Val Loss</strong>. If Train Loss keeps dropping to 0.01, but Val Loss shoots up to 2.00, the model has catastrophically overfitted—meaning it memorized the exact pixels of the training data instead of learning the universal concept of "AI Generation". A healthy model (like this one) sees both losses smoothly converge downwards together.</p>
             
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
                         <tr>
-                            <th>Epoch</th>
-                            <th>Train Loss</th>
-                            <th>Train Acc</th>
-                            <th>Val Loss</th>
-                            <th>Val Acc</th>
+                            <th style="padding-bottom: 1rem; vertical-align: top;">Epoch<br><span style="font-size: 0.75rem; color: #64748b; font-weight: normal;">(Full pass through dataset)</span></th>
+                            <th style="padding-bottom: 1rem; vertical-align: top;">Train Loss<br><span style="font-size: 0.75rem; color: #64748b; font-weight: normal;">(Model's error rate on training data)</span></th>
+                            <th style="padding-bottom: 1rem; vertical-align: top;">Train Acc<br><span style="font-size: 0.75rem; color: #64748b; font-weight: normal;">(% of training data correct)</span></th>
+                            <th style="padding-bottom: 1rem; vertical-align: top;">Val Loss<br><span style="font-size: 0.75rem; color: #64748b; font-weight: normal;">(Error rate on unseen data)</span></th>
+                            <th style="padding-bottom: 1rem; vertical-align: top;">Val Acc<br><span style="font-size: 0.75rem; color: #64748b; font-weight: normal;">(% of unseen data correct)</span></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -898,7 +898,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         <div id="section-report" class="section-block">
             <h2 class="section-title">Pipeline Execution Analytics</h2>
             <p class="section-desc">Master JSON execution summary.</p>
-            <p class="deep-desc" style="font-size: 0.95rem; line-height: 1.6; color: #475569; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-blue); margin-bottom: 2rem;"><strong>Deep Research Breakdown:</strong> This raw JSON payload is the explicit machine-to-machine telemetry output. It mathematically proves exactly how many images were processed (6,000) and the exact microsecond hardware limits of the current code. <br><br><strong>What it means:</strong> The <code>divergence_contrast_ratio</code> of 1.0 proves that the Shannon Entropy Pyramids calculated the noise floors without mathematical overflow. The <code>avg_batch_latency_ms</code> directly proves that this architecture is extremely lightweight and can be deployed on edge devices (like smartphones or low-power servers) without needing a massive GPU farm.</p>
+            <p class="deep-desc" style="font-size: 0.95rem; line-height: 1.6; color: #475569; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-blue); margin-bottom: 2rem;"><strong>Detailed Breakdown:</strong> This raw JSON payload is the explicit machine-to-machine telemetry output. It mathematically proves exactly how many images were processed (6,000) and the exact microsecond hardware limits of the current code. <br><br><strong>What it means:</strong> The <code>divergence_contrast_ratio</code> of 1.0 proves that the Shannon Entropy Pyramids calculated the noise floors without mathematical overflow. The <code>avg_batch_latency_ms</code> directly proves that this architecture is extremely lightweight and can be deployed on edge devices (like smartphones or low-power servers) without needing a massive GPU farm.</p>
             <pre><code>{json.dumps(summary_data, indent=2)}</code></pre>
         </div>
     </div>
