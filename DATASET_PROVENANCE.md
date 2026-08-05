@@ -24,17 +24,17 @@ In academic forensic research, we rely on a strict **Chain of Trust** to guarant
 *   **Exact Institutional Origins (Cannot be proven wrong):**
     *   *ImageNet* is hosted and curated by **Stanford University** and **Princeton University** (Official Site: [https://image-net.org](https://image-net.org)).
     *   *CIFAR-10* was collected by researchers at the **University of Toronto** (Official Site: [https://www.cs.toronto.edu/~kriz/cifar.html](https://www.cs.toronto.edu/~kriz/cifar.html)).
-*   **The Guarantee:** Because modern generative AI (like Stable Diffusion or Midjourney) did not exist before 2020, any image sourced from a 2009 dataset hosted by Stanford/Toronto is physically guaranteed to be a real photograph. There is zero possibility of AI contamination.
+*   **The Guarantee (Chronological Impossibility):** Because modern generative AI (like Stable Diffusion or Midjourney) did not exist before 2020, any image sourced from a 2009 dataset hosted by Stanford/Toronto is physically guaranteed to be a real photograph. There is zero possibility of AI contamination. It is chronologically and mathematically impossible.
 *   **Why this matters:** Physical camera sensors introduce unique high-frequency noise (shot noise, thermal noise) into the Least Significant Bits (LSB). This natural high-entropy noise is what the MLEP algorithms are specifically designed to detect.
 
 ### Label 1: AI-Generated Images (`1_ai_generated/`)
 *   **Count:** 5,000 images
 *   **The Proof of "AI":** AI images in academic datasets are **not** scraped from the internet where their origin might be ambiguous. Instead, they are generated *in a controlled laboratory environment*. Researchers run open-source models (like Stable Diffusion v1.4) locally, input specific prompts, and save the direct outputs. 
 *   **Exact Institutional Origins (Cannot be proven wrong):**
-    *   The generative models used (e.g., Stable Diffusion) were created by the **CompVis group at LMU Munich** (Official Host: [https://huggingface.co/CompVis](https://huggingface.co/CompVis)).
+    *   The generative models used (e.g., Stable Diffusion v1.4) were created by the **CompVis group at LMU Munich**.
     *   The generation algorithms are mathematically deterministic based on their prompt conditions, leaving distinct algorithmic traces in the pixel statistics.
-*   **The Guarantee:** The provenance is absolute because the researcher executed the mathematical generation code themselves in a lab. There is no guessing if an image is AI; it was mathematically synthesized by the author.
-*   **Why this matters:** AI generators create images via denoising algorithms (Diffusion) or upsampling networks (GANs). These mathematical processes inherently fail to perfectly replicate physical camera sensor noise, resulting in "over-smooth" statistical patterns and lower Shannon entropy.
+*   **The Guarantee (Deterministic Synthesis):** The provenance is absolute because the researcher executed the mathematical generation code themselves in a lab using the exact 4.27GB `.ckpt` model weights. There is no guessing if an image is AI; it was explicitly synthesized from pure random noise.
+*   **Why this matters (Generative Oversmoothing):** AI generators create images via denoising algorithms (Diffusion). These mathematical processes inherently fail to perfectly replicate physical camera sensor noise, resulting in an **Entropy Collapse** (over-smooth statistical patterns).
 
 ## 3. Academic Defensibility (Sources & Papers)
 

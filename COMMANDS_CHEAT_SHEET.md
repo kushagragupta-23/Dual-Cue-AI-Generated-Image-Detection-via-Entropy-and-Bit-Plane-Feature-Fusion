@@ -43,16 +43,22 @@ This command executes the end-to-end MLEP extraction pipeline, computes entropy 
 ```bash
 python scripts/run_project.py --data_dir dataset10000 --output_dir outputs/project_run --batch_size 8 --export_visualizations
 ```
+### C. Generate the 15 Advanced Forensic Visuals
+This standalone script runs the dataset through the LBP, FFT, and Noise Residual processors to mathematically map the Generative Oversmoothing flaws (creates the 15 charts used in the dashboard).
 
-### C. Generate the Interactive HTML Dashboard
-This generates a self-contained, premium glassmorphism HTML dashboard with embedded training metrics and entropy visualizations.
+**Cross-Platform Command:**
+```bash
+python scripts/generate_extra_visuals.py
+```
+### D. Generate the Interactive HTML Dashboard
+This generates a self-contained, premium glassmorphism HTML dashboard with embedded training metrics, entropy Pyramids, and the Dual-Cue architectural pipeline.
 
 **Cross-Platform Command:**
 ```bash
 python scripts/generate_html_report.py --output outputs/MLEP_Dashboard.html
 ```
 
-### D. Build / Validate the Dataset
+### E. Build / Validate the Dataset
 If you ever move to a new machine and need to reconstruct the verified 10,000-image dataset from scratch (assuming you have the raw images downloaded).
 
 **Cross-Platform Command:**

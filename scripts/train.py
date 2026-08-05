@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Training Pipeline for the MLEP AI-Generated Image Detector.
-Trains the MLEPDetector on the provided dataset.
+Training Pipeline for the MLEP (Macro-Texture Analyzer) Branch.
+Trains the Entropy Pyramids to detect Generative Oversmoothing in the provided dataset.
 """
 
 import argparse
