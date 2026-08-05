@@ -412,7 +412,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
             <h2 class="section-title" style="margin-bottom: 0.5rem; text-align: left;">Full Dual-Cue Architecture Pipeline (Roadmap)</h2>
             <p class="section-desc" style="margin-bottom: 2rem; text-align: left;">
                 This diagram illustrates the complete theoretical pipeline for the project. Currently, the <strong>MLEP</strong> branch is fully implemented and mathematically verified. The <strong>BPFF</strong> branch is <strong>currently under progress by Aishwarya</strong>. <br><br>
-                <strong style="color: var(--accent-blue);">Deep Research Methodology (Parallel Engineering):</strong> By having two different researchers independently engineer the macro-texture analyzer (MLEP) and the micro-steganographic analyzer (BPFF), we mathematically guarantee zero cross-contamination of algorithmic biases. Once both independent models achieve maximum isolated accuracy, the final fusion mechanism will merge them into a single, unbiased dual-cue architecture.
+                <strong style="color: var(--accent-blue);">Methodology (Parallel Engineering):</strong> By having two different researchers independently engineer the macro-texture analyzer (MLEP) and the micro-steganographic analyzer (BPFF), we mathematically guarantee zero cross-contamination of algorithmic biases. Once both independent models achieve maximum isolated accuracy, the final fusion mechanism will merge them into a single, unbiased dual-cue architecture.
             </p>
             
             <div style="background: #f8fafc; padding: 2rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; gap: 1.5rem; font-family: var(--font-main);">
@@ -435,16 +435,7 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
                         <span style="position: absolute; top: -10px; right: -10px; background: var(--accent-green); color: white; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: bold; text-transform: uppercase;">Current Phase (Kushagra)</span>
                         <h4 style="color: #065f46; margin-top: 0; margin-bottom: 0.5rem;">Branch 1: MLEP</h4>
                         <strong style="color: #047857; font-size: 0.9rem;">Multi-Level Entropy Pyramids</strong>
-                        <div style="font-size: 0.75rem; color: #064e3b; margin-top: 0.8rem; text-align: left; background: rgba(255,255,255,0.6); padding: 0.8rem; border-radius: 6px;">
-                            <div style="font-weight: bold; margin-bottom: 4px;">Pipeline Steps:</div>
-                            <ol style="margin: 0; padding-left: 1.2rem; line-height: 1.5;">
-                                <li><strong>Patch Shuffling:</strong> Local L×L micro-patch permutation to isolate structural chaos.</li>
-                                <li><strong>Multi-Scale Pyramid:</strong> Resampling to 1.0x, 0.5x, 0.25x resolutions.</li>
-                                <li><strong>Shannon Entropy:</strong> 2x2 sliding window entropy extraction.</li>
-                                <li><strong>Spatial Encoder:</strong> ImageNet-tiled ResNet-50 backbone.</li>
-                                <li><strong>MLP Head:</strong> Dropout-regularized logit projection.</li>
-                            </ol>
-                        </div>
+                        <p style="font-size: 0.8rem; color: #064e3b; margin-top: 0.5rem; line-height: 1.4;">Extracts high-frequency structural chaos, Photonic Noise, and Local Binary Patterns (LBP) to expose generative oversmoothing.</p>
                     </div>
 
                     <!-- BPFF Branch (In Progress) -->
@@ -478,8 +469,38 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
             </div>
         </div>
 
+        <!-- SECTION: MLEP DETAILED PIPELINE -->
+        <div id="section-mlep-pipeline" class="section-block" style="border-top: none; margin-top: 3rem; padding-top: 0;">
+            <h2 class="section-title" style="margin-bottom: 0.5rem; text-align: left;">Branch 1 (Kushagra): Detailed MLEP Engineering Pipeline</h2>
+            <p class="section-desc" style="margin-bottom: 2rem; text-align: left;">
+                The Multi-Level Entropy Pyramids (MLEP) module is fully implemented and relies on a strict 5-step mathematical extraction process to expose generative oversmoothing before passing data to the fusion block.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="background: #f8fafc; border-left: 4px solid var(--accent-green); padding: 1.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #065f46;">1. Patch Shuffling</h4>
+                    <p style="margin: 0; color: #334155; font-size: 0.9rem;">Partitions each R, G, B channel into L×L micro-patches and applies a seeded pseudo-random spatial permutation. This destroys local continuity while preserving global semantics.</p>
+                </div>
+                <div style="background: #f8fafc; border-left: 4px solid var(--accent-green); padding: 1.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #065f46;">2. Multi-Scale Resampling Pyramid</h4>
+                    <p style="margin: 0; color: #334155; font-size: 0.9rem;">Bilinear downsampling at scales {1.0, 0.5, 0.25} followed by bilinear upsampling back to the original resolution, capturing both pixel-level noise and texture-level anomalies.</p>
+                </div>
+                <div style="background: #f8fafc; border-left: 4px solid var(--accent-green); padding: 1.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #065f46;">3. 2×2 Sliding Window Shannon Entropy</h4>
+                    <p style="margin: 0; color: #334155; font-size: 0.9rem;">Computes discrete Shannon entropy over every 4-pixel window to quantify structural chaos, outputting a dense 9-channel anomaly heatmap.</p>
+                </div>
+                <div style="background: #f8fafc; border-left: 4px solid var(--accent-green); padding: 1.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #065f46;">4. Spatial Encoder (ResNet-50)</h4>
+                    <p style="margin: 0; color: #334155; font-size: 0.9rem;">The 9-channel entropy maps are zero-mean unit-variance normalized via BatchNorm2d, and fed into an ImageNet-tiled ResNet-50 backbone to produce a 2048-D global feature vector.</p>
+                </div>
+                <div style="background: #f8fafc; border-left: 4px solid var(--accent-green); padding: 1.5rem; border-radius: 0 8px 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #065f46;">5. MLP Classifier Head</h4>
+                    <p style="margin: 0; color: #334155; font-size: 0.9rem;">A dropout-regularized multi-layer perceptron (Linear(2048→512) → ReLU → Linear(512→1)) computes the final predictive logit.</p>
+                </div>
+            </div>
+        </div>
+
         <div id="section-top-metrics" class="section-block" style="border-top: none; margin-top: 3rem; padding-top: 0;">
-            <h2 class="section-title" style="margin-bottom: 0.5rem; text-align: left;">Deep Research Summary: Top 8 Metrics</h2>
+            <h2 class="section-title" style="margin-bottom: 0.5rem; text-align: left;">Execution Summary: Top 8 Metrics</h2>
             <p class="section-desc" style="margin-bottom: 2rem; text-align: left; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-blue);">
                 The 8 cards below represent the absolute maximum theoretical performance of the MLEP architecture running on an NVIDIA RTX 4050.<br><br>
                 <strong>Architecture Note:</strong> This MLEP implementation is extremely heavy-duty. It uses a <strong>completely unfrozen ResNet-50 backbone</strong>, computing full gradients across all <strong>23.5 million parameters</strong> during training to maximize feature extraction from the 2x2 local entropy patches.<br><br>
