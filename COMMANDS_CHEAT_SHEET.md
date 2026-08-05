@@ -58,12 +58,28 @@ This generates a self-contained, premium glassmorphism HTML dashboard with embed
 python scripts/generate_html_report.py --output outputs/MLEP_Dashboard.html
 ```
 
-### E. Build / Validate the Dataset
-If you ever move to a new machine and need to reconstruct the verified 10,000-image dataset from scratch (assuming you have the raw images downloaded).
+### E. Download the Verified Dataset
+Streams the verified Real/AI images directly from HuggingFace and writes the `provenance_manifest.json`.
+
+**Cross-Platform Command:**
+```bash
+python scripts/download_dataset.py --target_dir outputs/verified_dataset --num_images 10000 --source auto
+```
+
+### F. Build / Validate the Benchmark Dataset
+If you ever move to a new machine and need to synthesize or reconstruct a structured benchmark dataset from scratch.
 
 **Cross-Platform Command:**
 ```bash
 python scripts/build_benchmark_dataset.py
+```
+
+### G. Visualize Core MLEP Algorithm Live
+Generates a sample image in memory and runs it through the Multi-granularity Local Entropy Patterns extractor, printing the entropy maps and sizes directly to the terminal for debugging or demonstration.
+
+**Cross-Platform Command:**
+```bash
+python scripts/visualize_mlep.py
 ```
 
 ---
