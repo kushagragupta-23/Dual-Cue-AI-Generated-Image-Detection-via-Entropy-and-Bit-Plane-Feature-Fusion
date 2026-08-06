@@ -462,7 +462,8 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
             <button class="tablinks" onclick="openTab(event, 'TabOptimizer')">3. Optimizer & Overfitting</button>
             <button class="tablinks" onclick="openTab(event, 'TabVisuals')">4. Diagnostic Visuals</button>
             <button class="tablinks" onclick="openTab(event, 'TabData')">5. Data Provenance</button>
-            <button class="tablinks" onclick="openTab(event, 'TabCommands')">6. Commands & Reproduction</button>
+            <button class="tablinks" onclick="openTab(event, 'TabDeepResearch')">6. Deep Research & Proofs</button>
+            <button class="tablinks" onclick="openTab(event, 'TabCommands')">7. Commands & Reproduction</button>
         </div>
         
         <div id="TabArchitecture" class="tabcontent" style="display:block;">
@@ -1150,6 +1151,395 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
         </div>
 
         </div> <!-- Close TabOptimizer -->
+
+        
+        <div id="TabDeepResearch" class="tabcontent">
+        <div id="section-deep-research" class="section-block" style="border-top: none; margin-top: 1rem; padding-top: 0; max-width: 900px; margin: 0 auto;">
+            <h1>MLEP Project: Complete Technical Reference & Deep Research Documentation</h1>
+<br>
+<p style="margin-bottom: 1rem;">This document provides a comprehensive explanation of <strong>every single component</strong> in the MLEP AI-Generated Image Detection project — every configuration parameter, every chart, every architectural decision, every training strategy — with the reasoning, proofs, and scientific justification behind each choice.</p>
+<br>
+<p style="margin-bottom: 1rem;">---</p>
+<br>
+<h2 class="section-title" style="margin-top:3rem;">Table of Contents</h2>
+<br>
+<li><a href="#1-the-core-problem">The Core Problem: Why Does This Work?</a></li>
+<li><a href="#2-configuration-parameters">Configuration Parameters Explained</a></li>
+<li><a href="#3-architecture-deep-dive">Architecture Deep Dive</a></li>
+<p style="margin-bottom: 1rem;">4. <a href="#4-training-strategy">Training Strategy & Optimizer Decisions</a></p>
+<p style="margin-bottom: 1rem;">5. <a href="#5-data-augmentation">Data Augmentation Strategy (Forensics Insight)</a></p>
+<p style="margin-bottom: 1rem;">6. <a href="#6-charts-explained">All Charts & Visualizations Explained</a></p>
+<p style="margin-bottom: 1rem;">7. <a href="#7-final-metrics">Final Metrics & What They Mean</a></p>
+<br>
+<p style="margin-bottom: 1rem;">---</p>
+<br>
+<h2 class="section-title" style="margin-top:3rem;">1. The Core Problem: Why Does This Work?</h2>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">The Generative Oversmoothing Effect</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What:</strong> Real cameras capture light through a physical sensor (CCD/CMOS). This process inherently embeds random photonic noise — tiny, invisible high-frequency variations in pixel values. AI generative models (Stable Diffusion, Midjourney, DALL-E) work by *denoising* a random noise image step-by-step. This denoising process systematically smooths out high-frequency micro-textures.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Why it matters:</strong> This means every AI-generated image has slightly *less* randomness (lower entropy) at the pixel level compared to a real photograph, even if the image looks perfectly realistic to the human eye.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Proof (from our data):</strong></p>
+<table><tr><th>Metric</th><th>Real Images</th><th>AI-Generated Images</th></tr>
+<tr><td>Mean Shannon Entropy</td><td>**1.7844**</td><td>**1.7658**</td></tr>
+<tr><td>Difference</td><td></td><td>**-0.0186**</td></tr>
+<br>
+</table><br>
+<p style="margin-bottom: 1rem;">This 0.0186 entropy gap is tiny but <strong>consistent across thousands of images</strong>. Our neural network learns to detect this gap.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Scientific basis:</strong> Yuan et al., "MLEP: Multi-granularity Local Entropy Patterns for AI-generated Image Detection" (<a href="https://arxiv.org/abs/2604.13726">arXiv:2604.13726</a>); Wang et al., CVPR 2025, "Re-evaluating Frequency Domain Forensics in the Era of Advanced Diffusion Models."</p>
+<br>
+<p style="margin-bottom: 1rem;">---</p>
+<br>
+<h2 class="section-title" style="margin-top:3rem;">2. Configuration Parameters Explained (`configs/default.yaml`)</h2>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">Dataset Section</h3>
+<br>
+<table><tr><th>Parameter</th><th>Value</th><th>What It Does</th><th>Why This Value</th></tr>
+<tr><td>`data_dir`</td><td>`dataset10000`</td><td>Path to the image folder</td><td>Contains our 10,000 images (5K real + 5K AI)</td></tr>
+<tr><td>`image_size`</td><td>`256`</td><td>All images are resized to 256×256 pixels</td><td>This is the standard input size for ResNet-50. Larger (512) would capture more noise detail but exceeds RTX 4050's 6GB VRAM. 256 is the optimal balance.</td></tr>
+<tr><td>`batch_size`</td><td>`32`</td><td>Number of images processed together in one forward pass</td><td>32 fills ~4GB of the 6GB VRAM. Going to 64 causes out-of-memory crashes. Going to 16 wastes GPU capacity.</td></tr>
+<tr><td>`num_workers`</td><td>`0`</td><td>Number of CPU threads loading images in parallel</td><td>Windows has a known bug where `num_workers > 0` causes `fork()` memory leaks. Set to `0` for safety on Windows, `2` on Linux.</td></tr>
+<tr><td>`val_split`</td><td>`0.20`</td><td>20% of data reserved for validation</td><td>Standard ML practice. 20% = 2,000 images, enough for statistically reliable accuracy estimates.</td></tr>
+<tr><td>`test_split`</td><td>`0.20`</td><td>20% of data reserved for final testing</td><td>Never seen during training. This is the "exam" the model takes at the very end.</td></tr>
+<tr><td>`seed`</td><td>`42`</td><td>Random seed for reproducibility</td><td>Ensures the same train/val/test split every run. `42` is a convention (Hitchhiker's Guide reference).</td></tr>
+<tr><td>`enable_augmentations`</td><td>`true`</td><td>Apply random image transforms during training</td><td>Prevents the model from memorizing specific images. Forces it to learn the *entropy pattern* rather than surface features.</td></tr>
+<tr><td>`jpeg_quality_min/max`</td><td>`70 / 100`</td><td>Range for random JPEG recompression quality</td><td>Simulates what happens when images are shared on social media (WhatsApp, Instagram compress images). Applied at only 10% probability because heavy JPEG destroys entropy signals.</td></tr>
+<tr><td>`blur_sigma_min/max`</td><td>`0.5 / 2.0`</td><td>Range for random Gaussian blur strength</td><td>Simulates camera defocus or post-processing blur. Applied at only 10% probability because blur destroys the high-frequency noise our model depends on.</td></tr>
+<br>
+</table><br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">MLEP Section</h3>
+<br>
+<table><tr><th>Parameter</th><th>Value</th><th>What It Does</th><th>Why This Value</th></tr>
+<tr><td>`patch_size`</td><td>`2`</td><td>Size of micro-patches for optional shuffling</td><td>Smallest possible patch. Each patch is just 2×2 = 4 pixels.</td></tr>
+<tr><td>`scales`</td><td>`[1.0, 0.5, 0.25]`</td><td>Multi-scale pyramid factors</td><td>**1.0x:** Full resolution captures pixel-level noise. **0.5x:** Downsampled then upsampled — captures texture-level smoothing artifacts. **0.25x:** Quarter resolution — captures coarse structural artifacts. 3 scales × 3 RGB channels = **9 channels** fed into the backbone.</td></tr>
+<tr><td>`window_size`</td><td>`2`</td><td>Sliding window for entropy computation</td><td>A 2×2 window contains 4 pixels. Shannon entropy is computed over these 4 values. Possible output values: {0.0, 0.811, 1.0, 1.5, 2.0}.</td></tr>
+<tr><td>`seed`</td><td>`42`</td><td>Seed for deterministic patch shuffling</td><td>Ensures shuffling permutation is reproducible (currently disabled).</td></tr>
+<tr><td>`use_shuffling`</td><td>`false`</td><td>Whether to spatially scramble patches</td><td>**Disabled** because our ResNet-50 backbone uses pretrained ImageNet weights that expect spatially coherent input. Shuffling would break the spatial relationships the convolutional filters learned.</td></tr>
+<br>
+</table><br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">Training Section</h3>
+<br>
+<table><tr><th>Parameter</th><th>Value</th><th>What It Does</th><th>Why This Value</th></tr>
+<tr><td>`epochs`</td><td>`25`</td><td>Maximum training iterations over the full dataset</td><td>The model converges around epoch 12-15. 25 epochs with early stopping (patience=7) gives enough room without wasting time.</td></tr>
+<tr><td>`lr`</td><td>`0.0002`</td><td>Base learning rate</td><td>Standard for fine-tuning pretrained models with AdamW. Too high (0.001) causes the model to "forget" ImageNet features. Too low (0.00001) means the model never learns.</td></tr>
+<tr><td>`weight_decay`</td><td>`0.05`</td><td>L2 regularization penalty</td><td>Penalizes large weights to prevent overfitting. 0.05 is aggressive but necessary because the model easily memorizes the training set.</td></tr>
+<tr><td>`early_stopping_patience`</td><td>`7`</td><td>Stop training if val accuracy doesn't improve for 7 epochs</td><td>Prevents wasted compute. If the model hasn't improved in 7 epochs, it's unlikely to get better.</td></tr>
+<tr><td>`gradient_clip_norm`</td><td>`1.0`</td><td>Maximum gradient magnitude</td><td>Prevents "exploding gradients" where a single bad batch causes the model to jump wildly. Clips gradients to a maximum norm of 1.0.</td></tr>
+<tr><td>`optimizer`</td><td>`AdamW`</td><td>Adam optimizer with decoupled weight decay</td><td>Better than vanilla Adam for fine-tuning because it applies weight decay correctly (to weights, not to gradient moments).</td></tr>
+<tr><td>`scheduler`</td><td>`CosineAnnealingLR`</td><td>Learning rate schedule</td><td>Smoothly reduces the LR from its initial value to `eta_min` following a cosine curve. This prevents the model from overshooting the optimal solution late in training.</td></tr>
+<tr><td>`scheduler_eta_min`</td><td>`0.000001`</td><td>Minimum learning rate</td><td>The LR never drops below 1e-6. This ensures the model can still make tiny adjustments even at the end of training.</td></tr>
+<tr><td>`differential_lr.backbone`</td><td>`0.5`</td><td>LR multiplier for ResNet-50 backbone</td><td>The backbone has ImageNet pretrained weights. Training it too fast (multiplier > 1.0) would overwrite these valuable features. 0.5× means it learns at half the base rate.</td></tr>
+<tr><td>`differential_lr.head`</td><td>`5.0`</td><td>LR multiplier for the classifier head</td><td>The classifier is randomly initialized (no pretrained weights). It needs to learn fast to catch up with the backbone. 5× means it learns 10× faster than the backbone.</td></tr>
+<tr><td>`differential_lr.extractor`</td><td>`1.0`</td><td>LR multiplier for MLEP extractor</td><td>The extractor's BatchNorm layer needs standard adaptation speed.</td></tr>
+<br>
+</table><br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">Hardware Section</h3>
+<br>
+<table><tr><th>Parameter</th><th>Value</th><th>What It Does</th><th>Why This Value</th></tr>
+<tr><td>`device`</td><td>`cuda`</td><td>Use GPU for computation</td><td>NVIDIA RTX 4050 — ~20× faster than CPU for matrix operations.</td></tr>
+<tr><td>`amp`</td><td>`true`</td><td>Automatic Mixed Precision</td><td>Uses FP16 (half-precision) for forward passes and FP32 for gradients. Cuts VRAM usage by ~40% and increases throughput by ~25%.</td></tr>
+<tr><td>`cudnn_benchmark`</td><td>`true`</td><td>Auto-tune convolution algorithms</td><td>cuDNN tries multiple kernel implementations and picks the fastest one for our specific tensor sizes. ~10-15% speed boost.</td></tr>
+<tr><td>`tf32`</td><td>`true`</td><td>TF32 Tensor Core acceleration</td><td>RTX 40-series specific. Uses 19-bit precision internally (10-bit mantissa + 8-bit exponent + sign) instead of full FP32. ~2× faster matrix multiplications with negligible accuracy loss.</td></tr>
+<tr><td>`target_gpu`</td><td>`NVIDIA RTX 4050`</td><td>Documentation reference</td><td>For logging and reproducibility only.</td></tr>
+<br>
+</table><br>
+<p style="margin-bottom: 1rem;">---</p>
+<br>
+<h2 class="section-title" style="margin-top:3rem;">3. Architecture Deep Dive</h2>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">The MLEP Pipeline (Step by Step)</h3>
+<br>
+<pre><code>
+Input Image (B, 3, 256, 256) — raw RGB pixels in [0, 255]
+│
+▼
+÷ 255.0  → Normalize to [0, 1]
+│
+▼
+┌─────────────────────────────────────┐
+│   Multi-Scale Resampling Pyramid    │
+│                                     │
+│  Scale 1.0x: Identity (full res)    │
+│  Scale 0.5x: Down→Up (blur effect)  │
+│  Scale 0.25x: Down→Up (more blur)   │
+│                                     │
+│  Concatenate: (B, 9, 256, 256)      │
+└─────────────────────────────────────┘
+│
+▼
+┌─────────────────────────────────────┐
+│   2×2 Shannon Entropy (LEP)         │
+│                                     │
+│  For each 4-pixel window:           │
+│    H = -Σ p(x) · log₂(p(x))        │
+│                                     │
+│  Output: (B, 9, 255, 255)           │
+└─────────────────────────────────────┘
+│
+▼
+┌─────────────────────────────────────┐
+│   BatchNorm2d(9)                    │
+│   Normalizes entropy maps to        │
+│   zero-mean, unit-variance          │
+└─────────────────────────────────────┘
+│
+▼
+┌─────────────────────────────────────┐
+│   ResNet-50 Backbone                │
+│   (conv1 adapted: 3ch → 9ch)        │
+│   Global Average Pooling → 2048-D   │
+└─────────────────────────────────────┘
+│
+▼
+┌─────────────────────────────────────┐
+│   Classifier MLP                    │
+│   Dropout(0.5) → Linear(2048→512)   │
+│   → ReLU → Dropout(0.3)            │
+│   → Linear(512→1) → Logit          │
+└─────────────────────────────────────┘
+│
+▼
+Sigmoid → Probability (0 = Real, 1 = AI)
+</code></pre>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">Why ResNet-50?</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What:</strong> ResNet-50 is a 50-layer deep convolutional neural network pretrained on ImageNet (1.2 million natural images, 1000 categories).</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Why:</strong> We need a backbone that already "understands" image structure. Training a deep network from scratch on only 6,000 training images would massively overfit. By using pretrained weights, the backbone already knows how to detect edges, textures, and patterns — we just fine-tune it to detect entropy patterns instead.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>How the 9-channel adaptation works:</strong> ResNet-50's first convolutional layer expects 3 input channels (RGB). Our MLEP extractor produces 9 channels. We tile the pretrained 3-channel weights 3 times to create 9-channel weights, preserving the learned filters.</p>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">Why BatchNorm Before the Backbone?</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What:</strong> BatchNorm2d normalizes each channel to have mean=0 and std=1 across the batch.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Why:</strong> The entropy maps have values in {0.0, 0.811, 1.0, 1.5, 2.0}. ImageNet-pretrained ResNet expects inputs with mean ~0.485 and std ~0.229. Without BatchNorm, the backbone would receive inputs at the completely wrong scale, making the pretrained weights useless.</p>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">Why Dropout(0.5) + Dropout(0.3)?</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What:</strong> Dropout randomly zeroes out neurons during training, forcing the network to not rely on any single feature.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Why 0.5 first:</strong> The 2048-D feature vector from ResNet is very high-dimensional. Without strong dropout, the classifier can memorize arbitrary patterns. 50% dropout forces robust feature usage.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Why 0.3 second:</strong> After compressing to 512 dimensions, lighter dropout (30%) allows the final classifier to make precise decisions without being too aggressive.</p>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">Why Label Smoothing (0.05 → 0.95)?</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What:</strong> Instead of training with hard labels (0 = Real, 1 = AI), we use soft labels (0.05 = Real, 0.95 = AI).</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Why:</strong> Hard labels make the model overconfident. The loss function pushes the model to output exactly 0.0 or 1.0, which requires extreme weight values that cause overfitting. Soft labels tell the model "be 95% sure, not 100% sure" — this produces better-calibrated probabilities and reduces overfitting.</p>
+<br>
+<p style="margin-bottom: 1rem;">---</p>
+<br>
+<h2 class="section-title" style="margin-top:3rem;">4. Training Strategy & Optimizer Decisions</h2>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">Why AdamW (Not SGD)?</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Adam</strong> maintains per-parameter adaptive learning rates using momentum and RMS of gradients. This is critical because different parts of our model need different learning speeds (differential LR). <strong>AdamW</strong> (Weight-decoupled Adam) applies weight decay correctly — to the weights directly, not to the gradient moments — which prevents the regularization from being diluted by the adaptive learning rate.</p>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">Why CosineAnnealingLR?</h3>
+<br>
+<p style="margin-bottom: 1rem;">Instead of a fixed learning rate or step decay, cosine annealing smoothly reduces the LR following: `lr(t) = eta_min + 0.5 * (lr_max - eta_min) * (1 + cos(π * t / T_max))`</p>
+<br>
+<p style="margin-bottom: 1rem;">This has two benefits:</p>
+<li><strong>Early epochs:</strong> High LR allows rapid learning of coarse entropy patterns</li>
+<li><strong>Late epochs:</strong> Low LR allows fine-tuning without overshooting the loss minimum</li>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">Why Early Stopping (Patience = 7)?</h3>
+<br>
+<p style="margin-bottom: 1rem;">The training accuracy keeps climbing (up to ~96%) but validation accuracy plateaus around epoch 12. Continuing to train past this point only increases the gap between training and validation accuracy (overfitting). Patience=7 means we give the model 7 more chances to improve before stopping.</p>
+<br>
+<p style="margin-bottom: 1rem;">---</p>
+<br>
+<h2 class="section-title" style="margin-top:3rem;">5. Data Augmentation Strategy (The Forensics Insight)</h2>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">Why Most Augmentations Are Kept Low</h3>
+<br>
+<p style="margin-bottom: 1rem;">This is not a typical computer vision task. <strong>This is a forensics task.</strong> The model must detect subtle pixel-level noise patterns. Standard CV augmentations can destroy these patterns:</p>
+<br>
+<table><tr><th>Augmentation</th><th>Probability</th><th>Why This Value</th></tr>
+<tr><td>**JPEG Recompression**</td><td>**10%**</td><td>JPEG introduces block artifacts that mask the natural entropy pattern. Too much JPEG = model can't see the real signal. 10% adds minimal robustness.</td></tr>
+<tr><td>**Gaussian Blur**</td><td>**10%**</td><td>Blur destroys high-frequency noise — the exact signal we're detecting. Heavy blur (80%) caused accuracy to drop to 76%. 10% is barely noticeable.</td></tr>
+<tr><td>**ColorJitter**</td><td>**40%**</td><td>Changes brightness/contrast/saturation. This doesn't affect entropy computation (entropy is computed per-pixel, not per-color) so it's safe at higher probability.</td></tr>
+<tr><td>**Horizontal Flip**</td><td>**40%**</td><td>Mirrors the image. Entropy is symmetric, so flipping doesn't destroy the signal. Prevents the model from memorizing left/right positioning.</td></tr>
+<tr><td>**Random Rotation (±10°)**</td><td>**40%**</td><td>Slight rotation prevents spatial memorization. 10° is small enough to preserve local pixel neighborhoods.</td></tr>
+<tr><td>**Random Resized Crop (0.8-1.0)**</td><td>**40%**</td><td>Crops 80-100% of the image. Prevents the model from relying on objects always being at the center.</td></tr>
+<br>
+</table><br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">Proof: What Happened When We Used Heavy Augmentations</h3>
+<br>
+<table><tr><th>Phase</th><th>Blur/JPEG Prob</th><th>Test Accuracy</th><th>Result</th></tr>
+<tr><td>Phase 1</td><td>50%</td><td>**85.25%**</td><td>Baseline</td></tr>
+<tr><td>Phase 2</td><td>**80%**</td><td>**76.40%**</td><td>❌ Dropped 9 points! Signal destroyed.</td></tr>
+<tr><td>Phase 3</td><td>**10%**</td><td>**85.90%**</td><td>✓ Best result. Signal preserved.</td></tr>
+<br>
+</table><br>
+<p style="margin-bottom: 1rem;">---</p>
+<br>
+<h2 class="section-title" style="margin-top:3rem;">6. All Charts & Visualizations Explained</h2>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">6.1 Training Curves (`training_curves.png`)</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What it shows:</strong> Two subplots: (1) Training Loss vs Validation Loss over 25 epochs, (2) Training Accuracy vs Validation Accuracy over 25 epochs.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>How to read it:</strong></p>
+<li>If the training curve keeps improving but validation plateaus → <strong>Overfitting</strong> (the model memorizes training data but can't generalize)</li>
+<li>If both curves improve together → <strong>Healthy learning</strong></li>
+<li>If both curves plateau → <strong>Convergence</strong> (the model has learned everything it can)</li>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What our chart shows:</strong> Training accuracy reaches ~96% while validation plateaus at ~86.5%. The ~9.5% gap indicates moderate overfitting, which is expected given our small dataset (6,000 training images).</p>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">6.2 Confusion Matrix (`confusion_matrix.png`)</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What it shows:</strong> A 2×2 grid showing how many images were classified correctly vs incorrectly.</p>
+<br>
+<pre><code>
+Predicted
+Real    |    AI
+Actual Real    TP     |    FP    (False Positives: Real images mistakenly flagged as AI)
+Actual AI      FN     |    TN    (False Negatives: AI images that slipped through)
+</code></pre>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Why it matters:</strong> Accuracy alone doesn't tell the full story. If 90% of images are real, a model that always says "real" gets 90% accuracy but catches zero AI images. The confusion matrix reveals the specific failure modes.</p>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">6.3 ROC Curve (`roc_curve.png`)</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What it shows:</strong> Receiver Operating Characteristic — plots True Positive Rate (sensitivity) vs False Positive Rate (1 - specificity) at every possible classification threshold.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>How to read it:</strong></p>
+<li><strong>AUC = 1.0:</strong> Perfect classifier</li>
+<li><strong>AUC = 0.5:</strong> Random guessing (diagonal line)</li>
+<li><strong>Our AUC = 0.922:</strong> The model is very good at ranking AI images higher than real images, regardless of what threshold we pick.</li>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Why it matters:</strong> Unlike accuracy (which depends on a fixed 0.5 threshold), ROC-AUC measures the model's ability to *separate* the two classes at ANY threshold. This is a threshold-independent performance metric.</p>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">6.4 Precision-Recall Curve (`pr_curve.png`)</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What it shows:</strong> Plots Precision (of all images labeled AI, how many actually are?) vs Recall (of all actual AI images, how many did we catch?) at every threshold.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Our PR-AUC = 0.901:</strong> The model maintains high precision even at high recall — it doesn't need to sacrifice "catching more AI images" to avoid false alarms.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Why it matters:</strong> In a real-world scenario where AI images are rare, precision is critical. A model that flags everything as AI would have 100% recall but terrible precision (lots of false alarms).</p>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">6.5 Probability Distribution (`prob_dist.png`)</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What it shows:</strong> Histogram of the model's sigmoid output probabilities, separated by actual class (green = real, red = AI).</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>How to read it:</strong></p>
+<li><strong>Well-separated peaks</strong> near 0.0 (real) and 1.0 (AI) = confident and correct</li>
+<li><strong>Overlapping peaks</strong> near 0.5 = uncertain, model struggles to distinguish</li>
+<li>Our chart shows mostly separated peaks with some overlap around 0.3-0.6, explaining the ~14% error rate.</li>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">6.6 t-SNE Clusters (`tsne_clusters.png`)</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What it shows:</strong> t-Distributed Stochastic Neighbor Embedding — compresses the 2048-dimensional ResNet features into 2D for visualization.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>How to read it:</strong></p>
+<li><strong>Two distinct clusters</strong> (green and red separated) = the model has learned features that clearly distinguish real from AI</li>
+<li><strong>Overlapping blobs</strong> = the model struggles to find distinguishing features</li>
+<li>Our chart shows two mostly-separated clusters with some mixing at the boundaries, consistent with 86% accuracy.</li>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Why it matters:</strong> This proves the model isn't just memorizing — it has learned a meaningful internal representation where real and AI images naturally cluster apart.</p>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">6.7 FFT Analysis (`fft_analysis.png`)</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What it shows:</strong> 2D Fast Fourier Transform spectrum of a real image vs an AI image.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>How to read it:</strong></p>
+<li>The <strong>center</strong> represents low-frequency content (overall brightness, large shapes)</li>
+<li>The <strong>edges</strong> represent high-frequency content (fine details, noise, textures)</li>
+<li>Real images typically show more energy at high frequencies (more noise)</li>
+<li>AI images show suppressed high-frequency energy (smoother, less noise)</li>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Why it matters:</strong> This is the visual proof of the "generative oversmoothing" effect. You can literally see that AI images have less high-frequency content.</p>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">6.8 LBP Texture Distribution (`lbp_texture.png`)</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What it shows:</strong> Local Binary Pattern histogram — a classical texture descriptor that encodes micro-texture patterns.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>How to read it:</strong> Each of the 256 possible LBP codes represents a specific local texture pattern. Differences between the real (green) and AI (red) distributions reveal different micro-texture characteristics.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Why it matters:</strong> LBP is an independent validation of our entropy-based approach. If the LBP distributions differ, it confirms that real and AI images have genuinely different texture properties — we're not overfitting to noise.</p>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">6.9 Chrominance Scatter (`chrominance_scatter.png`)</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What it shows:</strong> YCbCr color space analysis — plots the blue-difference (Cb) vs red-difference (Cr) chrominance channels.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>How to read it:</strong> Real and AI images may have different color distributions in the chrominance domain. Clustering or separation indicates different color generation characteristics.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Why it matters:</strong> This is a forensics technique from JPEG steganalysis. It checks whether AI generators produce unrealistic color distributions.</p>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">6.10 Feature Importance / Saliency Maps (`feature_importance_real.png`, `feature_importance_ai.png`)</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What it shows:</strong> Heatmap overlay on the original image showing which regions the model "pays attention to" when making its decision.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>How to read it:</strong></p>
+<li><strong>Hot (red/yellow) regions:</strong> High entropy variation — the model finds these areas most informative</li>
+<li><strong>Cool (blue) regions:</strong> Low entropy variation — the model ignores these areas</li>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Why it matters:</strong> This is the model's "proof of work." If the saliency concentrates on textured areas (hair, grass, fabric), it confirms the model is detecting entropy patterns. If it focuses on semantic objects (faces, cars), it might be learning shortcuts instead.</p>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">6.11 Error Analysis (`error_analysis.png`)</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What it shows:</strong> Bar charts of the model's confidence for high-confidence correct predictions (top row) and uncertain/borderline predictions (bottom row).</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>How to read it:</strong></p>
+<li>Top row: The model is very confident and correct (P(AI) near 0.0 for real, near 1.0 for AI)</li>
+<li>Bottom row: The model is uncertain (P(AI) near 0.5) — these are the hard cases</li>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Why it matters:</strong> Identifies the model's failure modes. If uncertain predictions cluster around specific image types, it reveals what the model struggles with.</p>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">6.12 Calibration Curve (`calibration_curve.png`)</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What it shows:</strong> Plots predicted probability vs actual frequency of positive (AI) outcomes.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>How to read it:</strong></p>
+<li><strong>Perfectly calibrated:</strong> Points fall on the diagonal line (when the model says "80% chance this is AI," it should be AI 80% of the time)</li>
+<li><strong>Above diagonal:</strong> Model is under-confident (says 60% but it's actually AI 80% of the time)</li>
+<li><strong>Below diagonal:</strong> Model is over-confident (says 80% but it's actually AI only 60% of the time)</li>
+<br>
+<p style="margin-bottom: 1rem;"><strong>Why it matters:</strong> A well-calibrated model is trustworthy. If a pathology lab uses this model and it says "90% AI," doctors need to know that really means 90%, not 60%.</p>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">6.13 MLEP Heatmap (`batch1_sample0_mlep_heatmap.png`)</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What it shows:</strong> The raw entropy map produced by the MLEP extractor for a single image, visualized as a heatmap.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>How to read it:</strong> Brighter regions have higher entropy (more randomness). Real images should show uniformly distributed entropy, while AI images may show smoother, lower-entropy patches.</p>
+<br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">6.14 MLEP Multiscale (`batch1_sample0_mlep_multiscale.png`)</h3>
+<br>
+<p style="margin-bottom: 1rem;"><strong>What it shows:</strong> The three separate entropy maps at scales 1.0x, 0.5x, and 0.25x for a single image.</p>
+<br>
+<p style="margin-bottom: 1rem;"><strong>How to read it:</strong> Comparing scales reveals how entropy changes at different resolutions. Real images maintain entropy across all scales. AI images may show entropy collapse at coarser scales (where the upsampling artifacts become more visible).</p>
+<br>
+<p style="margin-bottom: 1rem;">---</p>
+<br>
+<h2 class="section-title" style="margin-top:3rem;">7. Final Metrics & What They Mean</h2>
+<br>
+<table><tr><th>Metric</th><th>Value</th><th>What It Means</th></tr>
+<tr><td>**Test Accuracy**</td><td>85.90%</td><td>Of all 2,000 test images, 85.9% were classified correctly</td></tr>
+<tr><td>**Test Precision**</td><td>84.52%</td><td>Of all images the model called "AI," 84.52% actually were AI</td></tr>
+<tr><td>**Test Recall**</td><td>87.90%</td><td>Of all actual AI images, the model caught 87.9% of them</td></tr>
+<tr><td>**Test F1-Score**</td><td>86.18%</td><td>Harmonic mean of precision and recall (balanced metric)</td></tr>
+<tr><td>**ROC-AUC**</td><td>0.922</td><td>Probability the model ranks a random AI image higher than a random real image</td></tr>
+<tr><td>**PR-AUC**</td><td>0.901</td><td>Area under the precision-recall curve</td></tr>
+<tr><td>**Best Val Accuracy**</td><td>86.55%</td><td>Highest validation accuracy achieved during training</td></tr>
+<tr><td>**Overfit Gap**</td><td>~9.5%</td><td>Difference between training accuracy (96%) and validation accuracy (86.5%)</td></tr>
+<br>
+</table><br>
+<h3 style="margin-top:2rem; color:var(--accent-blue);">What These Numbers Mean in Practice</h3>
+<br>
+<li>The model correctly identifies <strong>~86 out of every 100 images</strong></li>
+<li>When it says an image is AI-generated, it's right <strong>~85% of the time</strong></li>
+<li>It catches <strong>~88% of AI images</strong> (only misses ~12%)</li>
+<li>The 0.922 ROC-AUC means the model has strong discriminative power even at different confidence thresholds</li>
+
+        </div>
+        </div> <!-- Close TabDeepResearch -->
 
         <div id="TabCommands" class="tabcontent">
         <!-- SECTION: COMMANDS -->
