@@ -39,7 +39,7 @@ python scripts/build_benchmark_dataset.py
 ### C. Train the Model
 Runs the full PyTorch training loop with Train/Validation/Test evaluation on the RTX 4050.
 ```bash
-python scripts/train.py --data_dir dataset10000 --output_dir outputs/checkpoints --epochs 10 --batch_size 32
+python scripts/train.py --data_dir dataset10000 --output_dir outputs/checkpoints --epochs 25 --batch_size 32
 ```
 Optional flags: `--lr 0.0002`
 
@@ -86,7 +86,7 @@ Tip: Keep the `outputs/` folder open in your file explorer so you can show files
 
 ### Step 2: Run Live Training
 ```bash
-python scripts/train.py --data_dir dataset10000 --output_dir outputs/checkpoints --epochs 10 --batch_size 32
+python scripts/train.py --data_dir dataset10000 --output_dir outputs/checkpoints --epochs 25 --batch_size 32
 ```
 **What to explain:**
 1. The dataloader reads from the `dataset10000` folder (5,000 real + 5,000 AI images).
