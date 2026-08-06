@@ -31,7 +31,7 @@ python scripts/download_dataset.py --target_dir dataset10000 --num_images 10000 
 ```
 
 ### B. Build the Benchmark Dataset
-Reconstructs the structured 70/15/15 split dataset from scratch.
+Reconstructs the structured 60/20/20 split dataset from scratch.
 ```bash
 python scripts/build_benchmark_dataset.py
 ```
@@ -92,7 +92,7 @@ python scripts/train.py --data_dir dataset10000 --output_dir outputs/checkpoints
 1. The dataloader reads from the `dataset10000` folder (5,000 real + 5,000 AI images).
 2. As epochs progress, the loss decreases and accuracy increases.
 3. After each epoch, the model runs a validation pass on held-out data. At the end, it runs a final test evaluation.
-4. Early stopping will halt training automatically if validation loss stops improving (patience=5 epochs).
+4. Early stopping will halt training automatically if validation accuracy stops improving (patience=7 epochs).
 
 ### Step 3: Generate Forensic Visualizations
 ```bash
@@ -110,7 +110,7 @@ python scripts/run_project.py --data_dir dataset10000 --output_dir outputs/proje
 **What to explain:**
 1. This is the core MLEP pipeline — it computes Shannon entropy at multiple scales.
 2. Point out the real-time processing speed printed in the console.
-3. The entropy gap (Real: ~1.911 vs AI: ~1.906) demonstrates the generative oversmoothing effect.
+3. The entropy gap (Real: ~1.784 vs AI: ~1.766) demonstrates the generative oversmoothing effect.
 
 ### Step 5: Generate & Open the HTML Dashboard
 ```bash
@@ -132,30 +132,5 @@ The real images come from a curated HuggingFace dataset that aggregates photogra
 Standard CNNs tend to learn surface-level patterns (colors, textures) that don't generalize to unseen generators. We specifically target the entropy gap caused by generative oversmoothing, which is harder for AI to fake.
 
 **"How do you prevent overfitting?"**
-We use Dropout (50% + 30%), AdamW with weight decay (L2 regularization), CosineAnnealingLR scheduler, gradient clipping, early stopping, and balanced sampling during training.
+We use Dropout (50% + 30%), AdamW with weight decay 0.05 (L2 regularization), CosineAnnealingLR scheduler, label smoothing, gradient clipping, early stopping (patience=7), and balanced sampling during training.
 
----
-
-## 5. Log Monitoring
-
-**Windows (PowerShell):**
-```powershell
-Get-Content -Wait -Tail 20 "outputs/checkpoints/training.log"
-```
-
-**Linux / macOS:**
-```bash
-tail -f outputs/checkpoints/training.log
-```
-
----
-
-## 6. Git Commands
-
-```bash
-git config user.name "kushagragupta-23"
-git config user.email "aakg2310@gmail.com"
-git add .
-git commit -m "Update project files"
-git push origin main
-```

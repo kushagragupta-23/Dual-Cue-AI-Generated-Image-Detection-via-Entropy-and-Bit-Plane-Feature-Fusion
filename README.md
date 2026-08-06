@@ -11,7 +11,7 @@ Based on the Multi-granularity Local Entropy Patterns (MLEP) approach described 
 **How it works:**
 
 1. **Generative Oversmoothing:** Real camera sensors capture physical light and embed natural noise into the pixel matrix. Generative models rely on gradient estimation to denoise images, which smooths out high-frequency micro-textures.
-2. **Entropy Gap:** Our experiments show that real images maintain a mean entropy of ~1.911, while AI-generated images drop to ~1.906. This small but consistent gap is what the model learns to detect.
+2. **Entropy Gap:** Our experiments show that real images maintain a mean entropy of ~1.784, while AI-generated images drop to ~1.766. This small but consistent gap is what the model learns to detect.
 3. **MLEP Pipeline:** The `MLEPExtractor` computes Shannon entropy across multi-scale image patches (scales 1.0, 0.5, 0.25) producing a 9-channel entropy feature map, which is then classified by a ResNet-50 backbone.
 
 See [docs/mlep_architecture.md](docs/mlep_architecture.md) for full architectural details.

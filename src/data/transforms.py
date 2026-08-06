@@ -78,8 +78,7 @@ class MLEPPreprocessingTransform:
         if random.random() < 0.1:
             sigma = random.uniform(self.blur_sigma_range[0], self.blur_sigma_range[1])
             img = GaussianBlurDegradation(sigma=sigma)(img)
-        # Prevent overfitting with structural/spatial augmentations
-        # Increased probabilities to force better generalization for the >90% validation goal
+        # Structural/spatial augmentations to prevent memorization without destroying forensic signals
         if random.random() < 0.4:
             from torchvision.transforms import ColorJitter
             img = ColorJitter(brightness=0.15, contrast=0.15, saturation=0.15, hue=0.05)(img)

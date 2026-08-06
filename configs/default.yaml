@@ -5,8 +5,8 @@ dataset:
   image_size: 256
   batch_size: 32
   num_workers: 0  # Windows-safe (set to 2 on Linux/macOS)
-  val_split: 0.15
-  test_split: 0.15
+  val_split: 0.20
+  test_split: 0.20
   seed: 42
   enable_augmentations: true
   jpeg_quality_min: 70
@@ -25,7 +25,7 @@ training:
   epochs: 25
   lr: 0.0002
   weight_decay: 0.05
-  early_stopping_patience: 5
+  early_stopping_patience: 7
   gradient_clip_norm: 1.0
   optimizer: "AdamW"
   scheduler: "CosineAnnealingLR"

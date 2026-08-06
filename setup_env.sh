@@ -10,7 +10,7 @@ echo "==========================================================================
 if command -v conda &> /dev/null; then
     echo "[INFO] Conda detected. You can create the conda environment by running:"
     echo "       conda env create -f environment.yml"
-    echo "       conda activate mlep_only"
+    echo "       conda activate venv"
     echo ""
 fi
 

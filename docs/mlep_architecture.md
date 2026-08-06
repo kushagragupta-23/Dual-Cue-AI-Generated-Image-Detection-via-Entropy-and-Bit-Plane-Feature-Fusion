@@ -4,7 +4,7 @@
 
 The MLEP (Multi-Level Entropy Pyramid) architecture detects AI-generated images by analyzing their entropy characteristics. The key insight is that generative models (Stable Diffusion, GANs, etc.) tend to smooth out high-frequency noise during the denoising process. Real camera sensors capture natural photonic noise that produces higher local entropy compared to AI-generated images.
 
-Our experiments show a small but consistent entropy gap: Real images have a mean entropy of ~1.911 while AI-generated images measure ~1.906. MLEP computes Shannon entropy across a multi-scale feature pyramid and feeds the resulting entropy maps into a ResNet-50 backbone for classification.
+Our experiments show a small but consistent entropy gap: Real images have a mean entropy of ~1.784 while AI-generated images measure ~1.766. MLEP computes Shannon entropy across a multi-scale feature pyramid and feeds the resulting entropy maps into a ResNet-50 backbone for classification.
 
 ---
 
@@ -47,14 +47,14 @@ The 9-channel entropy map passes through:
 
 To combat overfitting when training on entropy patterns:
 
-- **Optimizer**: AdamW with weight decay (L2 penalty) of 0.01.
+- **Optimizer**: AdamW with weight decay (L2 penalty) of 0.05.
 - **Differential Learning Rates**: 
   - Base: 2e-4
   - Backbone: 1e-4 (0.5x) to preserve ImageNet pretraining.
   - Head: 1e-3 (5x) for rapid convergence of the new classifier.
 - **LR Scheduler**: CosineAnnealingLR (T_max=epochs) to smoothly anneal the learning rate.
 - **Dropout**: Strong spatial regularization using Dropout(0.5) and Dropout(0.3) in the MLP head.
-- **Early Stopping**: Patience set to 5 epochs (monitors validation accuracy).
+- **Early Stopping**: Patience set to 7 epochs (monitors validation accuracy).
 
 ---
 
