@@ -40,7 +40,10 @@ def train_one_epoch(model, loader, criterion, optimizer, device, epoch, scaler, 
     start_time = time.time()
     
     for batch_idx, (images, labels, _) in enumerate(loader):
-        images, labels = images.to(device), labels.to(device).float().unsqueeze(1)
+        images = images.to(device)
+        labels_orig = labels.to(device).float().unsqueeze(1)
+        # Apply Label Smoothing: 0 -> 0.05, 1 -> 0.95
+        labels_smooth = labels_orig * 0.9 + 0.05
         
         optimizer.zero_grad()
         
@@ -48,7 +51,7 @@ def train_one_epoch(model, loader, criterion, optimizer, device, epoch, scaler, 
         if use_amp:
             with torch.amp.autocast('cuda'):
                 logits = model(images)
-                loss = criterion(logits, labels)
+                loss = criterion(logits, labels_smooth)
             # Backward pass with scaler
             scaler.scale(loss).backward()
             # Gradient clipping to prevent explosion
@@ -58,7 +61,7 @@ def train_one_epoch(model, loader, criterion, optimizer, device, epoch, scaler, 
             scaler.update()
         else:
             logits = model(images)
-            loss = criterion(logits, labels)
+            loss = criterion(logits, labels_smooth)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
@@ -69,7 +72,7 @@ def train_one_epoch(model, loader, criterion, optimizer, device, epoch, scaler, 
         preds = (torch.sigmoid(logits.float()) > 0.5).float()
         
         all_preds.extend(preds.cpu().numpy())
-        all_labels.extend(labels.cpu().numpy())
+        all_labels.extend(labels_orig.cpu().numpy())
         
         if (batch_idx + 1) % 10 == 0 or (batch_idx + 1) == len(loader):
             current_acc = 100.0 * (np.array(all_preds) == np.array(all_labels)).mean()
@@ -132,10 +135,10 @@ def main():
     parser = argparse.ArgumentParser(description="Train MLEPDetector")
     parser.add_argument("--data_dir", type=str, required=True, help="Path to dataset")
     parser.add_argument("--output_dir", type=str, default="outputs/checkpoints", help="Where to save model weights")
-    parser.add_argument("--epochs", type=int, default=10, help="Number of training epochs")
+    parser.add_argument("--epochs", type=int, default=25, help="Number of training epochs")
     parser.add_argument("--batch_size", type=int, default=32, help="Batch size")
     parser.add_argument("--lr", type=float, default=2e-4, help="Learning rate")
-    parser.add_argument("--patience", type=int, default=5, help="Early stopping patience (epochs without val improvement)")
+    parser.add_argument("--patience", type=int, default=7, help="Early stopping patience (epochs without val improvement)")
     args = parser.parse_args()
 
     data_path = root_path / args.data_dir
@@ -198,7 +201,7 @@ def main():
         {'params': backbone_params, 'lr': args.lr * 0.5},      # Pretrained: fully unfreeze and train at half base LR
         {'params': head_params, 'lr': args.lr * 5.0},           # Classifier head: learn fast
         {'params': extractor_params, 'lr': args.lr},            # Extractors: standard rate
-    ], weight_decay=1e-2)
+    ], weight_decay=0.05)
     
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=1e-6)
     criterion = nn.BCEWithLogitsLoss()

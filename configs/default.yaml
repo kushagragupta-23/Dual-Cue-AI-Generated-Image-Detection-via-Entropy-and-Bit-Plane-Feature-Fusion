@@ -22,9 +22,9 @@ mlep:
   use_shuffling: false  # Disabled: pretrained ResNet expects spatial coherence
 
 training:
-  epochs: 20
+  epochs: 25
   lr: 0.0002
-  weight_decay: 0.01
+  weight_decay: 0.05
   early_stopping_patience: 5
   gradient_clip_norm: 1.0
   optimizer: "AdamW"
