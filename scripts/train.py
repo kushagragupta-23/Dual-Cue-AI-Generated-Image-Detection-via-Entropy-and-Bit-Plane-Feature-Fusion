@@ -198,7 +198,7 @@ def main():
     extractor_params = list(model.mlep_extractor.parameters())
     
     optimizer = optim.AdamW([
-        {'params': backbone_params, 'lr': args.lr * 0.5},      # Pretrained: fully unfreeze and train at half base LR
+        {'params': backbone_params, 'lr': args.lr * 0.5},      # Pretrained: train at half base LR
         {'params': head_params, 'lr': args.lr * 5.0},           # Classifier head: learn fast
         {'params': extractor_params, 'lr': args.lr},            # Extractors: standard rate
     ], weight_decay=0.05)

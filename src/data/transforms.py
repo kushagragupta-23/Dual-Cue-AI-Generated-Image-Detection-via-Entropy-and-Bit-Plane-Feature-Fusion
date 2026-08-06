@@ -72,25 +72,25 @@ class MLEPPreprocessingTransform:
 
     def _apply_augmentations(self, img: Image.Image) -> Image.Image:
         """Apply random JPEG recompression, Gaussian blur, ColorJitter, and Horizontal Flip."""
-        if random.random() < 0.5:
+        if random.random() < 0.1:
             q = random.randint(self.jpeg_quality_range[0], self.jpeg_quality_range[1])
             img = JPEGRecompression(quality=q)(img)
-        if random.random() < 0.5:
+        if random.random() < 0.1:
             sigma = random.uniform(self.blur_sigma_range[0], self.blur_sigma_range[1])
             img = GaussianBlurDegradation(sigma=sigma)(img)
         # Prevent overfitting with structural/spatial augmentations
         # Increased probabilities to force better generalization for the >90% validation goal
-        if random.random() < 0.7:
+        if random.random() < 0.4:
             from torchvision.transforms import ColorJitter
             img = ColorJitter(brightness=0.15, contrast=0.15, saturation=0.15, hue=0.05)(img)
-        if random.random() < 0.5:
+        if random.random() < 0.4:
             from torchvision.transforms.functional import hflip
             img = hflip(img)
-        if random.random() < 0.5:
+        if random.random() < 0.4:
             from torchvision.transforms import RandomRotation
             # Slight random rotation to prevent spatial memorization
             img = RandomRotation(degrees=10)(img)
-        if random.random() < 0.5:
+        if random.random() < 0.4:
             from torchvision.transforms import RandomResizedCrop
             # Random scale crop prevents the model from relying on fixed object positioning
             img = RandomResizedCrop(size=self.image_size, scale=(0.8, 1.0))(img)
