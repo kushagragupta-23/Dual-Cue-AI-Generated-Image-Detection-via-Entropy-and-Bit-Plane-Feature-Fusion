@@ -183,7 +183,7 @@ def main():
         torch.backends.cuda.matmul.allow_tf32 = True
         torch.backends.cudnn.allow_tf32 = True
         gpu_name = torch.cuda.get_device_name(0)
-        gpu_mem = torch.cuda.get_device_properties(0).total_mem / (1024**3)
+        gpu_mem = torch.cuda.get_device_properties(0).total_memory / (1024**3)
         logger.info(f"GPU: {gpu_name} ({gpu_mem:.1f} GB) | cuDNN benchmark=ON | TF32=ON")
     
     # Initialize the complete model (MLEP) with Pre-trained ImageNet weights
