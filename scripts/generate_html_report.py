@@ -463,7 +463,9 @@ def generate_html(output_file: Path, auto_open: bool = True) -> None:
             <button class="tablinks" onclick="openTab(event, 'TabVisuals')">4. Diagnostic Visuals</button>
             <button class="tablinks" onclick="openTab(event, 'TabData')">5. Data Provenance</button>
             <button class="tablinks" onclick="openTab(event, 'TabDeepResearch')">6. Deep Research & Proofs</button>
-            <button class="tablinks" onclick="openTab(event, 'TabCommands')">7. Commands & Reproduction</button>
+            <button class="tablinks" onclick="openTab(event, 'TabGlossary')">8. Interactive Glossary</button>
+            <button class="tablinks" onclick="openTab(event, \'TabGlossary\')">8. Interactive Glossary</button>
+            <button class="tablinks" onclick="openTab(event, 'TabCommands')">9. Commands & Reproduction</button>
         </div>
         
         <div id="TabArchitecture" class="tabcontent" style="display:block;">
@@ -1541,6 +1543,104 @@ Actual AI      FN     |    TN    (False Negatives: AI images that slipped throug
         </div>
         </div> <!-- Close TabDeepResearch -->
 
+        
+        <div id="TabGlossary" class="tabcontent">
+        <div id="section-glossary" class="section-block" style="border-top: none; margin-top: 1rem; padding-top: 0; max-width: 900px; margin: 0 auto;">
+            <h2 class="section-title">Interactive Technical Glossary</h2>
+            <p class="section-desc">Search for any term used in this project to see its deep research definition, mathematical meaning, and project relevance.</p>
+            
+            <input type="text" id="glossarySearch" onkeyup="filterGlossary()" placeholder="Search for terms (e.g. MLEP, AdamW)..." style="width: 100%; padding: 12px 20px; margin-bottom: 20px; box-sizing: border-box; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 16px; background-color: #f8fafc;">
+            
+            <div id="glossaryList">
+
+                <div class="glossary-item" style="margin-bottom: 1.5rem; background: #fff; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid var(--accent-blue); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h3 class="term-title" style="margin-top: 0; color: #1e293b;">MLEP</h3>
+                    <p style="margin-bottom: 0.5rem; color: #334155;"><strong>Definition:</strong> Multi-granularity Local Entropy Patterns. A feature extraction method computing Shannon Entropy across 4-pixel windows at multiple scales.</p>
+                    <p style="margin-bottom: 0; color: #334155;"><strong>Project Relevance:</strong> This is the core of our detection pipeline. Instead of looking at raw colors or shapes, MLEP extracts the structural randomness (entropy) of the image, exposing AI generation artifacts.</p>
+                </div>
+
+                <div class="glossary-item" style="margin-bottom: 1.5rem; background: #fff; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid var(--accent-blue); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h3 class="term-title" style="margin-top: 0; color: #1e293b;">Shannon Entropy</h3>
+                    <p style="margin-bottom: 0.5rem; color: #334155;"><strong>Definition:</strong> A mathematical measure of unpredictability or chaos in a signal. Formula: H = -Σ p(x) · log₂(p(x)).</p>
+                    <p style="margin-bottom: 0; color: #334155;"><strong>Project Relevance:</strong> Used to quantify the micro-texture in an image. Real images have higher entropy (more randomness from camera sensors), while AI images have lower entropy (smoother).</p>
+                </div>
+
+                <div class="glossary-item" style="margin-bottom: 1.5rem; background: #fff; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid var(--accent-blue); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h3 class="term-title" style="margin-top: 0; color: #1e293b;">Generative Oversmoothing</h3>
+                    <p style="margin-bottom: 0.5rem; color: #334155;"><strong>Definition:</strong> The tendency of AI generative models (like Diffusion or GANs) to systematically smooth out high-frequency micro-textures during the denoising generation process.</p>
+                    <p style="margin-bottom: 0; color: #334155;"><strong>Project Relevance:</strong> This physical artifact is exactly what our MLEP model detects. The entropy gap (~1.784 vs ~1.766) is the mathematical proof of this oversmoothing.</p>
+                </div>
+
+                <div class="glossary-item" style="margin-bottom: 1.5rem; background: #fff; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid var(--accent-blue); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h3 class="term-title" style="margin-top: 0; color: #1e293b;">ROC-AUC</h3>
+                    <p style="margin-bottom: 0.5rem; color: #334155;"><strong>Definition:</strong> Area Under the Receiver Operating Characteristic Curve. A threshold-independent metric evaluating how well a model can separate positive from negative classes.</p>
+                    <p style="margin-bottom: 0; color: #334155;"><strong>Project Relevance:</strong> An AUC of 0.922 means our model has a 92.2% chance of ranking a randomly chosen AI image higher than a randomly chosen real image, showing robust separation.</p>
+                </div>
+
+                <div class="glossary-item" style="margin-bottom: 1.5rem; background: #fff; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid var(--accent-blue); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h3 class="term-title" style="margin-top: 0; color: #1e293b;">PR-AUC</h3>
+                    <p style="margin-bottom: 0.5rem; color: #334155;"><strong>Definition:</strong> Area Under the Precision-Recall Curve. Evaluates the tradeoff between precision and recall, especially useful for imbalanced datasets.</p>
+                    <p style="margin-bottom: 0; color: #334155;"><strong>Project Relevance:</strong> A PR-AUC of 0.901 confirms that our model maintains high precision even when detecting the vast majority of AI images (high recall).</p>
+                </div>
+
+                <div class="glossary-item" style="margin-bottom: 1.5rem; background: #fff; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid var(--accent-blue); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h3 class="term-title" style="margin-top: 0; color: #1e293b;">ResNet-50</h3>
+                    <p style="margin-bottom: 0.5rem; color: #334155;"><strong>Definition:</strong> A 50-layer deep convolutional neural network that utilizes residual connections to train effectively without vanishing gradients.</p>
+                    <p style="margin-bottom: 0; color: #334155;"><strong>Project Relevance:</strong> We adapted an ImageNet-pretrained ResNet-50 to accept 9-channel entropy maps instead of 3-channel RGB. This leverages its powerful spatial pattern recognition.</p>
+                </div>
+
+                <div class="glossary-item" style="margin-bottom: 1.5rem; background: #fff; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid var(--accent-blue); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h3 class="term-title" style="margin-top: 0; color: #1e293b;">AdamW</h3>
+                    <p style="margin-bottom: 0.5rem; color: #334155;"><strong>Definition:</strong> Adam optimizer with decoupled Weight Decay. It applies L2 regularization directly to the weights rather than blending it with the gradient moments.</p>
+                    <p style="margin-bottom: 0; color: #334155;"><strong>Project Relevance:</strong> AdamW (LR=0.0002, WD=0.05) prevents our model from memorizing the 6,000 training images, forcing it to learn generalized entropy patterns.</p>
+                </div>
+
+                <div class="glossary-item" style="margin-bottom: 1.5rem; background: #fff; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid var(--accent-blue); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h3 class="term-title" style="margin-top: 0; color: #1e293b;">Cosine Annealing</h3>
+                    <p style="margin-bottom: 0.5rem; color: #334155;"><strong>Definition:</strong> A learning rate scheduler that smoothly decreases the learning rate following a cosine curve.</p>
+                    <p style="margin-bottom: 0; color: #334155;"><strong>Project Relevance:</strong> Allows the model to learn coarse entropy patterns quickly early on, and make very fine, stable adjustments in the final epochs without overshooting.</p>
+                </div>
+
+                <div class="glossary-item" style="margin-bottom: 1.5rem; background: #fff; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid var(--accent-blue); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h3 class="term-title" style="margin-top: 0; color: #1e293b;">Dropout</h3>
+                    <p style="margin-bottom: 0.5rem; color: #334155;"><strong>Definition:</strong> A regularization technique that randomly zeroes out a percentage of neurons during training to prevent co-adaptation.</p>
+                    <p style="margin-bottom: 0; color: #334155;"><strong>Project Relevance:</strong> We use strong Dropout (50% followed by 30%) in the classifier head to force the network to distribute its decision-making across many features rather than relying on a few.</p>
+                </div>
+
+                <div class="glossary-item" style="margin-bottom: 1.5rem; background: #fff; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid var(--accent-blue); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h3 class="term-title" style="margin-top: 0; color: #1e293b;">Label Smoothing</h3>
+                    <p style="margin-bottom: 0.5rem; color: #334155;"><strong>Definition:</strong> A technique that converts hard labels (0.0 or 1.0) into soft labels (e.g., 0.05 or 0.95).</p>
+                    <p style="margin-bottom: 0; color: #334155;"><strong>Project Relevance:</strong> Stops the model from becoming overly confident. By pushing probabilities away from the absolute extremes, it improves generalization and calibration on unseen data.</p>
+                </div>
+
+                <div class="glossary-item" style="margin-bottom: 1.5rem; background: #fff; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid var(--accent-blue); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h3 class="term-title" style="margin-top: 0; color: #1e293b;">LBP</h3>
+                    <p style="margin-bottom: 0.5rem; color: #334155;"><strong>Definition:</strong> Local Binary Patterns. A classical texture descriptor that encodes micro-texture patterns by thresholding neighboring pixels.</p>
+                    <p style="margin-bottom: 0; color: #334155;"><strong>Project Relevance:</strong> Provides independent validation of the entropy gap. Differences in the LBP histograms confirm that real and AI images have fundamentally different micro-textures.</p>
+                </div>
+
+                <div class="glossary-item" style="margin-bottom: 1.5rem; background: #fff; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid var(--accent-blue); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h3 class="term-title" style="margin-top: 0; color: #1e293b;">FFT</h3>
+                    <p style="margin-bottom: 0.5rem; color: #334155;"><strong>Definition:</strong> Fast Fourier Transform. Converts an image from the spatial domain into the frequency domain.</p>
+                    <p style="margin-bottom: 0; color: #334155;"><strong>Project Relevance:</strong> Provides visual proof of oversmoothing. The FFT spectrum shows reduced energy at the edges (high frequencies) for AI images compared to real images.</p>
+                </div>
+
+                <div class="glossary-item" style="margin-bottom: 1.5rem; background: #fff; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid var(--accent-blue); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h3 class="term-title" style="margin-top: 0; color: #1e293b;">Batch Normalization</h3>
+                    <p style="margin-bottom: 0.5rem; color: #334155;"><strong>Definition:</strong> A technique that normalizes activations across a batch to zero-mean and unit-variance.</p>
+                    <p style="margin-bottom: 0; color: #334155;"><strong>Project Relevance:</strong> Crucial for aligning our discrete entropy values {0.0, 0.81, 1.0, 1.5, 2.0} with the standard scale expected by the ImageNet-pretrained ResNet filters.</p>
+                </div>
+
+                <div class="glossary-item" style="margin-bottom: 1.5rem; background: #fff; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid var(--accent-blue); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <h3 class="term-title" style="margin-top: 0; color: #1e293b;">Steganalysis</h3>
+                    <p style="margin-bottom: 0.5rem; color: #334155;"><strong>Definition:</strong> The study of detecting hidden messages or patterns (steganography) within digital media.</p>
+                    <p style="margin-bottom: 0; color: #334155;"><strong>Project Relevance:</strong> Our pipeline applies steganalysis principles (like LBP and Entropy) to detect the invisible high-frequency artifacts left behind by AI generators.</p>
+                </div>
+
+            </div>
+        </div>
+        </div> <!-- Close TabGlossary -->
+
         <div id="TabCommands" class="tabcontent">
         <!-- SECTION: COMMANDS -->
         <div id="section-commands" class="section-block" style="border-top: none; margin-top: 1rem; padding-top: 0;">
@@ -1596,6 +1696,82 @@ git push origin main</code></pre>
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
         }}
+    </script>
+
+    
+    <script>
+        function filterGlossary() {{
+            var input, filter, list, items, title, i, txtValue;
+            input = document.getElementById('glossarySearch');
+            filter = input.value.toUpperCase();
+            list = document.getElementById("glossaryList");
+            items = list.getElementsByClassName('glossary-item');
+            
+            for (i = 0; i < items.length; i++) {{
+                title = items[i].getElementsByClassName("term-title")[0];
+                txtValue = title.textContent || title.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {{
+                    items[i].style.display = "";
+                }} else {{
+                    items[i].style.display = "none";
+                }}
+            }}
+        }}
+
+        // Auto-Tooltip Logic
+        document.addEventListener("DOMContentLoaded", function() {{
+            const glossary = {{ 'MLEP': 'Multi-granularity Local Entropy Patterns. A feature extraction method computing Shannon Entropy across 4-pixel windows at multiple scales.', 'Shannon Entropy': 'A mathematical measure of unpredictability or chaos in a signal. Formula: H = -Σ p(x) · log₂(p(x)).', 'Generative Oversmoothing': 'The tendency of AI generative models (like Diffusion or GANs) to systematically smooth out high-frequency micro-textures during the denoising generation process.', 'ROC-AUC': 'Area Under the Receiver Operating Characteristic Curve. A threshold-independent metric evaluating how well a model can separate positive from negative classes.', 'PR-AUC': 'Area Under the Precision-Recall Curve. Evaluates the tradeoff between precision and recall, especially useful for imbalanced datasets.', 'ResNet-50': 'A 50-layer deep convolutional neural network that utilizes residual connections to train effectively without vanishing gradients.', 'AdamW': 'Adam optimizer with decoupled Weight Decay. It applies L2 regularization directly to the weights rather than blending it with the gradient moments.', 'Cosine Annealing': 'A learning rate scheduler that smoothly decreases the learning rate following a cosine curve.', 'Dropout': 'A regularization technique that randomly zeroes out a percentage of neurons during training to prevent co-adaptation.', 'Label Smoothing': 'A technique that converts hard labels (0.0 or 1.0) into soft labels (e.g., 0.05 or 0.95).', 'LBP': 'Local Binary Patterns. A classical texture descriptor that encodes micro-texture patterns by thresholding neighboring pixels.', 'FFT': 'Fast Fourier Transform. Converts an image from the spatial domain into the frequency domain.', 'Batch Normalization': 'A technique that normalizes activations across a batch to zero-mean and unit-variance.', 'Steganalysis': 'The study of detecting hidden messages or patterns (steganography) within digital media.' }};
+            
+            const tooltipCSS = `
+                .glossary-tooltip {{ position: relative; display: inline-block; border-bottom: 1px dotted var(--accent-blue); cursor: help; color: var(--accent-blue); font-weight: 600; transition: color 0.2s; }}
+                .glossary-tooltip:hover {{ color: var(--primary-color); }}
+                .glossary-tooltip .tooltiptext {{ visibility: hidden; width: 260px; background-color: #1e293b; color: #fff; text-align: left; border-radius: 6px; padding: 12px; position: absolute; z-index: 1000; bottom: 125%; left: 50%; margin-left: -130px; opacity: 0; transition: opacity 0.3s; font-size: 0.85rem; font-weight: normal; line-height: 1.4; box-shadow: 0 4px 12px rgba(0,0,0,0.3); pointer-events: none; }}
+                .glossary-tooltip .tooltiptext::after {{ content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #1e293b transparent transparent transparent; }}
+                .glossary-tooltip:hover .tooltiptext {{ visibility: visible; opacity: 1; }}
+            `;
+            const styleSheet = document.createElement("style");
+            styleSheet.type = "text/css";
+            styleSheet.innerText = tooltipCSS;
+            document.head.appendChild(styleSheet);
+
+            function highlightTerms(node) {{
+                if (node.nodeType === 3) {{ 
+                    let text = node.nodeValue;
+                    if (!text.trim()) return;
+                    
+                    let parentTag = node.parentNode.tagName;
+                    if (['SCRIPT', 'STYLE', 'CODE', 'PRE', 'BUTTON', 'A', 'H1', 'H2', 'H3', 'TH'].includes(parentTag)) return;
+                    if (node.parentNode.classList.contains('glossary-tooltip') || node.parentNode.classList.contains('tooltiptext')) return;
+                    
+                    let replaced = false;
+                    let newHTML = text;
+                    
+                    for (const [term, definition] of Object.entries(glossary)) {{
+                        const regex = new RegExp(`\\b(${{term}})\\b`, "g");
+                        if (regex.test(newHTML)) {{
+                            newHTML = newHTML.replace(regex, `<span class="glossary-tooltip">$1<span class="tooltiptext"><strong>$1</strong><br>${{definition}}</span></span>`);
+                            replaced = true;
+                        }}
+                    }}
+                    
+                    if (replaced) {{
+                        const span = document.createElement("span");
+                        span.innerHTML = newHTML;
+                        node.parentNode.replaceChild(span, node);
+                    }}
+                }} else if (node.nodeType === 1) {{
+                    if (!['SCRIPT', 'STYLE', 'CODE', 'PRE', 'BUTTON', 'A'].includes(node.tagName)) {{
+                        for (let i = node.childNodes.length - 1; i >= 0; i--) {{
+                            highlightTerms(node.childNodes[i]);
+                        }}
+                    }}
+                }}
+            }}
+            
+            // Apply only to paragraph descriptions and subtexts to avoid breaking UI layout
+            const targets = document.querySelectorAll('.section-desc, p, .stat-subtext');
+            targets.forEach(target => highlightTerms(target));
+        }});
     </script>
 
     <footer>
