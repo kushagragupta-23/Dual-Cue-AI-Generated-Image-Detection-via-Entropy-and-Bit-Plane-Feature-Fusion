@@ -1,11 +1,12 @@
-# HydraFusion-Net: Master Configuration File (v3 — Production)
+# HydraFusion-Net: Master Configuration File (v3 — Hardware-Accelerated Production)
 # 2-Stage Training: Contrastive Pre-Training -> Gated Fusion Fine-Tuning
+# Optimized for NVIDIA GeForce RTX 4050 Laptop GPU (6GB VRAM)
 
 dataset:
-  data_dir: "C:/Users/Eldoria/Music/project main cl dv/DL AND CV PROJECT (1)/dataset10000"
+  data_dir: "dataset10000"
   image_size: 256
-  batch_size: 16 # Optimized for RTX 4050 6GB VRAM
-  num_workers: 2  # Capped at 2 on Windows to prevent deadlocks
+  batch_size: 32 # Optimized batch size for RTX 4050 6GB VRAM Tensor Cores
+  num_workers: 2  # Capped at 2 on Windows to prevent worker process deadlocks
   val_split: 0.20
   test_split: 0.20
   seed: 42
@@ -49,7 +50,6 @@ training:
   weight_decay: 0.005  # Calibrated regularization
   use_amp: true
   supcon_temp: 0.1     # Sharp contrastive alignment (safe with float32)
-
 
 logging:
   log_dir: "outputs/logs"
