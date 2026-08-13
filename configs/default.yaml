@@ -1,0 +1,57 @@
+# HydraFusion-Net: Master Configuration File (v3 — Production)
+# 2-Stage Training: Contrastive Pre-Training -> Gated Fusion Fine-Tuning
+
+dataset:
+  data_dir: "C:/Users/Eldoria/Music/project main cl dv/DL AND CV PROJECT (1)/dataset10000"
+  image_size: 256
+  batch_size: 16 # Optimized for RTX 4050 6GB VRAM
+  num_workers: 2  # Capped at 2 on Windows to prevent deadlocks
+  val_split: 0.20
+  test_split: 0.20
+  seed: 42
+  
+augmentations:
+  enable_augmentations: true
+  jpeg_quality_min: 70
+  jpeg_quality_max: 100
+  blur_sigma_min: 0.5
+  blur_sigma_max: 1.5
+  random_flip_prob: 0.5
+  random_rotation_degrees: 5
+
+mlep:
+  window_size: 2
+  scales: [1.0, 0.5, 0.25]
+  macro_grid_size: 16
+
+lota:
+  bit_planes: [0, 1, 2]
+  k_patches: 4
+  patch_size: 32
+  grid_size: 8
+  normalization: "thresholding"
+  threshold_val: 255.0
+
+hydrafusion:
+  backbone: "resnet50"
+  latent_dim: 512
+  use_freq_prefilter: true
+  freeze_backbones: true  # Critical: prevents overfitting on small dataset
+  fusion_heads: ["spatial_attn_forward", "spatial_attn_reverse", "channel_se", "freq_corr"]
+  
+training:
+  stage1_epochs: 15
+  stage2_epochs: 25
+  optimizer: "adamw"
+  lr_stage1: 0.001     # For extractors + projections (backbones frozen)
+  lr_stage2: 0.0003    # For fusion heads + router + classifier
+  lr_backbone: 0.00003 # Micro-LR for ResNet layer3 in Stage 2
+  weight_decay: 0.005  # Calibrated regularization
+  use_amp: true
+  supcon_temp: 0.1     # Sharp contrastive alignment (safe with float32)
+
+
+logging:
+  log_dir: "outputs/logs"
+  checkpoint_dir: "outputs/checkpoints"
+  level: "INFO"
