@@ -1,0 +1,22 @@
+# Python / Environment
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+ENV/
+.pytest_cache/
+
+# Datasets & Large Files
+dataset10000/
+*.pth
+*.pt
+*.onnx
+*.bin
+*.tar.gz
+*.zip
+
+# Logs & Run outputs
+*.log
+outputs/project_run/
+outputs/logs/

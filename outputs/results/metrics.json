@@ -1,0 +1,12 @@
+{
+  "best_val_accuracy": 90.45,
+  "test_accuracy": 90.2,
+  "precision": 89.26,
+  "recall": 91.4,
+  "f1_score": 90.32,
+  "test_correct": 1804,
+  "test_total": 2000,
+  "optimizer": "adamw",
+  "stage1_epochs": 15,
+  "stage2_epochs": 25
+}

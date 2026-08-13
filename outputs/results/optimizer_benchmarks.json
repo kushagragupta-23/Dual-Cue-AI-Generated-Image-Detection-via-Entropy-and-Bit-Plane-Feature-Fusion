@@ -1,0 +1,22 @@
+{
+    "AdamW": {
+        "Standalone_MLEP": 90.31,
+        "Standalone_LOTA": 91.0,
+        "HydraFusion_Net": 96.53
+    },
+    "SGD_Momentum": {
+        "Standalone_MLEP": 90.05,
+        "Standalone_LOTA": 90.79,
+        "HydraFusion_Net": 95.58
+    },
+    "Lion": {
+        "Standalone_MLEP": 90.3,
+        "Standalone_LOTA": 91.34,
+        "HydraFusion_Net": 96.55
+    },
+    "NAdam": {
+        "Standalone_MLEP": 89.85,
+        "Standalone_LOTA": 90.61,
+        "HydraFusion_Net": 95.77
+    }
+}
