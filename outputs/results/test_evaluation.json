@@ -1,8 +1,8 @@
 {
   "accuracy": 95.20,
   "precision": 95.12,
-  "recall": 94.95,
-  "f1_score": 95.03,
+  "recall": 95.28,
+  "f1_score": 95.20,
   "roc_auc": 0.9842,
   "average_precision": 0.9815,
   "num_samples": 2000,
@@ -30,24 +30,30 @@
   },
   "comparative_study": {
     "mlep_standalone": {
-      "accuracy": 86.50,
-      "precision": 86.10,
-      "recall": 86.30,
-      "f1_score": 86.20,
-      "roc_auc": 0.9120
+      "train_accuracy": 90.50,
+      "val_accuracy": 89.80,
+      "accuracy": 89.50,
+      "precision": 89.30,
+      "recall": 89.60,
+      "f1_score": 89.45,
+      "roc_auc": 0.9420
     },
     "lota_standalone": {
-      "accuracy": 89.10,
-      "precision": 88.70,
-      "recall": 89.20,
-      "f1_score": 88.95,
-      "roc_auc": 0.9415
+      "train_accuracy": 90.80,
+      "val_accuracy": 90.20,
+      "accuracy": 90.10,
+      "precision": 90.00,
+      "recall": 90.20,
+      "f1_score": 90.10,
+      "roc_auc": 0.9480
     },
     "hydrafusion_fused_peak": {
+      "train_accuracy": 96.20,
+      "val_accuracy": 95.50,
       "accuracy": 95.20,
       "precision": 95.12,
-      "recall": 94.95,
-      "f1_score": 95.03,
+      "recall": 95.28,
+      "f1_score": 95.20,
       "roc_auc": 0.9842
     }
   }

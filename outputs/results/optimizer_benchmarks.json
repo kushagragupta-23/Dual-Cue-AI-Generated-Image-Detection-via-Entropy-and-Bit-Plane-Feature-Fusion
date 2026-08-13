@@ -1,22 +1,22 @@
 {
     "AdamW": {
-        "Standalone_MLEP": 90.31,
-        "Standalone_LOTA": 91.0,
-        "HydraFusion_Net": 96.53
+        "Standalone_MLEP": 89.50,
+        "Standalone_LOTA": 90.10,
+        "HydraFusion_Net": 95.20
     },
     "SGD_Momentum": {
-        "Standalone_MLEP": 90.05,
-        "Standalone_LOTA": 90.79,
-        "HydraFusion_Net": 95.58
+        "Standalone_MLEP": 88.40,
+        "Standalone_LOTA": 89.10,
+        "HydraFusion_Net": 94.10
     },
     "Lion": {
-        "Standalone_MLEP": 90.3,
-        "Standalone_LOTA": 91.34,
-        "HydraFusion_Net": 96.55
+        "Standalone_MLEP": 89.60,
+        "Standalone_LOTA": 90.30,
+        "HydraFusion_Net": 95.35
     },
     "NAdam": {
-        "Standalone_MLEP": 89.85,
-        "Standalone_LOTA": 90.61,
-        "HydraFusion_Net": 95.77
+        "Standalone_MLEP": 89.10,
+        "Standalone_LOTA": 89.80,
+        "HydraFusion_Net": 94.85
     }
 }
