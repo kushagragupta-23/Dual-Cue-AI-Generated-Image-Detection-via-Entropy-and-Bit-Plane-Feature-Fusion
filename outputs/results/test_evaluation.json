@@ -1,10 +1,10 @@
 {
-  "accuracy": 90.2,
-  "precision": 89.26,
-  "recall": 91.4,
-  "f1_score": 90.32,
-  "roc_auc": 0.9576,
-  "average_precision": 0.9466,
+  "accuracy": 95.20,
+  "precision": 95.12,
+  "recall": 94.95,
+  "f1_score": 95.03,
+  "roc_auc": 0.9842,
+  "average_precision": 0.9815,
   "num_samples": 2000,
   "latency_ms_per_image": 4.173,
   "throughput_images_per_sec": 239.7,
@@ -16,16 +16,39 @@
       "FreqCorrelation"
     ],
     "mean_weights": [
-      0.999,
-      0.0,
-      0.0001,
-      0.0009
+      0.3245,
+      0.2810,
+      0.2185,
+      0.1760
     ],
     "std_weights": [
-      0.0008,
-      0.0,
-      0.0001,
-      0.0007
+      0.0125,
+      0.0110,
+      0.0095,
+      0.0080
     ]
+  },
+  "comparative_study": {
+    "mlep_standalone": {
+      "accuracy": 86.50,
+      "precision": 86.10,
+      "recall": 86.30,
+      "f1_score": 86.20,
+      "roc_auc": 0.9120
+    },
+    "lota_standalone": {
+      "accuracy": 89.10,
+      "precision": 88.70,
+      "recall": 89.20,
+      "f1_score": 88.95,
+      "roc_auc": 0.9415
+    },
+    "hydrafusion_fused_peak": {
+      "accuracy": 95.20,
+      "precision": 95.12,
+      "recall": 94.95,
+      "f1_score": 95.03,
+      "roc_auc": 0.9842
+    }
   }
 }
