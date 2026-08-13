@@ -162,8 +162,8 @@ def main() -> None:
     if eval_result["alphas"] is not None:
         alphas = eval_result["alphas"]
         head_names = [
-            "SpatialAttn MLEP→LOTA",
-            "SpatialAttn LOTA→MLEP",
+            "SpatialAttn MLEP->LOTA",
+            "SpatialAttn LOTA->MLEP",
             "Channel SE",
             "Freq Correlation",
         ]
@@ -171,7 +171,7 @@ def main() -> None:
         for name, mean, std in zip(
             head_names, alphas.mean(axis=0), alphas.std(axis=0)
         ):
-            logger.info(f"    {name}: μ={mean:.4f}, σ={std:.4f}")
+            logger.info(f"    {name}: mean={mean:.4f}, std={std:.4f}")
 
     # ═══════════════════════════════════════════════════════════════════
     #  2. Robustness Degradation Sweep (Optional)

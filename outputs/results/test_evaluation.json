@@ -1,13 +1,13 @@
 {
-  "accuracy": 95.20,
-  "precision": 95.12,
-  "recall": 95.28,
-  "f1_score": 95.20,
-  "roc_auc": 0.9842,
-  "average_precision": 0.9815,
+  "accuracy": 90.2,
+  "precision": 89.26,
+  "recall": 91.4,
+  "f1_score": 90.32,
+  "roc_auc": 0.9576,
+  "average_precision": 0.9466,
   "num_samples": 2000,
-  "latency_ms_per_image": 4.173,
-  "throughput_images_per_sec": 239.7,
+  "latency_ms_per_image": 5.682,
+  "throughput_images_per_sec": 176.0,
   "gating_weights": {
     "head_names": [
       "SpatialAttn_MLEP\u2192LOTA",
@@ -16,45 +16,16 @@
       "FreqCorrelation"
     ],
     "mean_weights": [
-      0.3245,
-      0.2810,
-      0.2185,
-      0.1760
+      0.999,
+      0.0,
+      0.0001,
+      0.0009
     ],
     "std_weights": [
-      0.0125,
-      0.0110,
-      0.0095,
-      0.0080
+      0.0008,
+      0.0,
+      0.0001,
+      0.0007
     ]
-  },
-  "comparative_study": {
-    "mlep_standalone": {
-      "train_accuracy": 90.50,
-      "val_accuracy": 89.80,
-      "accuracy": 89.50,
-      "precision": 89.30,
-      "recall": 89.60,
-      "f1_score": 89.45,
-      "roc_auc": 0.9420
-    },
-    "lota_standalone": {
-      "train_accuracy": 90.80,
-      "val_accuracy": 90.20,
-      "accuracy": 90.10,
-      "precision": 90.00,
-      "recall": 90.20,
-      "f1_score": 90.10,
-      "roc_auc": 0.9480
-    },
-    "hydrafusion_fused_peak": {
-      "train_accuracy": 96.20,
-      "val_accuracy": 95.50,
-      "accuracy": 95.20,
-      "precision": 95.12,
-      "recall": 95.28,
-      "f1_score": 95.20,
-      "roc_auc": 0.9842
-    }
   }
 }
