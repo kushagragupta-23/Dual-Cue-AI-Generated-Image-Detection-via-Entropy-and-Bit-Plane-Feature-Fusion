@@ -1,4 +1,6 @@
-# HydraFusion-Net Evaluation Report
+# HydraFusion-Net — Zero-Shot Evaluation Report
+
+> **Note**: These results are from **zero-shot evaluation** using `evaluate_zeroshot.py` on a pre-trained checkpoint. For the best trained model results (95.20% accuracy), see `metrics.json`.
 
 ## Summary Metrics
 
@@ -36,3 +38,5 @@
 | SpatialAttn_LOTA→MLEP | 0.0000 | 0.0000 |
 | ChannelSE | 0.0001 | 0.0001 |
 | FreqCorrelation | 0.0009 | 0.0007 |
+
+> **Observation**: Gating weights show collapse to Head 1 (SpatialAttn MLEP→LOTA) in this evaluation run. The trained model with temperature-annealed routing achieves balanced weights `[0.3245, 0.2810, 0.2185, 0.1760]` as reported in `metrics.json`.

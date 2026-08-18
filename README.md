@@ -1,7 +1,15 @@
 # HydraFusion-Net
 
-> **A Dual-Stream Multi-Head Fusion Architecture for AI-Generated Image Detection**
+> **A Dual-Stream Multi-Head Fusion Architecture for AI-Generated Image Detection**  
 > Fuses **MLEP** (Multi-granularity Local Entropy Patterns, NeurIPS 2025) and **LOTA** (LOw-biT pAtch, ICCV 2025) through an adaptive gated fusion router with cross-modal contrastive alignment.
+
+### 👥 Authors & Affiliation
+- **Kushagra Gupta\*** — [`Kushagra.G27pgai@jioinstitute.edu.in`](mailto:Kushagra.G27pgai@jioinstitute.edu.in)
+- **Aishwarya Nevrekar\*** — [`Aishwarya.N27pgai@jioinstitute.edu.in`](mailto:Aishwarya.N27pgai@jioinstitute.edu.in)
+- **Institution:** Artificial Intelligence & Data Science Programme, **Jio Institute**, Navi Mumbai, Maharashtra, India  
+- *\*Equal contribution & co-first authorship*
+- **📄 CVPR 2026 Submission Report:** [`outputs/HydraFusion_CVPR_Paper.html`](outputs/HydraFusion_CVPR_Paper.html)
+
 
 ---
 

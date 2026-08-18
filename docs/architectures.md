@@ -197,7 +197,9 @@ This allows the model to emphasize different fusion strategies per image—e.g.,
 **In:** `src/models/hydrafusion_net.py`
 
 ```python
-Linear(512 → 256) → LayerNorm → GELU → Dropout(0.3) → Linear(256 → 1)
+Linear(512 → 256) → LayerNorm → GELU → Dropout(0.4)
+ → Linear(256 → 128) → LayerNorm → GELU → Dropout(0.3)
+ → Linear(128 → 1)
 ```
 
 Output is a raw logit; sigmoid applied for probability.
@@ -235,13 +237,30 @@ A Gradient Reversal Layer (GRL) + domain classifier intended to force generator-
 
 ## Current Performance
 
+### Best Trained Model (2-Stage Pipeline — `metrics.json`)
+
 | Metric | Value |
 |:---:|:---:|
-| **Best Val Accuracy** | 90.45% |
+| **Best Val Accuracy** | 95.50% |
+| **Test Accuracy** | 95.20% |
+| **Precision** | 95.12% |
+| **Recall** | 95.28% |
+| **F1 Score** | 95.20% |
+| **ROC-AUC** | 0.9842 |
+| **Average Precision** | 0.9815 |
+
+### Zero-Shot Evaluation (Pre-trained Checkpoint — `test_evaluation.json`)
+
+| Metric | Value |
+|:---:|:---:|
 | **Test Accuracy** | 90.20% |
 | **Precision** | 89.26% |
 | **Recall** | 91.40% |
 | **F1 Score** | 90.32% |
+| **ROC-AUC** | 0.9576 |
+| **Average Precision** | 0.9466 |
+| **Latency** | 5.68 ms/image |
+| **Throughput** | 176.0 images/sec |
 
 **Dataset:** 10,000 images (5K real + 5K AI-generated), split 60/20/20.
 
