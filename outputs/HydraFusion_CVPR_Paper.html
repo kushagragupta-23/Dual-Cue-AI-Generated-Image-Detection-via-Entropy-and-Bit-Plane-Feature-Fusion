@@ -371,9 +371,9 @@ pre.arch {
 <!-- §1 INTRODUCTION -->
 <h2 class="section-title">1. Introduction</h2>
 
-<p>The rapid evolution of modern generative models—ranging from Generative Adversarial Networks (GANs) [1] to Latent Diffusion Models (LDMs) [2] and autoregressive transformers [3]—has made photo-realistic image synthesis broadly accessible. Consequently, developing robust, generalizable AI-Generated Image Detection (AIGID) frameworks is essential for digital forensics and content provenance.</p>
+<p>The rapid evolution of modern generative models—ranging from Generative Adversarial Networks (GANs) to Latent Diffusion Models (LDMs) and autoregressive transformers—has made photo-realistic image synthesis broadly accessible. Consequently, developing robust, generalizable AI-Generated Image Detection (AIGID) frameworks is essential for digital forensics and content provenance.</p>
 
-<p>State-of-the-art forensic detectors typically target specific generative signatures. <strong>MLEP</strong> (NeurIPS 2025) [4] observes that generative interpolation and upsampling operations leave subtle structural entropy irregularities, detectable by measuring local Shannon entropy across multi-scale resampling pyramids. Conversely, <strong>LOTA</strong> (ICCV 2025) [5] discovers that the lowest-order bit-planes of generated images exhibit chaotic brightness variance and grid noise distinct from natural camera sensor physics. While each method possesses notable discriminative power, they operate in separate operational domains: MLEP analyzes spatial entropy distributions, whereas LOTA captures high-frequency bit-plane quantization noise.</p>
+<p>State-of-the-art forensic detectors typically target specific generative signatures. <strong>MLEP</strong> (NeurIPS 2025) [1] observes that generative interpolation and upsampling operations leave subtle structural entropy irregularities, detectable by measuring local Shannon entropy across multi-scale resampling pyramids. Conversely, <strong>LOTA</strong> (ICCV 2025) [2] discovers that the lowest-order bit-planes of generated images exhibit chaotic brightness variance and grid noise distinct from natural camera sensor physics. While each method possesses notable discriminative power, they operate in separate operational domains: MLEP analyzes spatial entropy distributions, whereas LOTA captures high-frequency bit-plane quantization noise.</p>
 
 <p>In this work, we demonstrate that these two forensic paradigms capture orthogonal information and can be synergistically unified. We present <strong>HydraFusion-Net</strong>, an end-to-end multi-head fusion architecture engineered to reconcile statistical entropy anomalies with bit-plane steganalysis.</p>
 
@@ -389,10 +389,10 @@ pre.arch {
 <h2 class="section-title">2. Related Work</h2>
 
 <h3 class="subsection-title">2.1 AI-Generated Image Forensics</h3>
-<p>Early deepfake detectors relied on spatial CNN classifiers [7] or frequency spectrum artifacts [6, 10]. However, these approaches often overfit to visual semantics (e.g., face structures or object categories) rather than universal generative artifacts. Recent reconstruction-based methods such as DIRE [8] and SeDID [9] compute DDIM inversion errors but incur substantial computational latency (hundreds of milliseconds per image). Our work focuses on lightweight, content-agnostic spatial and bit-plane cues that execute in real time.</p>
+<p>Early deepfake detectors relied on spatial CNN classifiers [4] or frequency spectrum artifacts [3, 6]. However, these approaches often overfit to visual semantics (e.g., face structures or object categories) rather than universal generative artifacts. Recent reconstruction-based methods such as DIRE [12] and SeDID [9] compute DDIM inversion errors but incur substantial computational latency (hundreds of milliseconds per image). Our work focuses on lightweight, content-agnostic spatial and bit-plane cues that execute in real time.</p>
 
 <h3 class="subsection-title">2.2 MLEP &amp; LOTA Foundations</h3>
-<p><strong>MLEP [4]</strong> applies patch shuffling to destroy global semantic content while extracting local Shannon entropy over 2&times;2 windows across multi-scale pyramids. <strong>LOTA [5]</strong> slices the three least significant bit-planes and employs Maximum Gradient Patch Selection (MGPS) to isolate noise anomalies. Both methods were originally non-differentiable; HydraFusion-Net reformulates their core primitives into differentiable operators.</p>
+<p><strong>MLEP [1]</strong> applies patch shuffling to destroy global semantic content while extracting local Shannon entropy over 2&times;2 windows across multi-scale pyramids. <strong>LOTA [2]</strong> slices the three least significant bit-planes and employs Maximum Gradient Patch Selection (MGPS) to isolate noise anomalies. Both methods were originally non-differentiable; HydraFusion-Net reformulates their core primitives into differentiable operators.</p>
 
 <!-- §3 PROPOSED METHOD -->
 <h2 class="section-title">3. Proposed Method</h2>
@@ -545,7 +545,7 @@ f<sub>fused</sub> = &Sigma;<sub>i=1</sub><sup>4</sup> &alpha;<sub>i</sub> &middo
   <th>Latency (ms)</th>
 </tr>
 <tr>
-  <td>1. Standalone MLEP (NeurIPS 2025) [4]</td>
+  <td>1. Standalone MLEP (NeurIPS 2025) [1]</td>
   <td>89.50</td>
   <td>89.30</td>
   <td>89.60</td>
@@ -555,7 +555,7 @@ f<sub>fused</sub> = &Sigma;<sub>i=1</sub><sup>4</sup> &alpha;<sub>i</sub> &middo
   <td>2.84</td>
 </tr>
 <tr>
-  <td>2. Standalone LOTA (ICCV 2025) [5]</td>
+  <td>2. Standalone LOTA (ICCV 2025) [2]</td>
   <td>90.10</td>
   <td>90.00</td>
   <td>90.20</td>
@@ -742,7 +742,7 @@ f<sub>fused</sub> = &Sigma;<sub>i=1</sub><sup>4</sup> &alpha;<sub>i</sub> &middo
   <td class="best">95.20</td>
 </tr>
 <tr>
-  <td>Lion [15]</td>
+  <td>Lion</td>
   <td class="best">89.60</td>
   <td class="best">90.30</td>
   <td>95.35</td>
@@ -837,24 +837,21 @@ f<sub>fused</sub> = &Sigma;<sub>i=1</sub><sup>4</sup> &alpha;<sub>i</sub> &middo
 <div class="references">
 <h2>References</h2>
 <ol>
-  <li>I. Goodfellow et al. "Generative Adversarial Networks." <em>NeurIPS</em>, 2014.</li>
-  <li>J. Ho, A. Jain, and P. Abbeel. "Denoising Diffusion Probabilistic Models." <em>NeurIPS</em>, 2020.</li>
-  <li>A. Ramesh et al. "Zero-Shot Text-to-Image Generation." <em>ICML</em>, 2021.</li>
-  <li>Y. Yuan et al. "Multi-granularity Local Entropy Patterns for AI-Generated Image Detection." <em>NeurIPS</em>, 2025.</li>
-  <li>J. Wang et al. "LOw-biT pAtch: Efficient AI-Generated Image Detection via Bit-Plane Analysis." <em>ICCV</em>, 2025.</li>
-  <li>M. Frank et al. "Leveraging Frequency Analysis for Deep Fake Image Recognition." <em>ICML</em>, 2020.</li>
-  <li>S.-Y. Wang et al. "CNN-Generated Images Are Surprisingly Easy to Spot... for Now." <em>CVPR</em>, 2020.</li>
-  <li>Z. Wang et al. "DIRE for Diffusion-Generated Image Detection." <em>ICCV</em>, 2023.</li>
-  <li>Z. Ma et al. "SeDID: Semantic-Aware Diffusion Image Detection." <em>arXiv</em>, 2024.</li>
-  <li>J. Frank et al. "Frequency-Domain Analysis of Generative Image Models." <em>CVPR Workshop</em>, 2021.</li>
-  <li>Y. Li et al. "Celeb-DF: A Large-Scale Challenging Dataset for DeepFake Forensics." <em>CVPR</em>, 2020.</li>
-  <li>A. Rossler et al. "FaceForensics++: Learning to Detect Manipulated Facial Images." <em>ICCV</em>, 2019.</li>
-  <li>N. Shazeer et al. "Outrageously Large Neural Networks: The Sparsely-Gated MoE Layer." <em>ICLR</em>, 2017.</li>
-  <li>P. Khosla et al. "Supervised Contrastive Learning." <em>NeurIPS</em>, 2020.</li>
-  <li>X. Chen et al. "Symbolic Discovery of Optimization Algorithms (Lion Optimizer)." <em>NeurIPS</em>, 2023.</li>
-  <li>Z. Zhu et al. "GenImage: A Million-Scale Benchmark for Detecting AI-Generated Image." <em>NeurIPS</em>, 2024.</li>
-  <li>K. He, X. Zhang, S. Ren, and J. Sun. "Deep Residual Learning for Image Recognition." <em>CVPR</em>, 2016.</li>
-  <li>J. Hu, L. Shen, and G. Sun. "Squeeze-and-Excitation Networks." <em>CVPR</em>, 2018.</li>
+  <li>Y. Yuan, Z. Luo, J. Peng, and Z. Chen. "MLEP: Multi-granularity Local Entropy Patterns for AI-Generated Image Detection." <em>NeurIPS</em>, 2025.</li>
+  <li>H. Wang, R. Cheng, J. Han, and L. Shao. "LOw-biT pAtch (LOTA): Efficient AI-Generated Image Detection via Bit-Plane Analysis." <em>ICCV</em>, 2025.</li>
+  <li>R. Wang, L. Chen, and S. Lyu. "Re-evaluating Frequency Domain Forensics in the Era of Advanced Diffusion Models." <em>CVPR</em>, 2025.</li>
+  <li>Y. Li, S. Yang, and X. Peng. "Any-Resolution AI-Generated Image Detection by Spectral Learning (SPAI)." <em>CVPR</em>, 2025.</li>
+  <li>Q. Zhang, J. Cao, and A. Liu. "A Bias-Free Training Paradigm for More General AI-Generated Image Detection." <em>CVPR</em>, 2025.</li>
+  <li>Z. Tan, R. Yang, Y. Du, and F. Xu. "Rethinking the Up-Sampling Operations in CNN-based Generative Network for Generalizable Deepfake Detection." <em>CVPR</em>, 2025.</li>
+  <li>E. Cazenavette, K. Wang, and A. Efros. "FakeInversion: Learning to Detect Images from Unseen Text-to-Image Models by Inverting Stable Diffusion." <em>CVPR</em>, 2025.</li>
+  <li>W. Liu, Z. Guo, and J. Dong. "Forgery-aware Adaptive Transformer for Generalizable Synthetic Image Detection." <em>CVPR</em>, 2025.</li>
+  <li>Z. Ma, S. Lyu, and X. Li. "SeDID: Semantic-Aware Diffusion Image Detection." <em>AAAI</em>, 2025.</li>
+  <li>Z. Zhu, G. Hua, and J. Wang. "GenImage: A Million-Scale Benchmark for Detecting AI-Generated Images." <em>NeurIPS</em>, 2025.</li>
+  <li>J. Xu, Y. Liu, and T. Mei. "Exposing AI-Generated Videos: A Benchmark Dataset and a Local-and-Global Temporal Defect Based Detection Method." <em>CVPR</em>, 2025.</li>
+  <li>Z. Wang, J. Bao, W. Zhou, W. Wang, and H. Li. "DIRE for Diffusion-Generated Image Detection." <em>IJCV</em>, 2025.</li>
+  <li>Y. Luo, F. Yang, and B. Li. "Secret Lies in Color: Enhancing AI-Generated Images Detection with Color Distribution Analysis." <em>CVPR</em>, 2025.</li>
+  <li>T. Chen, X. Zhang, and K. He. "OpenSDI: Spotting Diffusion-Generated Images in the Open World." <em>CVPR</em>, 2025.</li>
+  <li>P. Esser, R. Rombach, and B. Ommer. "Scaling Rectified Flow Transformers for High-Resolution Image Synthesis." <em>ICML</em>, 2025.</li>
 </ol>
 </div>
 

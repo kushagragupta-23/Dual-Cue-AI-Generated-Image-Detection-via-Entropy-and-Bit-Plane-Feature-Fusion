@@ -114,10 +114,12 @@ python scripts/train.py --data_dir dataset10000
 
 ## 6. Publication Figures & Interactive Dashboard
 
-- **Interactive HTML Dashboard**: [`outputs/HydraFusion_Dashboard.html`](file:///d:/MAIN%20PROJECT%20CV%20AND%20DL/HydraFusion/outputs/HydraFusion_Dashboard.html)
-- **Publication PDF & PNG Figures**: [`outputs/figures/`](file:///d:/MAIN%20PROJECT%20CV%20AND%20DL/HydraFusion/outputs/figures/)
+- **Interactive HTML Dashboard**: [`outputs/HydraFusion_Dashboard.html`](outputs/HydraFusion_Dashboard.html)
+- **Complete Project Guide**: [`docs/HydraFusion_Complete_Guide.html`](docs/HydraFusion_Complete_Guide.html)
+- **Publication PDF & PNG Figures**: [`outputs/figures/`](outputs/figures/)
   - `performance_summary.pdf` / `performance_summary.png`
   - `gating_weights.pdf` / `gating_weights.png`
   - `roc_curve.pdf` / `roc_curve.png`
   - `pr_curve.pdf` / `pr_curve.png`
   - `confusion_matrix.pdf` / `confusion_matrix.png`
+
