@@ -1,0 +1,63 @@
+# ============================================================================
+# Architecture II: MGA-Net Cross-Attention Training Configuration
+# MGANetDualCueDetector — Spatial Cross-Modal Attention
+# ============================================================================
+
+experiment:
+  name: "arch2_mganet_training"
+  description: "MGA-Net cross-attention detector training"
+  random_seed: 42
+
+# --- Model ---
+model:
+  backbone: "resnet50"
+  pretrained: true
+  mlep_channels: 9
+  lota_channels: 3
+
+  cross_attention:
+    d_model: 256
+    num_heads: 8
+    dropout: 0.1
+
+# --- Dataset ---
+dataset:
+  root_dir: "datasets/GenImage"
+  image_size: 256
+
+# --- Data Loading ---
+dataloader:
+  batch_size: 32
+  num_workers: 4
+  pin_memory: true
+  balanced_sampling: true
+
+# --- Loss ---
+loss:
+  classification: "BCEWithLogitsLoss"
+
+# --- Optimizer ---
+optimizer:
+  type: "AdamW"
+  lr: 5.0e-4
+  weight_decay: 1.0e-4
+
+# --- Scheduler ---
+scheduler:
+  type: "CosineAnnealingLR"
+  T_max: 30
+  eta_min: 1.0e-6
+
+# --- Training ---
+training:
+  num_epochs: 30
+  gradient_clip_norm: 1.0
+  mixed_precision: true
+  log_interval: 10
+
+# --- Checkpointing ---
+checkpointing:
+  save_dir: "outputs/arch2_mganet/checkpoints"
+  save_best: true
+  monitor_metric: "val_f1"
+  mode: "max"

@@ -1,0 +1,141 @@
+# ============================================================================
+# Stage 2: Gated Classification Fine-Tuning Configuration
+# DualCueAIGIDModel — Full Fusion Architecture with MoE & DANN
+# ============================================================================
+# Target: Fine-tune frozen SupCon stems with CrossModal Gating, MGA-Net,
+#         Sparse MoE, and Domain-Adversarial Training on full GenImage
+# Prerequisite: Stage 1 SupCon checkpoint
+# ============================================================================
+
+experiment:
+  name: "stage2_fusion_genimage"
+  description: "Gated fine-tuning of DualCueAIGIDModel on full GenImage"
+  stage: 2
+  random_seed: 42
+  stage1_checkpoint: "outputs/checkpoints/stage1_supcon/best_model.pt"
+
+# --- Dataset ---
+dataset:
+  root_dir: "datasets/GenImage"
+  train_generators:
+    - "ProGAN"
+    - "StyleGAN"
+    - "BigGAN"
+    - "CycleGAN"
+    - "StarGAN"
+    - "GauGAN"
+    - "DeepFake"
+    - "SITD"
+  image_size: 256
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+  stratified: true
+
+# --- Data Loading ---
+dataloader:
+  batch_size: 32
+  num_workers: 4
+  pin_memory: true
+  balanced_sampling: true
+  domain_aware_sampling: true
+
+# --- Model Architecture ---
+model:
+  backbone: "resnet50"
+  pretrained: false  # Loaded from Stage 1 checkpoint
+  freeze_stems: true  # Freeze backbone stems from Stage 1
+
+  # Learnable Frequency Pre-Filter (transferred from Stage 1)
+  frequency_filter:
+    enabled: true
+
+  # Cross-Attention (MGA-Net)
+  cross_attention:
+    enabled: true
+    d_model: 256
+    num_heads: 8
+    dropout: 0.1
+
+  # Sparse MoE
+  moe:
+    enabled: true
+    d_model: 512
+    num_experts: 4
+    top_k: 2
+
+  # Domain-Adversarial Training
+  dann:
+    enabled: true
+    num_domains: 8
+    lambda_init: 0.0
+    lambda_max: 0.5
+    warmup_epochs: 5  # Linear ramp from 0 → lambda_max
+
+# --- Loss ---
+loss:
+  classification: "BCEWithLogitsLoss"
+  domain: "CrossEntropyLoss"
+  domain_weight: 0.1
+  aux_weight: 0.01  # MoE load-balancing loss weight
+
+# --- Optimizer ---
+optimizer:
+  type: "AdamW"
+  lr: 5.0e-4
+  weight_decay: 1.0e-4
+  betas: [0.9, 0.999]
+
+# --- Learning Rate Schedule ---
+scheduler:
+  type: "CosineAnnealingLR"
+  T_max: 30
+  eta_min: 1.0e-6
+
+# --- Training ---
+training:
+  num_epochs: 30
+  gradient_clip_norm: 1.0
+  mixed_precision: true
+  log_interval: 10
+  val_interval: 1
+  save_interval: 5
+  early_stopping:
+    enabled: true
+    patience: 10
+    monitor_metric: "val_f1"
+    mode: "max"
+
+# --- Augmentation ---
+augmentation:
+  jpeg_recompression:
+    enabled: true
+    quality_range: [70, 100]
+    probability: 0.5
+  gaussian_blur:
+    enabled: true
+    sigma_range: [0.5, 2.0]
+    probability: 0.3
+
+# --- Checkpointing ---
+checkpointing:
+  save_dir: "outputs/checkpoints/stage2_fusion"
+  save_best: true
+  monitor_metric: "val_f1"
+  mode: "max"
+
+# --- Evaluation ---
+evaluation:
+  zero_shot_generators:
+    - "Midjourney"
+    - "DALLE2"
+    - "StableDiffusion_v1.5"
+    - "StableDiffusion_v2.1"
+  robustness_test:
+    jpeg_qualities: [100, 90, 80, 70]
+    blur_sigmas: [0.0, 0.5, 1.0, 2.0]
+
+# --- Logging ---
+logging:
+  log_dir: "outputs/logs/stage2_fusion"
+  tensorboard: true

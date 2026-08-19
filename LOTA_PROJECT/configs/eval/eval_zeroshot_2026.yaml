@@ -1,0 +1,83 @@
+# ============================================================================
+# Zero-Shot Generalization Stress Benchmark Configuration
+# 2026 Diffusion Model Evaluation (FLUX.1, SD3, DALLE-3)
+# ============================================================================
+# Evaluates model generalization on generators NOT seen during training.
+# All generators listed are evaluated without fine-tuning.
+# ============================================================================
+
+experiment:
+  name: "zeroshot_2026_diffusion"
+  description: "Zero-shot evaluation on 2026 diffusion generators"
+
+# --- Model ---
+model:
+  checkpoint: "outputs/checkpoints/stage2_fusion/best_model.pt"
+  backbone: "resnet50"
+
+# --- Evaluation Generators ---
+# Group 1: GAN generators (seen during training for some splits)
+seen_generators:
+  - "ProGAN"
+  - "StyleGAN"
+  - "BigGAN"
+  - "CycleGAN"
+  - "StarGAN"
+  - "GauGAN"
+  - "DeepFake"
+  - "SITD"
+
+# Group 2: Unseen GAN generators (zero-shot)
+unseen_gan_generators:
+  - "StyleGAN2"
+  - "StyleGAN3"
+  - "ProjectedGAN"
+  - "VQGAN"
+
+# Group 3: Unseen Diffusion generators (zero-shot)
+unseen_diffusion_generators:
+  - "Midjourney"
+  - "DALLE2"
+  - "DALLE3"
+  - "StableDiffusion_v1.5"
+  - "StableDiffusion_v2.1"
+  - "StableDiffusion_XL"
+  - "StableDiffusion_3.0"
+  - "FLUX.1"
+  - "Imagen"
+
+# --- Evaluation Settings ---
+evaluation:
+  batch_size: 32
+  threshold: 0.5
+  optimal_threshold: true  # Find optimal threshold via Youden's J
+
+# --- Robustness Stress Tests ---
+robustness:
+  jpeg_qualities: [100, 90, 80, 70, 60, 50]
+  blur_sigmas: [0.0, 0.5, 1.0, 1.5, 2.0, 3.0]
+
+# --- Output ---
+output:
+  results_dir: "outputs/eval_results/zeroshot_2026"
+  save_json: true
+  save_markdown: true
+  save_figures: true
+  figure_dpi: 300
+
+# --- Metrics ---
+metrics:
+  primary: ["accuracy", "roc_auc", "average_precision"]
+  secondary: ["f1_score", "precision", "recall"]
+  per_domain: true
+  confusion_matrix: true
+
+# --- Reporting ---
+reporting:
+  comparison_baselines:
+    - name: "MLEP Only"
+      checkpoint: "outputs/checkpoints/mlep_only/best.pt"
+    - name: "LOTA Only"
+      checkpoint: "outputs/checkpoints/lota_only/best.pt"
+    - name: "DualCue Fusion"
+      checkpoint: "outputs/checkpoints/stage2_fusion/best_model.pt"

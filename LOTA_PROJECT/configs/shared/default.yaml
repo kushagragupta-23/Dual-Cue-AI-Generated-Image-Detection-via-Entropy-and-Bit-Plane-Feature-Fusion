@@ -1,0 +1,100 @@
+# ============================================================================
+# Master Default Hyperparameters Configuration
+# Dual-Cue AI-Generated Image Detection (MLEP & LOTA Fusion)
+# ============================================================================
+# Baseline parameters shared across all training stages and experiments.
+# Stage-specific configs (train_baseline_progan.yaml, train_fusion_genimage.yaml)
+# override these defaults where needed.
+# ============================================================================
+
+# --- Input ---
+input:
+  image_size: 256
+  input_channels: 3
+  normalization: "uint8"  # Images in [0, 255] range
+
+# --- MLEP Extractor ---
+mlep:
+  scales: [1.0, 0.5, 0.25]
+  grid_size: 16
+  patch_size: 16
+  output_channels: 9  # 3 scales × 3 RGB
+
+# --- LOTA Extractor ---
+lota:
+  k_patches: 1
+  patch_size: 32
+  grid_size: 8
+  bit_planes: [0, 1, 2]
+  threshold_val: 255.0
+  output_channels: 3  # Single top-1 patch, 3 RGB
+
+# --- Backbone ---
+backbone:
+  name: "resnet50"
+  pretrained: true
+  output_dim: 2048  # ResNet-50 stage4 output
+
+# --- Frequency Pre-Filter ---
+frequency_filter:
+  init_cutoff: 0.65
+  init_slope: 4.0
+
+# --- Cross-Attention (MGA-Net) ---
+cross_attention:
+  d_model: 256
+  num_heads: 8
+  dropout: 0.1
+
+# --- Sparse MoE ---
+moe:
+  d_model: 512
+  num_experts: 4
+  top_k: 2
+
+# --- Domain Adversarial (DANN) ---
+dann:
+  num_domains: 8
+  lambda_init: 0.0
+  lambda_max: 0.5
+  warmup_epochs: 5
+
+# --- Optimizer ---
+optimizer:
+  type: "AdamW"
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+  betas: [0.9, 0.999]
+
+# --- Scheduler ---
+scheduler:
+  type: "CosineAnnealingLR"
+  eta_min: 1.0e-6
+
+# --- Training ---
+training:
+  batch_size: 32
+  num_workers: 4
+  gradient_clip_norm: 1.0
+  mixed_precision: true
+  log_interval: 10
+  val_interval: 1
+
+# --- Loss Weights ---
+loss:
+  classification_weight: 1.0
+  domain_weight: 0.1
+  aux_weight: 0.01
+  supcon_temperature: 0.07
+
+# --- Augmentation ---
+augmentation:
+  jpeg_recompression:
+    quality_range: [70, 100]
+    probability: 0.5
+  gaussian_blur:
+    sigma_range: [0.5, 2.0]
+    probability: 0.3
+
+# --- Seed ---
+seed: 42

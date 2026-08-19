@@ -1,0 +1,99 @@
+# ============================================================================
+# Stage 1: Supervised Contrastive Pre-Training Configuration
+# Dual-Cue MLEP + LOTA Fusion — SupCon Alignment Phase
+# ============================================================================
+# Target: Train LearnableFreqSupConNet on ProGAN-only split of GenImage
+# Duration: ~50 epochs, then freeze stems and discard projection heads
+# ============================================================================
+
+experiment:
+  name: "stage1_supcon_progan"
+  description: "SupCon contrastive pre-training on ProGAN split"
+  stage: 1
+  random_seed: 42
+
+# --- Dataset ---
+dataset:
+  root_dir: "datasets/GenImage"
+  train_generators:
+    - "ProGAN"
+  image_size: 256
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+  stratified: true
+
+# --- Data Loading ---
+dataloader:
+  batch_size: 64
+  num_workers: 4
+  pin_memory: true
+  balanced_sampling: true
+
+# --- Model Architecture ---
+model:
+  backbone: "resnet50"
+  pretrained: true
+  freeze_early_layers: false
+
+  # Learnable Frequency Pre-Filter
+  frequency_filter:
+    enabled: true
+    init_cutoff: 0.65
+    init_slope: 4.0
+
+  # Projection Head
+  projection:
+    hidden_dim: 256
+    output_dim: 128
+
+# --- SupCon Loss ---
+loss:
+  type: "supcon"
+  temperature: 0.07
+  base_temperature: 0.07
+
+# --- Optimizer ---
+optimizer:
+  type: "AdamW"
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+  betas: [0.9, 0.999]
+
+# --- Learning Rate Schedule ---
+scheduler:
+  type: "CosineAnnealingLR"
+  T_max: 50
+  eta_min: 1.0e-6
+
+# --- Training ---
+training:
+  num_epochs: 50
+  gradient_clip_norm: 1.0
+  mixed_precision: true
+  log_interval: 10  # Log every N batches
+  val_interval: 1   # Validate every N epochs
+  save_interval: 10  # Checkpoint every N epochs
+
+# --- Augmentation ---
+augmentation:
+  jpeg_recompression:
+    enabled: true
+    quality_range: [70, 100]
+    probability: 0.5
+  gaussian_blur:
+    enabled: true
+    sigma_range: [0.5, 2.0]
+    probability: 0.3
+
+# --- Checkpointing ---
+checkpointing:
+  save_dir: "outputs/checkpoints/stage1_supcon"
+  save_best: true
+  monitor_metric: "val_loss"
+  mode: "min"
+
+# --- Logging ---
+logging:
+  log_dir: "outputs/logs/stage1_supcon"
+  tensorboard: true

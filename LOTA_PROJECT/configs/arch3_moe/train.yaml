@@ -1,0 +1,73 @@
+# ============================================================================
+# Architecture III: MoE + DANN Training Configuration
+# MoEStandaloneDualCueDetector — Sparse MoE + Domain-Adversarial
+# ============================================================================
+
+experiment:
+  name: "arch3_moe_dann_training"
+  description: "Standalone MoE + DANN detector training"
+  random_seed: 42
+
+# --- Model ---
+model:
+  backbone: "resnet50"
+  pretrained: true
+  mlep_channels: 9
+  lota_channels: 3
+
+  moe:
+    d_model: 512
+    num_experts: 4
+    top_k: 2
+
+  dann:
+    num_domains: 8
+    lambda_init: 0.0
+    lambda_max: 0.5
+    warmup_epochs: 5
+
+# --- Dataset ---
+dataset:
+  root_dir: "datasets/GenImage"
+  image_size: 256
+
+# --- Data Loading ---
+dataloader:
+  batch_size: 32
+  num_workers: 4
+  pin_memory: true
+  balanced_sampling: true
+  domain_aware_sampling: true
+
+# --- Loss ---
+loss:
+  classification: "BCEWithLogitsLoss"
+  domain: "CrossEntropyLoss"
+  domain_weight: 0.1
+  aux_weight: 0.01
+
+# --- Optimizer ---
+optimizer:
+  type: "AdamW"
+  lr: 5.0e-4
+  weight_decay: 1.0e-4
+
+# --- Scheduler ---
+scheduler:
+  type: "CosineAnnealingLR"
+  T_max: 30
+  eta_min: 1.0e-6
+
+# --- Training ---
+training:
+  num_epochs: 30
+  gradient_clip_norm: 1.0
+  mixed_precision: true
+  log_interval: 10
+
+# --- Checkpointing ---
+checkpointing:
+  save_dir: "outputs/arch3_moe/checkpoints"
+  save_best: true
+  monitor_metric: "val_f1"
+  mode: "max"

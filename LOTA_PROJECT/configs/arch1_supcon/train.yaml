@@ -1,0 +1,60 @@
+# ============================================================================
+# Architecture I: SupCon Contrastive Pre-Training Configuration
+# LearnableFreqSupConNet — Dual-Cue Feature Alignment
+# ============================================================================
+
+experiment:
+  name: "arch1_supcon_pretraining"
+  description: "SupCon contrastive pre-training for MLEP-LOTA alignment"
+  random_seed: 42
+
+# --- Model ---
+model:
+  backbone: "resnet50"
+  pretrained: true
+  projection_dim: 128
+  hidden_dim: 256
+  temperature: 0.07
+
+  frequency_filter:
+    init_cutoff: 0.65
+    init_slope: 4.0
+
+# --- Dataset ---
+dataset:
+  root_dir: "datasets/ForenSynths"
+  train_generators: ["ProGAN"]
+  image_size: 256
+
+# --- Data Loading ---
+dataloader:
+  batch_size: 32
+  num_workers: 4
+  pin_memory: true
+  balanced_sampling: true
+
+# --- Optimizer ---
+optimizer:
+  type: "AdamW"
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+
+# --- Scheduler ---
+scheduler:
+  type: "CosineAnnealingLR"
+  T_max: 50
+  eta_min: 1.0e-6
+
+# --- Training ---
+training:
+  num_epochs: 50
+  gradient_clip_norm: 1.0
+  mixed_precision: true
+  log_interval: 10
+
+# --- Checkpointing ---
+checkpointing:
+  save_dir: "outputs/arch1_supcon/checkpoints"
+  save_best: true
+  monitor_metric: "loss"
+  mode: "min"

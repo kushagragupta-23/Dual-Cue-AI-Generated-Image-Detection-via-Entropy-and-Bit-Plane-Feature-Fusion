@@ -3,12 +3,24 @@ __pycache__/
 *.py[cod]
 *$py.class
 venv/
+.venv/
 env/
 ENV/
 .pytest_cache/
 
-# Datasets & Large Files
-dataset10000/
+# Datasets & Large Files — keep README and .gitkeep, ignore images
+dataset10000/**/*.jpg
+dataset10000/**/*.jpeg
+dataset10000/**/*.png
+dataset10000/**/*.gif
+dataset10000/**/*.jfif
+dataset10000/**/*.bmp
+dataset10000/**/*.webp
+dataset10000/**/metadata/*.json
+!dataset10000/DATASET_README.md
+!dataset10000/**/.gitkeep
+
+# Model weights & large binaries
 *.pth
 *.pt
 *.onnx
@@ -20,3 +32,23 @@ dataset10000/
 *.log
 outputs/project_run/
 outputs/logs/
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+._*
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Standalone sub-project artifacts (keep source, ignore generated)
+LOTA_PROJECT/outputs/
+LOTA_PROJECT/venv/
+LOTA_PROJECT/.venv/
+LOTA_PROJECT/dataset10000/
+MLEP_PROJECT/outputs/
+MLEP_PROJECT/venv/
+MLEP_PROJECT/.venv/
+MLEP_PROJECT/dataset10000/
+MLEP_PROJECT/logs/
