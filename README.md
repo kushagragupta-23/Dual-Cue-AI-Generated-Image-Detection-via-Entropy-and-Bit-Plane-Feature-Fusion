@@ -133,11 +133,12 @@ This repository contains the **complete project**: the fused HydraFusion-Net (ma
 │   ├── tests/                      #   MLEP unit tests
 │   └── README.md                   #   MLEP standalone documentation
 │
-├── dataset10000/                   # ★ Dataset (images downloaded separately)
-│   ├── DATASET_README.md           #   Dataset documentation & download guide
+├── dataset10000/                   # ★ Complete 10,000-image benchmark dataset (included in repo)
+│   ├── DATASET_README.md           #   Dataset documentation & provenance guide
 │   ├── train/real/ & train/fake/   #   6,000 training images (3K + 3K)
-│   ├── validation/real/ & val/fake/#   2,000 validation images
-│   └── test/real/ & test/fake/     #   2,000 test images
+│   ├── validation/real/ & val/fake/#   2,000 validation images (1K + 1K)
+│   ├── test/real/ & test/fake/     #   2,000 test images (1K + 1K)
+│   └── metadata/                   #   JSON manifests and class statistics
 │
 ├── .gitignore
 └── README.md                       # ← You are here
@@ -159,23 +160,11 @@ Out-of-the-box optimizations enabled for maximum GPU utilization:
 
 A **10,000-image benchmark** (5,000 real + 5,000 AI-generated) for AI-Generated Image Detection.
 
-> **Note:** The actual images are too large for GitHub. Download them using the instructions below.
+> **Included in Repository:** The full 10,000-image benchmark dataset is included directly in `dataset10000/` ready for immediate execution, training, and zero-shot evaluation without external downloads.
 
-### Download Instructions
+### Dataset Structure & Provenance
 
-The dataset is sourced from HuggingFace: [`Hemg/ai-vs-real-image-detection`](https://huggingface.co/datasets/Hemg/ai-vs-real-image-detection)
-
-```bash
-# Option 1: Use the built-in download script
-cd MLEP_PROJECT
-python scripts/download_dataset.py
-
-# Option 2: Manual download from HuggingFace
-pip install datasets
-python -c "from datasets import load_dataset; ds = load_dataset('Hemg/ai-vs-real-image-detection'); print(ds)"
-```
-
-After downloading, place images in the following structure:
+The dataset is curated and standardized from foundational academic archives and HuggingFace (`Hemg/ai-vs-real-image-detection`):
 
 ```
 dataset10000/

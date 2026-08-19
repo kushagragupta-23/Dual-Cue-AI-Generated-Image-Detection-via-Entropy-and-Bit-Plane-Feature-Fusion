@@ -8,18 +8,6 @@ env/
 ENV/
 .pytest_cache/
 
-# Datasets & Large Files — keep README and .gitkeep, ignore images
-dataset10000/**/*.jpg
-dataset10000/**/*.jpeg
-dataset10000/**/*.png
-dataset10000/**/*.gif
-dataset10000/**/*.jfif
-dataset10000/**/*.bmp
-dataset10000/**/*.webp
-dataset10000/**/metadata/*.json
-!dataset10000/DATASET_README.md
-!dataset10000/**/.gitkeep
-
 # Model weights & large binaries
 *.pth
 *.pt
@@ -41,6 +29,13 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Submission files — DO NOT upload to GitHub
+SUBMISSION/
+SUBMISSION_FINAL_PACKAGE.zip
+*.docx
+*.pptx
+~$*
 
 # Standalone sub-project artifacts (keep source, ignore generated)
 LOTA_PROJECT/outputs/
